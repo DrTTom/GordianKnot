@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'jacoco'
+apply plugin: "com.github.ben-manes.versions"
+
+buildscript {
+   repositories {
+      jcenter()
+   }
+   dependencies {
+      classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+   }
+}
+
+repositories {
+   mavenCentral()
+}
+
+check.dependsOn jacocoTestReport
+
+dependencies {
+   testCompile ("junit:junit:4.12")
+   {
+      exclude module: "hamcrest-core"
+   }
+   testCompile "org.hamcrest:hamcrest-all:1.3"
+}
