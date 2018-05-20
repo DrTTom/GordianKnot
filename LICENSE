@@ -1,0 +1,19 @@
+LICENSE
+############
+
+This file is about to change very soon. Up to then:
+
+1. Your are granted to use this application non-commercially only.
+
+2. You may not re-distribute it.
+
+3. There is absolutely no warranty or liability that any of the stuff is suitable for whatever 
+   use, not even that it is harmless.
+
+4. There are parts of vis.js checked in until correct dependency for java script libraries is established.
+   Thus, either license 
+    - http://www.apache.org/licenses/LICENSE-2.0
+    - The MIT License http://opensource.org/licenses/MIT
+   applies as well.
+   
+   
