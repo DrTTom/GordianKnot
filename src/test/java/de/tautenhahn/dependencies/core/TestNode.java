@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ public class TestNode
     assertThat("inner node", node, instanceOf(InnerNode.class));
     assertThat("simple name", node.getSimpleName(), equalTo("example"));
     assertThat("name", node.getName(), equalTo(PKG_1));
+    assertThat("toString", node.toString(), startsWith("InnerNode"));
     assertThat("name of leaf", node.find("Dummy").getName(), equalTo(PKG_1 + ".Dummy"));
   }
 

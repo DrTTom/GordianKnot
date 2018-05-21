@@ -160,4 +160,9 @@ public abstract class Node
     return result;
   }
 
+  @Override
+  public String toString()
+  {
+    return getClass().getSimpleName() + "(" + getName() + ")";
+  }
 }
