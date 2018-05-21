@@ -1,7 +1,9 @@
 package de.tautenhahn.dependencies.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -13,10 +15,9 @@ import java.util.stream.Stream;
 public class Leaf extends Node
 {
 
-  private List<Node> predecessors;
+  private final List<Node> predLeafs = new ArrayList<>();
 
-  private List<Node> successors;
-
+  private final List<Node> sucLeafs = new ArrayList<>();
 
   /**
    * Creates instance.
@@ -29,7 +30,6 @@ public class Leaf extends Node
     super(parent, name);
   }
 
-
   @Override
   public List<Node> getChildren()
   {
@@ -39,44 +39,41 @@ public class Leaf extends Node
   @Override
   public List<Node> getPredecessors()
   {
-    return predecessors;
+    return predLeafs.stream().map(this::replaceByCollapsedAnchestor).distinct().collect(Collectors.toList());
   }
-
-
-
-  public void setPredecessors(List<Node> predecessors)
-  {
-    this.predecessors = predecessors;
-  }
-
-
 
   @Override
   public List<Node> getSuccessors()
   {
-    return successors;
+    return sucLeafs.stream().map(this::replaceByCollapsedAnchestor).distinct().collect(Collectors.toList());
   }
 
-
-
-  public void setSuccessors(List<Node> successors)
+  public void addSuccessor(Leaf successor)
   {
-    this.successors = successors;
+    sucLeafs.add(successor);
+    successor.predLeafs.add(this);
   }
-
 
   @Override
-  List<List<Node>> getDependencyReason(Node other)
+  public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
     // TODO Auto-generated method stub
     return null;
   }
 
-
   @Override
-  Stream<Node> walkSubTree()
+  public Stream<Node> walkSubTree()
   {
     return Stream.empty();
   }
 
+  List<Node> getPredLeafs()
+  {
+    return predLeafs;
+  }
+
+  List<Node> getSucLeafs()
+  {
+    return sucLeafs;
+  }
 }

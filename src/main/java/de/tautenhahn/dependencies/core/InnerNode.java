@@ -3,6 +3,8 @@ package de.tautenhahn.dependencies.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,39 +30,52 @@ public class InnerNode extends Node
   /**
    * Creates a new instance as child of current node.
    * 
-   * @param name simple name of class, package, jar or module
+   * @param name must be relative to current node
    */
   public InnerNode createInnerChild(String name)
   {
-    return new InnerNode(this, name);
+    return createChild(name, InnerNode::new);
   }
 
   /**
    * Creates a new instance as child of current node.
    * 
-   * @param name simple name of class, package, jar or module
+   * @param name must be relative to current node
    */
   public Leaf createLeaf(String name)
   {
-    return new Leaf(this, name);
+    return createChild(name, Leaf::new);
   }
 
-  public Node find(String path)
+  private <T extends Node> T createChild(String name, BiFunction<Node, String, T> constructor)
   {
-    int pos = path.indexOf(SEPARATOR);
-    String first = pos > 0 ? path.substring(0, pos) : path;
-    String rest = pos > 0 ? path.substring(pos + 1) : null;
-    Node result = children.stream().filter(n -> n.getSimpleName().equals(first)).findAny().orElse(null);
-    return rest == null || result == null ? result : (InnerNode)result.find(rest);
+    Pair<String, String> parts = splitPath(name);
+    if (parts.getSecond() == null)
+    {
+      T result = constructor.apply(this, name);
+      children.add(result);
+      return result;
+    }
+
+    Node intermed = find(parts.getFirst());
+    if (intermed instanceof Leaf)
+    {
+      throw new IllegalArgumentException("cannot add a child of " + intermed.getName());
+    }
+    if (intermed == null)
+    {
+      intermed = createInnerChild(parts.getFirst());
+    }
+    return ((InnerNode)intermed).createChild(parts.getSecond(), constructor);
   }
 
 
   /**
-   * Creates a root node with no parent and no name.
+   * Creates a virtual root node with no parent and no name.
    */
   public static InnerNode createRoot()
   {
-    return new InnerNode(null, "");
+    return new InnerNode(null, null);
   }
 
   /**
@@ -78,46 +93,44 @@ public class InnerNode extends Node
   @Override
   public List<Node> getSuccessors()
   {
-    Stream<? extends Node> relevantNodes = isCollapsed() ? walkSubTree() : children.stream();
+    return getNeighbours(Leaf::getSucLeafs);
+  }
+
+  private List<Node> getNeighbours(Function<Leaf, List<Node>> lister)
+  {
+    Stream<? extends Node> relevantNodes = isCollapsed() ? walkHiddenSubTree() : children.stream();
     return relevantNodes.filter(x -> x instanceof Leaf)
-                        .flatMap(l -> l.getSuccessors().stream())
+                        .map(n -> (Leaf)n)
+                        .flatMap(l -> lister.apply(l).stream())
                         .distinct()
                         .map(this::replaceByCollapsedAnchestor)
                         .distinct()
                         .collect(Collectors.toList());
   }
 
-  private Node replaceByCollapsedAnchestor(Node n)
-  {
-    Node result = n;
-    Node parent = n.getParent();
-    while (parent != null)
-    {
-      if (parent.isCollapsed())
-      {
-        result = parent;
-      }
-      parent = parent.getParent();
-    }
-    return result;
-  }
-
   @Override
   public List<Node> getPredecessors()
   {
-    return null;
+    return getNeighbours(Leaf::getPredLeafs);
   }
 
   @Override
-  public List<List<Node>> getDependencyReason(Node other)
+  public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
     // TODO
     return null;
   }
 
   @Override
-  Stream<Node> walkSubTree()
+  public Stream<Node> walkSubTree()
   {
-    return children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+    return isCollapsed() ? Stream.empty()
+      : children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+  }
+
+  private Stream<Node> walkHiddenSubTree()
+  {
+    return children.stream().flatMap(n -> n instanceof InnerNode
+      ? Stream.concat(((InnerNode)n).walkHiddenSubTree(), Stream.of(n)) : Stream.of(n));
   }
 }
