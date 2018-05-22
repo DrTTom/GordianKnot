@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * Inner node of the containment structure. Those nodes have relations exclusively depending on the relations
  * of their children.
- * 
+ *
  * @author TT
  */
 public class InnerNode extends Node
@@ -29,7 +29,7 @@ public class InnerNode extends Node
 
   /**
    * Creates a new instance as child of current node.
-   * 
+   *
    * @param name must be relative to current node
    */
   public InnerNode createInnerChild(String name)
@@ -39,7 +39,7 @@ public class InnerNode extends Node
 
   /**
    * Creates a new instance as child of current node.
-   * 
+   *
    * @param name must be relative to current node
    */
   public Leaf createLeaf(String name)
@@ -98,13 +98,28 @@ public class InnerNode extends Node
 
   private List<Node> getNeighbours(Function<Leaf, List<Node>> lister)
   {
-    Stream<? extends Node> relevantNodes = isCollapsed() ? walkHiddenSubTree() : children.stream();
+    Stream<? extends Node> relevantNodes = null;
+    switch (getListMode())
+    {
+      case COLLAPSED:
+        relevantNodes = walkHiddenSubTree();
+        break;
+      case LEAFS_COLLAPSED:
+        relevantNodes = children.stream();
+        break;
+      case EXPANDED:
+        relevantNodes = Stream.empty();
+        break;
+      default:
+        throw new IllegalStateException("unsupported list mode");
+    }
     return relevantNodes.filter(x -> x instanceof Leaf)
                         .map(n -> (Leaf)n)
                         .flatMap(l -> lister.apply(l).stream())
                         .distinct()
                         .map(this::replaceByCollapsedAnchestor)
                         .distinct()
+                        .filter(n -> n != this)
                         .collect(Collectors.toList());
   }
 
@@ -124,8 +139,19 @@ public class InnerNode extends Node
   @Override
   public Stream<Node> walkSubTree()
   {
-    return isCollapsed() ? Stream.empty()
-      : children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+    switch (getListMode())
+    {
+      case COLLAPSED:
+        return Stream.empty();
+      case LEAFS_COLLAPSED:
+        return children.stream()
+                       .filter(c -> c instanceof InnerNode)
+                       .flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+      case EXPANDED:
+        return children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+      default:
+        throw new IllegalStateException("unsupported list mode");
+    }
   }
 
   private Stream<Node> walkHiddenSubTree()

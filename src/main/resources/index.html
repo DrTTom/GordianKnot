@@ -6,8 +6,8 @@
   <link href="vis.min.css" rel="stylesheet" type="text/css" />
   <style type="text/css">
     #mynetwork {
-      width: 600px;
-      height: 400px;
+      width: 1000px;
+      height: 700px;
       border: 1px solid lightgray;
     }
   </style>
@@ -16,29 +16,28 @@
 <div id="mynetwork" style="heigth: 600pt; width: 600pt;"></div>
 
 <script type="text/javascript">
-//TODO: get these via rest interface from backend
-  var nodes = new vis.DataSet([
-    {id: 1, label: 'de.tautenhahn.dependencies'},
-    {id: 2, label: 'de.tautenhahn.dependencies.core'},
-    {id: 3, label: 'de.tautenhahn.dependencies.rest'},
-    {id: 4, label: 'de.tautenhahn.dependencies.tests'},
-  ]);
+ var xhr = new XMLHttpRequest();
+ xhr.open('GET', "http://localhost:4567/view", true);
+ xhr.send();
+ 
+ xhr.onreadystatechange = processRequest;
+ 
+function processRequest(e) {
+	if (xhr.readyState == 4 ) {		
+		var response = JSON.parse(xhr.responseText);
+		var nodes = new vis.DataSet(response.nodes);
+		var edges = new vis.DataSet(response.edges);
 
-  var edges = new vis.DataSet([
-    {from: 1, to: 3},
-    {from: 1, to: 2},
-    {from: 2, to: 4},
-    {from: 3, to: 3}
-  ]);
-
-  // from example: create a network
   var container = document.getElementById('mynetwork');
   var data = {
     nodes: nodes,
     edges: edges
   };
-  var options = {};
+  var options = {   };
   var network = new vis.Network(container, data, options);
+
+    }
+}
 </script>
 
 </body>

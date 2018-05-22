@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.core.Node.ListMode;
+
 
 /**
  * Unit tests analyzing current build directory. If running in eclipse, make sure to call "gradle compileTest"
  * before.
- * 
+ *
  * @author TT
  */
 public class TestProjectAnalyzer
@@ -37,7 +39,7 @@ public class TestProjectAnalyzer
 
     Node corePackage = root.find("main:.de.tautenhahn.dependencies.core");
     Node testCorePackage = root.find("main:.de.tautenhahn.dependencies.core");
-    testCorePackage.setCollapsed(true);
+    testCorePackage.setListMode(ListMode.LEAFS_COLLAPSED);
     assertThat("needs core package", corePackage.getPredecessors(), hasItem(testCorePackage));
   }
 

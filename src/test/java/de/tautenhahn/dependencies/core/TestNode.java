@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.core.Node.ListMode;
+
 
 
 /**
  * Unit tests for several nodes.
- * 
+ *
  * @author TT
  */
 public class TestNode
@@ -71,11 +73,15 @@ public class TestNode
     nested.addSuccessor(alien);
 
     Node systemUnderTest = root.find(PKG_1);
+    assertThat("subtree expanded", systemUnderTest.walkSubTree().collect(Collectors.toList()), hasSize(3));
+    systemUnderTest.setListMode(ListMode.LEAFS_COLLAPSED);
     assertThat("successors of non-collapsed node", systemUnderTest.getSuccessors(), contains(other));
-    assertThat("subtree", systemUnderTest.walkSubTree().collect(Collectors.toList()), hasSize(3));
+    assertThat("subtree leafs collapsed",
+               systemUnderTest.walkSubTree().collect(Collectors.toList()),
+               hasSize(2));
     assertThat("direct predecessor", alien.getPredecessors(), contains(nested));
 
-    systemUnderTest.setCollapsed(true);
+    systemUnderTest.setListMode(ListMode.COLLAPSED);
     assertThat("successors of collapsed node", systemUnderTest.getSuccessors(), contains(other, alien));
     assertThat("subtree of collapsed", systemUnderTest.walkSubTree().collect(Collectors.toList()), empty());
     assertThat("parents subtree",

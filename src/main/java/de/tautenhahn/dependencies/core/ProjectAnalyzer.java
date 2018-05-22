@@ -14,7 +14,7 @@ import java.util.Objects;
 
 /**
  * Analyzes a project and builds the dependency tree.
- * 
+ *
  * @author TT
  */
 public class ProjectAnalyzer
@@ -30,7 +30,7 @@ public class ProjectAnalyzer
 
   /**
    * Creates instance for one-time use. TODO: set includes static, create hidden instances.
-   * 
+   *
    * @param includes regular expressions for absolute node names.
    */
   public ProjectAnalyzer(String... includes)
@@ -41,7 +41,7 @@ public class ProjectAnalyzer
   /**
    * Runs the dependency analysis for all classes in the class path with match some include. All other classes
    * are considered only as needed by included classes but not analyzed themselves.
-   * 
+   *
    * @param classPath paths to jar files or build directories.
    * @return root node of the created graph.
    */
@@ -88,6 +88,7 @@ public class ProjectAnalyzer
 
   private void handleClassFile(Path clazz, Path root)
   {
+    System.out.println(clazz);
     String className = root.relativize(clazz).toString().replace(".class", "").replace('/', '.');
     String source = root.getFileName().toString().replace('.', '_');
     Leaf node = this.root.createLeaf(source + ":." + className);

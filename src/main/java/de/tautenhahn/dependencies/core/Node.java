@@ -12,11 +12,24 @@ import java.util.stream.Stream;
  * Note that we distinguish between the "contains" and "dependsOn" relations.<br>
  * WARNING: This is not a valid concept to model a general directed graph but specialized for analyzing java
  * dependencies.
- * 
+ *
  * @author TT
  */
 public abstract class Node
 {
+
+  /**
+   * Defines how elements are listed and where dependencies are addressed to.
+   */
+  public enum ListMode
+  {
+    /** all children hidden, dependencies of whole subtree on this node */
+    COLLAPSED,
+    /** direct leaves collapsed, all other children listed separately */
+    LEAFS_COLLAPSED,
+    /** all children listed separately */
+    EXPANDED;
+  }
 
   public static final char SEPARATOR = '.';
 
@@ -24,11 +37,11 @@ public abstract class Node
 
   private final String simpleName;
 
-  private boolean collapsed;
+  private ListMode listMode = ListMode.EXPANDED;
 
   /**
    * Creates new instance.
-   * 
+   *
    * @param parent
    * @param simpleName
    */
@@ -92,34 +105,32 @@ public abstract class Node
 
   /**
    * Returns a stream of children in depth-first order, ignoring parts of collapsed nodes.
-   * 
-   * @param skipHidden true to skip nodes inside collapsed containers, false to list all nodes.
    */
   public abstract Stream<Node> walkSubTree();
 
   /**
-   * Returns true if all the children of this node in the container structure are handled as integral part of
-   * this node, false if they are considered as separate nodes.
+   * Returns the mode in which children in the container structure are handled as integral part of this node
+   * or as separate nodes.
    */
-  public boolean isCollapsed()
+  public ListMode getListMode()
   {
-    return collapsed;
+    return listMode;
   }
 
   /**
    * If parameter is true, combine this node with all its children into one collective node, collapse the
    * children as well. If false is given, consider the children as separate nodes.
-   * 
-   * @param collapsed
+   *
+   * @param listMode
    */
-  public void setCollapsed(boolean collapsed)
+  public void setListMode(ListMode listMode)
   {
-    this.collapsed = collapsed;
+    this.listMode = listMode;
   }
 
   /**
    * Returns sub-node specified by path, even if inside some collapsed node.
-   * 
+   *
    * @param path relative to this node.
    */
   public Node find(String path)
@@ -133,7 +144,7 @@ public abstract class Node
 
   /**
    * Separates the first part of a path.
-   * 
+   *
    * @param path
    */
   protected Pair<String, String> splitPath(String path)
@@ -148,14 +159,16 @@ public abstract class Node
   protected Node replaceByCollapsedAnchestor(Node n)
   {
     Node result = n;
-    Node parent = n.getParent();
-    while (parent != null)
+    Node ancestor = n.getParent();
+    boolean isFirst = true;
+    while (ancestor != null)
     {
-      if (parent.isCollapsed())
+      if (ancestor.listMode == ListMode.COLLAPSED || isFirst && ancestor.listMode == ListMode.LEAFS_COLLAPSED)
       {
-        result = parent;
+        result = ancestor;
       }
-      parent = parent.getParent();
+      ancestor = ancestor.getParent();
+      isFirst = false;
     }
     return result;
   }

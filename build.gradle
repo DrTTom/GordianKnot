@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'pmd'
-// apply plugin: 'findbugs' does not work with Java 10
+apply plugin: 'findbugs' // does not work with Java 10
 apply plugin: 'jacoco'
 apply plugin: "com.github.ben-manes.versions"
 
@@ -20,6 +20,8 @@ repositories {
 check.dependsOn jacocoTestReport
 
 dependencies {
+   compile "com.sparkjava:spark-core:2.7.2"
+   compile "com.google.code.gson:gson:2.8.4"
    testCompile ("junit:junit:4.12")
    {
       exclude module: "hamcrest-core"
