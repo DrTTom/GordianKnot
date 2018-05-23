@@ -39,6 +39,8 @@ public abstract class Node
 
   private ListMode listMode = ListMode.EXPANDED;
 
+  private int index;
+
   /**
    * Creates new instance.
    *
@@ -177,5 +179,23 @@ public abstract class Node
   public String toString()
   {
     return getClass().getSimpleName() + "(" + getName() + ")";
+  }
+
+  /**
+   * @return
+   */
+  public int getIndex()
+  {
+    return index;
+  }
+
+  /**
+   * Allows algorithms fast addressing by using consecutive numbers
+   * 
+   * @param index
+   */
+  public void setIndex(int index)
+  {
+    this.index = index;
   }
 }

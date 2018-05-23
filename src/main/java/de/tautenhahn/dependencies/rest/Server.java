@@ -36,17 +36,8 @@ public class Server
   private static DisplayableDependencyGraph displayGraph(Request req, Response res)
   {
     ProjectAnalyzer analyzer = new ProjectAnalyzer();
-    List<Path> classPath = Arrays.asList(Paths.get("..",
-                                                   "lza",
-                                                   "source",
-                                                   "archisig",
-                                                   "build",
-                                                   "classes",
-                                                   "java",
-                                                   "main")
-    // Paths.get("build", "classes", "java", "main")
-    // ,Paths.get("build", "classes", "java", "test")
-    );
+    List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
+                                         Paths.get("build", "classes", "java", "test"));
     Node root = analyzer.analyze(classPath);
 
     return new DisplayableDependencyGraph(root);
