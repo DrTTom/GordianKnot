@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.util.Objects;
 

@@ -5,19 +5,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.tautenhahn.dependencies.core.Node;
-
 
 /**
- * Applies the algorithm of Tarjan to find cycles in the dependency structure.
+ * Applies the algorithm of Tarjan to find components of strong connectivity in a graph.
  *
  * @author TT
  */
 public class CycleFinder
 {
 
-  // using array for faster access
-  private final Node[] allNodes;
+  private final Graph graph;
 
   private final int[] index;
 
@@ -31,35 +28,43 @@ public class CycleFinder
 
   private int stackSize;
 
-  private final List<List<Node>> strongComponents = new ArrayList<>();
+  private final List<List<Integer>> strongComponents = new ArrayList<>();
 
   /**
    * Returns the components of strong connectivity sorted by descending size.
    */
-  public List<List<Node>> getStrongComponents()
+  public List<List<Integer>> getStrongComponents()
   {
     return strongComponents;
   }
 
   /**
+   * Returns the subgraph induced by all nodes which are on cycles.
+   */
+  public Graph returnAllCycles()
+  {
+    // TODO: define how to join graphs and display only relevant edges.
+    List<Integer> retainNodes = strongComponents.stream()
+                                                .filter(l -> l.size() > 1)
+                                                .flatMap(List::stream)
+                                                .collect(Collectors.toList());
+    return new Graph(graph, retainNodes);
+  }
+
+  /**
    * Creates instance and runs analysis
    *
-   * @param root imaginary root node of the containment structure.
+   * @param graph Graph to analyze.
    */
-  public CycleFinder(Node root)
+  public CycleFinder(Graph graph)
   {
-    ArrayList<Node> nodes = root.walkSubTree().collect(Collectors.toCollection(() -> new ArrayList<>()));
-    allNodes = nodes.toArray(new Node[0]);
-    for ( int i = 0 ; i < allNodes.length ; i++ )
-    {
-      allNodes[i].setIndex(i);
-    }
-    index = new int[allNodes.length];
-    lowLink = new int[allNodes.length];
-    isOnStack = new boolean[allNodes.length];
-    stack = new int[allNodes.length];
+    this.graph = graph;
+    index = new int[graph.numberNodes()];
+    lowLink = new int[index.length];
+    isOnStack = new boolean[index.length];
+    stack = new int[index.length];
 
-    for ( int node = 0 ; node < allNodes.length ; node++ )
+    for ( int node = 0 ; node < index.length ; node++ )
     {
       if (index[node] == 0)
       {
@@ -74,9 +79,8 @@ public class CycleFinder
     index[node] = ++maxUsedIndex;
     lowLink[node] = maxUsedIndex;
     push(node);
-    for ( Node succNode : allNodes[node].getSuccessors() )
+    for ( int succ : graph.getSuccessors(node) )
     {
-      int succ = succNode.getIndex();
       if (index[succ] == 0)
       {
         tarjan(succ);
@@ -89,13 +93,13 @@ public class CycleFinder
     }
     if (lowLink[node] == index[node])
     {
-      List<Node> component = new ArrayList<>();
+      List<Integer> component = new ArrayList<>();
       strongComponents.add(component);
       int other = -1;
       do
       {
         other = pop();
-        component.add(allNodes[other]);
+        component.add(Integer.valueOf(other));
       }
       while (other != node);
     }

@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  *
  * @author TT
  */
-public class Leaf extends Node
+public class ClassNode extends Node
 {
 
   private final List<Node> predLeafs = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Leaf extends Node
    * @param name simple name
    * @param parent
    */
-  Leaf(Node parent, String name)
+  ClassNode(Node parent, String name)
   {
     super(parent, name);
   }
@@ -48,7 +48,12 @@ public class Leaf extends Node
     return sucLeafs.stream().map(this::replaceByCollapsedAnchestor).distinct().collect(Collectors.toList());
   }
 
-  public void addSuccessor(Leaf successor)
+  /**
+   * Adds a successor, namely a node for a class own class depends on.
+   * 
+   * @param successor
+   */
+  public void addSuccessor(ClassNode successor)
   {
     sucLeafs.add(successor);
     successor.predLeafs.add(this);
@@ -58,11 +63,11 @@ public class Leaf extends Node
   @Override
   public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
-    return other instanceof Leaf ? Collections.singletonList(new Pair<>(this, other))
-      : ((InnerNode)other).getContainedLeafs()
-                          .filter(sucLeafs::contains)
-                          .map(l -> new Pair<Node, Node>(this, l))
-                          .collect(Collectors.toList());
+    return other instanceof ClassNode ? Collections.singletonList(new Pair<>(this, other))
+      : ((ContainerNode)other).getContainedLeafs()
+                              .filter(sucLeafs::contains)
+                              .map(l -> new Pair<Node, Node>(this, l))
+                              .collect(Collectors.toList());
   }
 
   @Override

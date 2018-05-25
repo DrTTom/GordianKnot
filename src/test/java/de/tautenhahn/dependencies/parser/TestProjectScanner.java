@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
@@ -10,7 +10,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.core.Node.ListMode;
+import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.Node;
+import de.tautenhahn.dependencies.parser.Pair;
+import de.tautenhahn.dependencies.parser.ProjectScanner;
+import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
 /**
@@ -31,7 +35,7 @@ public class TestProjectScanner
     ProjectScanner systemUnderTest = new ProjectScanner();
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
-    InnerNode root = (InnerNode)systemUnderTest.scan(classPath);
+    ContainerNode root = (ContainerNode)systemUnderTest.scan(classPath);
 
     Node testNode = root.find("test:." + TestProjectScanner.class.getName());
     Node scannerNode = root.find("main:." + ProjectScanner.class.getName());

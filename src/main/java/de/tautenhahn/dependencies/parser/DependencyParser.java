@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class DepParser
+public class DependencyParser
 {
 
   private static final int MAGIC = 0xCAFEBABE;

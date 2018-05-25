@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,12 +15,12 @@ import java.util.stream.Stream;
  *
  * @author TT
  */
-public class InnerNode extends Node
+public class ContainerNode extends Node
 {
 
   private final List<Node> children = new ArrayList<>();
 
-  private InnerNode(Node parent, String name)
+  private ContainerNode(Node parent, String name)
   {
     super(parent, name);
   }
@@ -30,9 +30,9 @@ public class InnerNode extends Node
    *
    * @param name must be relative to current node
    */
-  public InnerNode createInnerChild(String name)
+  public ContainerNode createInnerChild(String name)
   {
-    return createChild(name, InnerNode::new);
+    return createChild(name, ContainerNode::new);
   }
 
   /**
@@ -40,9 +40,9 @@ public class InnerNode extends Node
    *
    * @param name must be relative to current node
    */
-  public Leaf createLeaf(String name)
+  public ClassNode createLeaf(String name)
   {
-    return createChild(name, Leaf::new);
+    return createChild(name, ClassNode::new);
   }
 
   private <T extends Node> T createChild(String name, BiFunction<Node, String, T> constructor)
@@ -56,7 +56,7 @@ public class InnerNode extends Node
     }
 
     Node intermed = find(parts.getFirst());
-    if (intermed instanceof Leaf)
+    if (intermed instanceof ClassNode)
     {
       throw new IllegalArgumentException("cannot add a child of " + intermed.getName());
     }
@@ -64,16 +64,16 @@ public class InnerNode extends Node
     {
       intermed = createInnerChild(parts.getFirst());
     }
-    return ((InnerNode)intermed).createChild(parts.getSecond(), constructor);
+    return ((ContainerNode)intermed).createChild(parts.getSecond(), constructor);
   }
 
 
   /**
    * Creates a virtual root node with no parent and no name.
    */
-  public static InnerNode createRoot()
+  public static ContainerNode createRoot()
   {
-    return new InnerNode(null, null);
+    return new ContainerNode(null, null);
   }
 
   /**
@@ -91,10 +91,10 @@ public class InnerNode extends Node
   @Override
   public List<Node> getSuccessors()
   {
-    return getNeighbours(Leaf::getSucLeafs);
+    return getNeighbours(ClassNode::getSucLeafs);
   }
 
-  private List<Node> getNeighbours(Function<Leaf, List<Node>> lister)
+  private List<Node> getNeighbours(Function<ClassNode, List<Node>> lister)
   {
     return getContainedLeafs().flatMap(l -> lister.apply(l).stream())
                               .distinct()
@@ -107,7 +107,7 @@ public class InnerNode extends Node
   @Override
   public List<Node> getPredecessors()
   {
-    return getNeighbours(Leaf::getPredLeafs);
+    return getNeighbours(ClassNode::getPredLeafs);
   }
 
   @Override
@@ -126,7 +126,7 @@ public class InnerNode extends Node
         return Stream.empty();
       case LEAFS_COLLAPSED:
         return children.stream()
-                       .filter(c -> c instanceof InnerNode)
+                       .filter(c -> c instanceof ContainerNode)
                        .flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
       case EXPANDED:
         return children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
@@ -138,14 +138,14 @@ public class InnerNode extends Node
   /**
    * Returns all Leafs currently represented by this node, excluding expanded stuff.
    */
-  public Stream<Leaf> getContainedLeafs()
+  public Stream<ClassNode> getContainedLeafs()
   {
     switch (getListMode())
     {
       case COLLAPSED:
         return getAllDescendentLeafs();
       case LEAFS_COLLAPSED:
-        return children.stream().filter(n -> n instanceof Leaf).map(l -> (Leaf)l);
+        return children.stream().filter(n -> n instanceof ClassNode).map(l -> (ClassNode)l);
       case EXPANDED:
         return Stream.empty();
       default:
@@ -153,10 +153,10 @@ public class InnerNode extends Node
     }
   }
 
-  private Stream<Leaf> getAllDescendentLeafs()
+  private Stream<ClassNode> getAllDescendentLeafs()
   {
-    return children.stream().flatMap(n -> n instanceof InnerNode ? ((InnerNode)n).getAllDescendentLeafs()
-      : Stream.of((Leaf)n));
+    return children.stream().flatMap(n -> n instanceof ContainerNode ? ((ContainerNode)n).getAllDescendentLeafs()
+      : Stream.of((ClassNode)n));
   }
 
   @Override

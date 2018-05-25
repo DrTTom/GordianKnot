@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.core.Node.ListMode;
+import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
 
@@ -25,7 +25,7 @@ import de.tautenhahn.dependencies.core.Node.ListMode;
 public class TestNode
 {
 
-  private static InnerNode root;
+  private static ContainerNode root;
 
   private static final String PKG_1 = "example:.de.tautenhahn.example";
 
@@ -36,7 +36,7 @@ public class TestNode
   @BeforeClass
   public static void init()
   {
-    root = InnerNode.createRoot();
+    root = ContainerNode.createRoot();
     for ( String name : new String[]{PKG_1, PKG_1_NESTED, PKG_2} )
     {
       root.createInnerChild(name).createLeaf("Dummy");
@@ -50,10 +50,10 @@ public class TestNode
   public void useNames()
   {
     Node node = root.find(PKG_1);
-    assertThat("inner node", node, instanceOf(InnerNode.class));
+    assertThat("inner node", node, instanceOf(ContainerNode.class));
     assertThat("simple name", node.getSimpleName(), equalTo("example"));
     assertThat("name", node.getName(), equalTo(PKG_1));
-    assertThat("toString", node.toString(), startsWith("InnerNode"));
+    assertThat("toString", node.toString(), startsWith("ContainerNode"));
     assertThat("name of leaf", node.find("Dummy").getName(), equalTo(PKG_1 + ".Dummy"));
   }
 
@@ -65,10 +65,10 @@ public class TestNode
   @Test
   public void dependencies()
   {
-    Leaf one = (Leaf)root.find(PKG_1 + ".Dummy");
-    Leaf nested = (Leaf)root.find(PKG_1_NESTED + ".Dummy");
-    Leaf other = (Leaf)root.find(PKG_2 + ".Dummy");
-    Leaf alien = root.createLeaf("alien");
+    ClassNode one = (ClassNode)root.find(PKG_1 + ".Dummy");
+    ClassNode nested = (ClassNode)root.find(PKG_1_NESTED + ".Dummy");
+    ClassNode other = (ClassNode)root.find(PKG_2 + ".Dummy");
+    ClassNode alien = root.createLeaf("alien");
     one.addSuccessor(other);
     nested.addSuccessor(alien);
 

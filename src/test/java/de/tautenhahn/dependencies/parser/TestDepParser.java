@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.contains;
@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
+
+import de.tautenhahn.dependencies.parser.DependencyParser;
 
 
 /**
@@ -54,7 +56,7 @@ public class TestDepParser
     Collection<String> jdepResult = callJdeps(clazz);
     long durationJDep = System.currentTimeMillis() - start;
 
-    DepParser systemUnderTest = new DepParser();
+    DependencyParser systemUnderTest = new DependencyParser();
     start = System.currentTimeMillis();
     try (InputStream classContent = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
     {
@@ -82,7 +84,7 @@ public class TestDepParser
   {
     String input = "(Ljava/util/concurrent/ConcurrentHashMap$BulkTask<V>;III[Ljava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$ReduceValuesTask;Ljava/util/function/BiFunction;)V";
     List<String> result = new ArrayList<>();
-    DepParser systemUnderTest = new DepParser();
+    DependencyParser systemUnderTest = new DependencyParser();
     systemUnderTest.addClassNames(input, result);
     assertThat(result,
                containsInAnyOrder("java/util/concurrent/ConcurrentHashMap$BulkTask",

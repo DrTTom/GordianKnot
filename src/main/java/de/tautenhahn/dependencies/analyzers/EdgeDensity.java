@@ -1,6 +1,6 @@
 package de.tautenhahn.dependencies.analyzers;
 
-import de.tautenhahn.dependencies.core.Node;
+import de.tautenhahn.dependencies.parser.Node;
 
 
 /**

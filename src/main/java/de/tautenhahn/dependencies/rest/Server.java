@@ -12,8 +12,10 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.tautenhahn.dependencies.core.Node;
-import de.tautenhahn.dependencies.core.ProjectScanner;
+import de.tautenhahn.dependencies.analyzers.CycleFinder;
+import de.tautenhahn.dependencies.analyzers.Graph;
+import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.ProjectScanner;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -33,14 +35,15 @@ public class Server
     get("view", Server::displayGraph, new JsonTransformer());
   }
 
-  private static DisplayableDependencyGraph displayGraph(Request req, Response res)
+  private static DiplayableDiGraph displayGraph(Request req, Response res)
   {
     ProjectScanner analyzer = new ProjectScanner();
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
-    Node root = analyzer.scan(classPath);
-
-    return new DisplayableDependencyGraph(root);
+    ContainerNode root = analyzer.scan(classPath);
+    Graph deps = new Graph(root);
+    CycleFinder c = new CycleFinder(deps);
+    return new DiplayableDiGraph(c.returnAllCycles());
   }
 
   /**

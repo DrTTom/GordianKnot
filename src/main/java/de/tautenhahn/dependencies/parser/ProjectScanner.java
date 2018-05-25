@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,18 +13,18 @@ import java.util.Objects;
 
 
 /**
- * Analyzes a project and builds the dependency tree.
+ * Analyzes a project and builds the dependency structure.
  *
  * @author TT
  */
 public class ProjectScanner
 {
 
-  private final Map<String, Leaf> classFirstSeenAt = new HashMap<>();
+  private final Map<String, ClassNode> classFirstSeenAt = new HashMap<>();
 
-  private final Map<Leaf, Collection<String>> deps = new HashMap<>();
+  private final Map<ClassNode, Collection<String>> deps = new HashMap<>();
 
-  private final InnerNode root = InnerNode.createRoot();
+  private final ContainerNode root = ContainerNode.createRoot();
 
 
 
@@ -45,10 +45,10 @@ public class ProjectScanner
    * @param classPath paths to jar files or build directories.
    * @return root node of the created graph.
    */
-  public Node scan(Collection<Path> classPath)
+  public ContainerNode scan(Collection<Path> classPath)
   {
     classPath.stream().forEach(this::handleInput);
-    for ( Entry<Leaf, Collection<String>> entry : deps.entrySet() )
+    for ( Entry<ClassNode, Collection<String>> entry : deps.entrySet() )
     {
       entry.getValue()
            .stream()
@@ -90,13 +90,13 @@ public class ProjectScanner
   {
     String className = root.relativize(clazz).toString().replace(".class", "").replace('/', '.');
     String source = root.getFileName().toString().replace('.', '_');
-    Leaf node = this.root.createLeaf(source + ":." + className);
+    ClassNode node = this.root.createLeaf(source + ":." + className);
     classFirstSeenAt.put(className, node);
     // TODO: stop if no include applies
 
     try (InputStream in = new FileInputStream(clazz.toFile()))
     {
-      DepParser parser = new DepParser();
+      DependencyParser parser = new DependencyParser();
       deps.put(node, parser.listDependencies(className, in));
     }
     catch (IOException e)

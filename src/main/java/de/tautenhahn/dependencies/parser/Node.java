@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core;
+package de.tautenhahn.dependencies.parser;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 
 /**
- * Node in a dependency structure, might stand for a class, package, package set, jar file or module. Nodes
+ * Node in a dependency structure. , might stand for a class, package, package set, jar file or module. Nodes
  * are expected to form a single-root tree structure where all children are classes. Computations will be made
  * on the class nodes initially, the higher level nodes will follow the results. <br>
  * Note that we distinguish between the "contains" and "dependsOn" relations.<br>
@@ -188,24 +188,4 @@ public abstract class Node
   {
     return getClass().getSimpleName() + "(" + getName() + ")";
   }
-
-  /**
-   * Returns an index set by some algorithm. Value has no meaning for the node itself.
-   */
-  public int getIndex()
-  {
-    return index;
-  }
-
-  /**
-   * Allows algorithms fast addressing by using consecutive numbers
-   *
-   * @param index
-   */
-  public void setIndex(int index)
-  {
-    this.index = index;
-  }
-
-
 }
