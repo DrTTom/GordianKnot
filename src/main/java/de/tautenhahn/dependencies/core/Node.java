@@ -31,6 +31,9 @@ public abstract class Node
     EXPANDED;
   }
 
+  /**
+   * Separator for the name parts.
+   */
   public static final char SEPARATOR = '.';
 
   private final Node parent;
@@ -97,6 +100,11 @@ public abstract class Node
    * Return the node this node depends on. Same handling of collapsed nodes.
    */
   public abstract List<Node> getPredecessors();
+
+  /**
+   * Returns true if there is at least one class represented by this node and not by some expanded child node.
+   */
+  public abstract boolean hasOwnContent();
 
   /**
    * Returns a list of pairs (a,b) where a is a child of the current node, b a child of the other node, a
@@ -182,7 +190,7 @@ public abstract class Node
   }
 
   /**
-   * @return
+   * Returns an index set by some algorithm. Value has no meaning for the node itself.
    */
   public int getIndex()
   {
@@ -191,11 +199,13 @@ public abstract class Node
 
   /**
    * Allows algorithms fast addressing by using consecutive numbers
-   * 
+   *
    * @param index
    */
   public void setIndex(int index)
   {
     this.index = index;
   }
+
+
 }

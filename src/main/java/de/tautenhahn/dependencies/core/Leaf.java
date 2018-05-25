@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 /**
  * Represents leafs in the containment structure which are intended to denote classes.
- * 
+ *
  * @author TT
  */
 public class Leaf extends Node
@@ -21,7 +21,7 @@ public class Leaf extends Node
 
   /**
    * Creates instance.
-   * 
+   *
    * @param name simple name
    * @param parent
    */
@@ -54,11 +54,15 @@ public class Leaf extends Node
     successor.predLeafs.add(this);
   }
 
+  @SuppressWarnings("unused")
   @Override
   public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return other instanceof Leaf ? Collections.singletonList(new Pair<>(this, other))
+      : ((InnerNode)other).getContainedLeafs()
+                          .filter(sucLeafs::contains)
+                          .map(l -> new Pair<Node, Node>(this, l))
+                          .collect(Collectors.toList());
   }
 
   @Override
@@ -75,5 +79,11 @@ public class Leaf extends Node
   List<Node> getSucLeafs()
   {
     return sucLeafs;
+  }
+
+  @Override
+  public boolean hasOwnContent()
+  {
+    return true;
   }
 }

@@ -1,8 +1,11 @@
 package de.tautenhahn.dependencies.core;
 
+import java.util.Objects;
+
+
 /**
  * Own Pair class because various existing ones suffer access restrictions.
- * 
+ *
  * @author TT
  * @param <S>
  * @param <T>
@@ -16,7 +19,7 @@ public class Pair<S, T>
 
   /**
    * Creates immutable instance.
-   * 
+   *
    * @param first
    * @param second
    */
@@ -41,4 +44,34 @@ public class Pair<S, T>
   {
     return second;
   }
+
+  @Override
+  public String toString()
+  {
+    return "(" + first + ", " + second + ")";
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return (first == null ? 0 : first.hashCode()) + 3 * (second == null ? 0 : second.hashCode());
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass())
+    {
+      return false;
+    }
+    @SuppressWarnings("rawtypes")
+    Pair other = (Pair)obj;
+    return Objects.equals(first, other.first) && Objects.equals(second, other.second);
+  }
+
+
 }

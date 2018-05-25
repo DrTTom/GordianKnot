@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.core.Node;
-import de.tautenhahn.dependencies.core.ProjectAnalyzer;
+import de.tautenhahn.dependencies.core.ProjectScanner;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -35,10 +35,10 @@ public class Server
 
   private static DisplayableDependencyGraph displayGraph(Request req, Response res)
   {
-    ProjectAnalyzer analyzer = new ProjectAnalyzer();
+    ProjectScanner analyzer = new ProjectScanner();
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
-    Node root = analyzer.analyze(classPath);
+    Node root = analyzer.scan(classPath);
 
     return new DisplayableDependencyGraph(root);
   }

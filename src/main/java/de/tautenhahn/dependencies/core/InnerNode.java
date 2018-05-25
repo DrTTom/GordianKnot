@@ -18,8 +18,6 @@ import java.util.stream.Stream;
 public class InnerNode extends Node
 {
 
-  public static final char SEPARATOR = '.';
-
   private final List<Node> children = new ArrayList<>();
 
   private InnerNode(Node parent, String name)
@@ -98,29 +96,12 @@ public class InnerNode extends Node
 
   private List<Node> getNeighbours(Function<Leaf, List<Node>> lister)
   {
-    Stream<? extends Node> relevantNodes = null;
-    switch (getListMode())
-    {
-      case COLLAPSED:
-        relevantNodes = walkHiddenSubTree();
-        break;
-      case LEAFS_COLLAPSED:
-        relevantNodes = children.stream();
-        break;
-      case EXPANDED:
-        relevantNodes = Stream.empty();
-        break;
-      default:
-        throw new IllegalStateException("unsupported list mode");
-    }
-    return relevantNodes.filter(x -> x instanceof Leaf)
-                        .map(n -> (Leaf)n)
-                        .flatMap(l -> lister.apply(l).stream())
-                        .distinct()
-                        .map(this::replaceByCollapsedAnchestor)
-                        .distinct()
-                        .filter(n -> n != this)
-                        .collect(Collectors.toList());
+    return getContainedLeafs().flatMap(l -> lister.apply(l).stream())
+                              .distinct()
+                              .map(this::replaceByCollapsedAnchestor)
+                              .distinct()
+                              .filter(n -> n != this)
+                              .collect(Collectors.toList());
   }
 
   @Override
@@ -132,8 +113,8 @@ public class InnerNode extends Node
   @Override
   public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
-    // TODO
-    return null;
+    return getContainedLeafs().flatMap(l -> l.getDependencyReason(other).stream())
+                              .collect(Collectors.toList());
   }
 
   @Override
@@ -154,9 +135,33 @@ public class InnerNode extends Node
     }
   }
 
-  private Stream<Node> walkHiddenSubTree()
+  /**
+   * Returns all Leafs currently represented by this node, excluding expanded stuff.
+   */
+  public Stream<Leaf> getContainedLeafs()
   {
-    return children.stream().flatMap(n -> n instanceof InnerNode
-      ? Stream.concat(((InnerNode)n).walkHiddenSubTree(), Stream.of(n)) : Stream.of(n));
+    switch (getListMode())
+    {
+      case COLLAPSED:
+        return getAllDescendentLeafs();
+      case LEAFS_COLLAPSED:
+        return children.stream().filter(n -> n instanceof Leaf).map(l -> (Leaf)l);
+      case EXPANDED:
+        return Stream.empty();
+      default:
+        throw new IllegalStateException("unsupported list mode");
+    }
+  }
+
+  private Stream<Leaf> getAllDescendentLeafs()
+  {
+    return children.stream().flatMap(n -> n instanceof InnerNode ? ((InnerNode)n).getAllDescendentLeafs()
+      : Stream.of((Leaf)n));
+  }
+
+  @Override
+  public boolean hasOwnContent()
+  {
+    return getContainedLeafs().findAny().isPresent();
   }
 }

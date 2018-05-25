@@ -1,6 +1,8 @@
 package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import de.tautenhahn.dependencies.core.Node;
@@ -29,6 +31,16 @@ public class CycleFinder
 
   private int stackSize;
 
+  private final List<List<Node>> strongComponents = new ArrayList<>();
+
+  /**
+   * Returns the components of strong connectivity sorted by descending size.
+   */
+  public List<List<Node>> getStrongComponents()
+  {
+    return strongComponents;
+  }
+
   /**
    * Creates instance and runs analysis
    *
@@ -42,7 +54,6 @@ public class CycleFinder
     {
       allNodes[i].setIndex(i);
     }
-    // TODO: add an index to the node class
     index = new int[allNodes.length];
     lowLink = new int[allNodes.length];
     isOnStack = new boolean[allNodes.length];
@@ -55,7 +66,7 @@ public class CycleFinder
         tarjan(node);
       }
     }
-
+    Collections.sort(strongComponents, (a, b) -> b.size() - a.size());
   }
 
   private void tarjan(int node)
@@ -66,7 +77,6 @@ public class CycleFinder
     for ( Node succNode : allNodes[node].getSuccessors() )
     {
       int succ = succNode.getIndex();
-      System.out.println("   successor " + allNodes[succ]);
       if (index[succ] == 0)
       {
         tarjan(succ);
@@ -79,12 +89,13 @@ public class CycleFinder
     }
     if (lowLink[node] == index[node])
     {
-      System.out.println("\nComponent is:");
+      List<Node> component = new ArrayList<>();
+      strongComponents.add(component);
       int other = -1;
       do
       {
         other = pop();
-        System.out.println(allNodes[other]);
+        component.add(allNodes[other]);
       }
       while (other != node);
     }

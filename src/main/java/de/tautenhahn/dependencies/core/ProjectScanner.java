@@ -17,7 +17,7 @@ import java.util.Objects;
  *
  * @author TT
  */
-public class ProjectAnalyzer
+public class ProjectScanner
 {
 
   private final Map<String, Leaf> classFirstSeenAt = new HashMap<>();
@@ -33,7 +33,7 @@ public class ProjectAnalyzer
    *
    * @param includes regular expressions for absolute node names.
    */
-  public ProjectAnalyzer(String... includes)
+  public ProjectScanner(String... includes)
   {
     // TODO!
   }
@@ -45,7 +45,7 @@ public class ProjectAnalyzer
    * @param classPath paths to jar files or build directories.
    * @return root node of the created graph.
    */
-  public Node analyze(Collection<Path> classPath)
+  public Node scan(Collection<Path> classPath)
   {
     classPath.stream().forEach(this::handleInput);
     for ( Entry<Leaf, Collection<String>> entry : deps.entrySet() )
@@ -88,7 +88,6 @@ public class ProjectAnalyzer
 
   private void handleClassFile(Path clazz, Path root)
   {
-    System.out.println(clazz);
     String className = root.relativize(clazz).toString().replace(".class", "").replace('/', '.');
     String source = root.getFileName().toString().replace('.', '_');
     Leaf node = this.root.createLeaf(source + ":." + className);

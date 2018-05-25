@@ -14,12 +14,12 @@ import de.tautenhahn.dependencies.core.Node.ListMode;
 
 
 /**
- * Unit tests analyzing current build directory. If running in eclipse, make sure to call "gradle compileTest"
+ * Unit tests analyzing current build directory. If running in eclipse, make sure to call "gradle assemble"
  * before.
  *
  * @author TT
  */
-public class TestProjectAnalyzer
+public class TestProjectScanner
 {
 
   /**
@@ -28,19 +28,23 @@ public class TestProjectAnalyzer
   @Test
   public void analyzeMe()
   {
-    ProjectAnalyzer systemUnderTest = new ProjectAnalyzer();
+    ProjectScanner systemUnderTest = new ProjectScanner();
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
-    InnerNode root = (InnerNode)systemUnderTest.analyze(classPath);
-    Node myNode = root.find("test:.de.tautenhahn.dependencies.core.TestProjectAnalyzer");
-    assertThat("Analyzer depends on",
-               myNode.getSuccessors(),
-               hasItem(root.find("main:.de.tautenhahn.dependencies.core.ProjectAnalyzer")));
+    InnerNode root = (InnerNode)systemUnderTest.scan(classPath);
 
-    Node corePackage = root.find("main:.de.tautenhahn.dependencies.core");
-    Node testCorePackage = root.find("main:.de.tautenhahn.dependencies.core");
+    Node testNode = root.find("test:." + TestProjectScanner.class.getName());
+    Node scannerNode = root.find("main:." + ProjectScanner.class.getName());
+    assertThat("This test class depends on", testNode.getSuccessors(), hasItem(scannerNode));
+
+    Node corePackage = scannerNode.getParent();
+    Node testCorePackage = testNode.getParent();
     testCorePackage.setListMode(ListMode.LEAFS_COLLAPSED);
+    corePackage.setListMode(ListMode.LEAFS_COLLAPSED);
     assertThat("needs core package", corePackage.getPredecessors(), hasItem(testCorePackage));
+    assertThat("reason",
+               testCorePackage.getDependencyReason(corePackage),
+               hasItem(new Pair<>(testNode, scannerNode)));
   }
 
 }
