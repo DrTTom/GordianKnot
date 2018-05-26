@@ -1,9 +1,12 @@
 package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 
 
 /**
@@ -14,26 +17,24 @@ import java.util.stream.Collectors;
 public class CycleFinder
 {
 
-  private final Graph graph;
+  private final int[] foundInStep;
 
-  private final int[] index;
-
-  private final int[] lowLink;
+  private final int[] earliestFoundSuccessor;
 
   private int maxUsedIndex;
 
   private final boolean[] isOnStack;
 
-  private final int[] stack;
+  private final IndexedNode[] stack;
 
   private int stackSize;
 
-  private final List<List<Integer>> strongComponents = new ArrayList<>();
+  private final List<List<IndexedNode>> strongComponents = new ArrayList<>();
 
   /**
    * Returns the components of strong connectivity sorted by descending size.
    */
-  public List<List<Integer>> getStrongComponents()
+  public List<List<IndexedNode>> getStrongComponents()
   {
     return strongComponents;
   }
@@ -41,14 +42,13 @@ public class CycleFinder
   /**
    * Returns the subgraph induced by all nodes which are on cycles.
    */
-  public Graph returnAllCycles()
+  public DiGraph createGraphFromCycles()
   {
-    // TODO: define how to join graphs and display only relevant edges.
-    List<Integer> retainNodes = strongComponents.stream()
+    Collection<DiGraph> parts = strongComponents.stream()
                                                 .filter(l -> l.size() > 1)
-                                                .flatMap(List::stream)
+                                                .map(DiGraph::new)
                                                 .collect(Collectors.toList());
-    return new Graph(graph, retainNodes);
+    return new DiGraph(parts.toArray(new DiGraph[0]));
   }
 
   /**
@@ -56,17 +56,16 @@ public class CycleFinder
    *
    * @param graph Graph to analyze.
    */
-  public CycleFinder(Graph graph)
+  public CycleFinder(DiGraph graph)
   {
-    this.graph = graph;
-    index = new int[graph.numberNodes()];
-    lowLink = new int[index.length];
-    isOnStack = new boolean[index.length];
-    stack = new int[index.length];
+    foundInStep = new int[graph.getAllNodes().size()];
+    earliestFoundSuccessor = new int[foundInStep.length];
+    isOnStack = new boolean[foundInStep.length];
+    stack = new IndexedNode[foundInStep.length];
 
-    for ( int node = 0 ; node < index.length ; node++ )
+    for ( IndexedNode node : graph.getAllNodes() )
     {
-      if (index[node] == 0)
+      if (foundInStep[node.getIndex()] == 0)
       {
         tarjan(node);
       }
@@ -74,47 +73,49 @@ public class CycleFinder
     Collections.sort(strongComponents, (a, b) -> b.size() - a.size());
   }
 
-  private void tarjan(int node)
+  private void tarjan(IndexedNode inode)
   {
-    index[node] = ++maxUsedIndex;
-    lowLink[node] = maxUsedIndex;
-    push(node);
-    for ( int succ : graph.getSuccessors(node) )
+    int node = inode.getIndex();
+    foundInStep[node] = ++maxUsedIndex;
+    earliestFoundSuccessor[node] = maxUsedIndex;
+    push(inode);
+    for ( IndexedNode succN : inode.getSuccessors() )
     {
-      if (index[succ] == 0)
+      int succ = succN.getIndex();
+      if (foundInStep[succ] == 0)
       {
-        tarjan(succ);
-        lowLink[node] = Math.min(lowLink[node], lowLink[succ]);
+        tarjan(succN);
+        earliestFoundSuccessor[node] = Math.min(earliestFoundSuccessor[node], earliestFoundSuccessor[succ]);
       }
       else if (isOnStack[succ])
       {
-        lowLink[node] = Math.min(lowLink[node], lowLink[succ]);
+        earliestFoundSuccessor[node] = Math.min(earliestFoundSuccessor[node], earliestFoundSuccessor[succ]);
       }
     }
-    if (lowLink[node] == index[node])
+    if (earliestFoundSuccessor[node] == foundInStep[node])
     {
-      List<Integer> component = new ArrayList<>();
+      List<IndexedNode> component = new ArrayList<>();
       strongComponents.add(component);
-      int other = -1;
+      IndexedNode other = null;
       do
       {
         other = pop();
-        component.add(Integer.valueOf(other));
+        component.add(other);
       }
-      while (other != node);
+      while (other != inode);
     }
   }
 
-  private void push(int node)
+  private void push(IndexedNode node)
   {
     stack[stackSize++] = node;
-    isOnStack[node] = true;
+    isOnStack[node.getIndex()] = true;
   }
 
-  private int pop()
+  private IndexedNode pop()
   {
-    int node = stack[--stackSize];
-    isOnStack[node] = false;
+    IndexedNode node = stack[--stackSize];
+    isOnStack[node.getIndex()] = false;
     return node;
   }
 }

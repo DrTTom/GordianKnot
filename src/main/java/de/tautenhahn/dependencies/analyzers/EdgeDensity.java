@@ -1,6 +1,6 @@
 package de.tautenhahn.dependencies.analyzers;
 
-import de.tautenhahn.dependencies.parser.Node;
+import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 
 
 /**
@@ -16,10 +16,10 @@ public class EdgeDensity
    *
    * @param root
    */
-  public double getDensity(Node root)
+  public double getDensity(DiGraph graph)
   {
     int[] numberNodesAndArcs = new int[2];
-    root.walkSubTree().forEach(n -> count(n, numberNodesAndArcs));
+    graph.getAllNodes().forEach(n -> count(n, numberNodesAndArcs));
     int numberNodes = numberNodesAndArcs[0];
     return 1.0 * numberNodesAndArcs[1] / (numberNodes * (numberNodes - 1));
   }
@@ -31,16 +31,12 @@ public class EdgeDensity
    * @param n
    * @param numberNodesAndArcs
    */
-  public double getTransitiveDensity(Node root)
+  public double getTransitiveDensity(DiGraph graph)
   {
-    // TODO!
-    int[] numberNodesAndArcs = new int[2];
-    root.walkSubTree().forEach(n -> count(n, numberNodesAndArcs));
-    int numberNodes = numberNodesAndArcs[0];
-    return 1.0 * numberNodesAndArcs[1] / (numberNodes * (numberNodes - 1));
+    return getDensity(BasicGraphOperations.transitiveClosure(graph));
   }
 
-  private void count(Node n, int[] numberNodesAndArcs)
+  private void count(IndexedNode n, int[] numberNodesAndArcs)
   {
     numberNodesAndArcs[0]++;
     numberNodesAndArcs[1] += n.getSuccessors().size();

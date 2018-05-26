@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.parser.DependencyParser;
-
 
 /**
  * Unit tests for finding out which classes are referenced by a given class.
@@ -112,6 +110,7 @@ public class TestDepParser
     String javaHome = System.getenv("JAVA_HOME");
     String command = javaHome == null ? "jdeps" : Paths.get(javaHome, "bin", "jdeps").toString();
     Path tempfile = Paths.get("tempfile.class");
+    Files.deleteIfExists(tempfile);
     try (InputStream ins = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
     {
       Files.copy(ins, tempfile);

@@ -8,7 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
-import de.tautenhahn.dependencies.analyzers.Graph;
+import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 
@@ -40,9 +41,13 @@ public class TestCycleFinder
     ((ClassNode)root.find("e")).addSuccessor((ClassNode)root.find("a"));
     ((ClassNode)root.find("f")).addSuccessor((ClassNode)root.find("e"));
 
-    List<List<Integer>> components = new CycleFinder(new Graph(root)).getStrongComponents();
-
+    CycleFinder systemUnderTest = new CycleFinder(new DiGraph(root));
+    List<List<IndexedNode>> components = systemUnderTest.getStrongComponents();
     assertThat("biggest component", components.get(0), hasSize(4));
+
+    DiGraph graph = systemUnderTest.createGraphFromCycles();
+    assertThat("nodes in cycle graph", graph.getAllNodes(), hasSize(4));
+
   }
 
 }

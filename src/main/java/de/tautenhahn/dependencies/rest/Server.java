@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
-import de.tautenhahn.dependencies.analyzers.Graph;
+import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import spark.Request;
@@ -35,15 +35,15 @@ public class Server
     get("view", Server::displayGraph, new JsonTransformer());
   }
 
-  private static DiplayableDiGraph displayGraph(Request req, Response res)
+  static DisplayableDiGraph displayGraph(Request req, Response res)
   {
     ProjectScanner analyzer = new ProjectScanner();
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
     ContainerNode root = analyzer.scan(classPath);
-    Graph deps = new Graph(root);
+    DiGraph deps = new DiGraph(root);
     CycleFinder c = new CycleFinder(deps);
-    return new DiplayableDiGraph(c.returnAllCycles());
+    return new DisplayableDiGraph(c.createGraphFromCycles());
   }
 
   /**
@@ -62,7 +62,7 @@ public class Server
 
   }
 
-  private static void allowCrossSiteCalls()
+  static void allowCrossSiteCalls()
   {
     before((request, response) -> {
       response.header("Access-Control-Allow-Origin", "*");

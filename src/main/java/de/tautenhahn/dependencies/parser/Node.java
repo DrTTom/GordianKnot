@@ -42,8 +42,6 @@ public abstract class Node
 
   private ListMode listMode = ListMode.EXPANDED;
 
-  private int index;
-
   /**
    * Creates new instance.
    *

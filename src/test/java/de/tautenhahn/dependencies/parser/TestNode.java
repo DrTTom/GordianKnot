@@ -5,7 +5,9 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.util.stream.Collectors;
@@ -74,6 +76,7 @@ public class TestNode
 
     Node systemUnderTest = root.find(PKG_1);
     assertThat("subtree expanded", systemUnderTest.walkSubTree().collect(Collectors.toList()), hasSize(3));
+    assertFalse("extended has own content", systemUnderTest.hasOwnContent());
     systemUnderTest.setListMode(ListMode.LEAFS_COLLAPSED);
     assertThat("successors of non-collapsed node", systemUnderTest.getSuccessors(), contains(other));
     assertThat("subtree leafs collapsed",
@@ -88,6 +91,20 @@ public class TestNode
                systemUnderTest.getParent().walkSubTree().collect(Collectors.toList()),
                hasSize(1));
     assertThat("collapsed predecessor", alien.getPredecessors(), contains(systemUnderTest));
+  }
+
+  /**
+   * Just checking the trivial stuff too.
+   */
+  @Test
+  public void pairs()
+  {
+    Pair<String, Object> systemUnderTest = new Pair<>("a", this);
+    assertThat("equals to itself", systemUnderTest, equalTo(systemUnderTest));
+    assertThat("equals to wrong type object", systemUnderTest, not(equalTo(systemUnderTest.getSecond())));
+    assertThat("equals to different Pair", systemUnderTest, not(equalTo(new Pair<>("b", "c"))));
+    assertThat("hash code", systemUnderTest.hashCode(), equalTo(new Pair<>("a", this).hashCode()));
+    assertThat("string", new Pair<>("a", "b").toString(), equalTo("(a, b)"));
   }
 
 }
