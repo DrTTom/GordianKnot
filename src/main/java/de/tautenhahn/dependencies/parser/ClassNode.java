@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ public class ClassNode extends Node
   private final List<Node> predLeafs = new ArrayList<>();
 
   private final List<Node> sucLeafs = new ArrayList<>();
+
+  private Collection<String> missingDependencies;
 
   /**
    * Creates instance.
@@ -90,5 +93,18 @@ public class ClassNode extends Node
   public boolean hasOwnContent()
   {
     return true;
+  }
+
+  /**
+   * Returns all class names which the represented class references but which to not match a successor node.
+   */
+  public Collection<String> getMissingDependencies()
+  {
+    return missingDependencies;
+  }
+
+  void setMissingDependencies(Collection<String> missingDependencies)
+  {
+    this.missingDependencies = missingDependencies;
   }
 }

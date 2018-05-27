@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -23,12 +25,17 @@ public final class ClassPathUtils
     // utility class
   }
 
+  public static List<Path> parseClassPath(String classpath)
+  {
+    return Arrays.stream(classpath.split(File.pathSeparator)).map(Paths::get).collect(Collectors.toList());
+  }
+
   /**
    * Returns the class path elements as List.
    */
-  public static List<String> getClassPath()
+  public static List<Path> getClassPath()
   {
-    return Arrays.asList(System.getProperty("java.class.path").split(java.io.File.pathSeparator));
+    return parseClassPath(System.getProperty("java.class.path"));
   }
 
   /**
@@ -38,17 +45,17 @@ public final class ClassPathUtils
    * 
    * @param classPath
    */
-  public static ClassLoader createClassLoader(List<String> classPath)
+  public static ClassLoader createClassLoader(List<Path> classPath)
   {
     Collection<URL> urls = classPath.stream().map(ClassPathUtils::toUrl).collect(Collectors.toList());
     return new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getPlatformClassLoader());
   }
 
-  private static URL toUrl(String pathName)
+  private static URL toUrl(Path entry)
   {
     try
     {
-      return new File(pathName).toURI().toURL();
+      return entry.toUri().toURL();
     }
     catch (MalformedURLException e) // cannot happen because JVM does correct escaping
     {

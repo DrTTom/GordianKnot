@@ -26,6 +26,7 @@ public class ProjectScanner
 
   private final ContainerNode root = ContainerNode.createRoot();
 
+  private final Filter filter;
 
 
   /**
@@ -33,9 +34,9 @@ public class ProjectScanner
    *
    * @param includes regular expressions for absolute node names.
    */
-  public ProjectScanner(String... includes)
+  public ProjectScanner(Filter filter)
   {
-    // TODO!
+    this.filter = filter;
   }
 
   /**
@@ -54,6 +55,7 @@ public class ProjectScanner
            .stream()
            .map(n -> n.replace('/', '.'))
            .map(classFirstSeenAt::get)
+           // TODO set the other deps into missing collection
            .filter(Objects::nonNull)
            .forEach(n -> entry.getKey().addSuccessor(n));
     }
@@ -80,6 +82,10 @@ public class ProjectScanner
     }
   }
 
+  private String getContextDirName(Path path)
+  {
+    return "dir:" + path.getFileName().toString().replace('.', '_');
+  }
 
   private boolean isFile(Path path, String suffix)
   {
@@ -89,13 +95,20 @@ public class ProjectScanner
   private void handleClassFile(Path clazz, Path root)
   {
     String className = root.relativize(clazz).toString().replace(".class", "").replace('/', '.');
-    String source = root.getFileName().toString().replace('.', '_');
-    ClassNode node = this.root.createLeaf(source + ":." + className);
-    classFirstSeenAt.put(className, node);
-    // TODO: stop if no include applies
-
-    try (InputStream in = new FileInputStream(clazz.toFile()))
+    if (filter.isIgnoredClass(className))
     {
+      return;
+    }
+    String source = root.getFileName().toString().replace('.', '_');
+    String nodeName = "dir:" + source + "." + className;
+    if (filter.isIgnoredSource(nodeName))
+    {
+      return;
+    }
+    ClassNode node = this.root.createLeaf(nodeName);
+    classFirstSeenAt.put(className, node);
+    try (InputStream in = new FileInputStream(clazz.toFile()))
+    { // TODO: allow filter to switch off parsing the dependencies of supporting nodes.
       DependencyParser parser = new DependencyParser();
       deps.put(node, parser.listDependencies(className, in));
     }
@@ -105,5 +118,4 @@ public class ProjectScanner
       e.printStackTrace();
     }
   }
-
 }

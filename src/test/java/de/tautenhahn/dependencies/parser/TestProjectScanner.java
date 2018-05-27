@@ -10,10 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.parser.ContainerNode;
-import de.tautenhahn.dependencies.parser.Node;
-import de.tautenhahn.dependencies.parser.Pair;
-import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
@@ -32,10 +28,10 @@ public class TestProjectScanner
   @Test
   public void analyzeMe()
   {
-    ProjectScanner systemUnderTest = new ProjectScanner();
+    ProjectScanner systemUnderTest = new ProjectScanner(new Filter());
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
-    ContainerNode root = (ContainerNode)systemUnderTest.scan(classPath);
+    ContainerNode root = systemUnderTest.scan(classPath);
 
     Node testNode = root.find("test:." + TestProjectScanner.class.getName());
     Node scannerNode = root.find("main:." + ProjectScanner.class.getName());

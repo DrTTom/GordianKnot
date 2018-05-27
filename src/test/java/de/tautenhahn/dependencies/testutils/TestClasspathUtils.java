@@ -56,7 +56,7 @@ public class TestClasspathUtils
   private ClassLoader createAlienLoader()
   {
     Path otherClasses = Paths.get("src", "test", "resources", "alienClasses").toAbsolutePath();
-    return ClassPathUtils.createClassLoader(Collections.singletonList(otherClasses.toString()));
+    return ClassPathUtils.createClassLoader(Collections.singletonList(otherClasses));
   }
 
 

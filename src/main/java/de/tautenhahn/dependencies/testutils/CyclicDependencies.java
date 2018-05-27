@@ -1,7 +1,6 @@
 package de.tautenhahn.dependencies.testutils;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +8,7 @@ import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
@@ -25,10 +25,9 @@ public class CyclicDependencies
 
   public String getPackageCycleReport()
   {
-    ProjectScanner scanner = new ProjectScanner();
+    ProjectScanner scanner = new ProjectScanner(new Filter());
     ContainerNode root = scanner.scan(ClassPathUtils.getClassPath()
                                                     .stream()
-                                                    .map(Paths::get)
                                                     .filter(Files::isDirectory)
                                                     .collect(Collectors.toList()));
     root.walkSubTree().forEach(n -> n.setListMode(ListMode.LEAFS_COLLAPSED));

@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import spark.Request;
 import spark.Response;
@@ -37,7 +38,7 @@ public class Server
 
   static DisplayableDiGraph displayGraph(Request req, Response res)
   {
-    ProjectScanner analyzer = new ProjectScanner();
+    ProjectScanner analyzer = new ProjectScanner(new Filter());
     List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
                                          Paths.get("build", "classes", "java", "test"));
     ContainerNode root = analyzer.scan(classPath);
