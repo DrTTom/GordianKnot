@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.testutils.CyclicDependencies;
+
 
 /**
  * Unit test for the server. Requires that the server is not running in parallel.
@@ -20,7 +22,9 @@ public class TestServer
   @Test
   public void getView()
   {
+    new CyclicDependencies(); // just creating a cycle
     String result = new Server.JsonTransformer().render(Server.displayGraph(null, null));
     assertThat("view result", result, containsString("DisplayableDiGraph"));
   }
+
 }

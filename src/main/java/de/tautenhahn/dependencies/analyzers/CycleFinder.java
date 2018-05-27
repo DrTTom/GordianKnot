@@ -19,7 +19,7 @@ public class CycleFinder
 
   private final int[] foundInStep;
 
-  private final int[] earliestFoundSuccessor;
+  private final int[] lowLink;
 
   private int maxUsedIndex;
 
@@ -59,7 +59,7 @@ public class CycleFinder
   public CycleFinder(DiGraph graph)
   {
     foundInStep = new int[graph.getAllNodes().size()];
-    earliestFoundSuccessor = new int[foundInStep.length];
+    lowLink = new int[foundInStep.length];
     isOnStack = new boolean[foundInStep.length];
     stack = new IndexedNode[foundInStep.length];
 
@@ -77,7 +77,7 @@ public class CycleFinder
   {
     int node = inode.getIndex();
     foundInStep[node] = ++maxUsedIndex;
-    earliestFoundSuccessor[node] = maxUsedIndex;
+    lowLink[node] = maxUsedIndex;
     push(inode);
     for ( IndexedNode succN : inode.getSuccessors() )
     {
@@ -85,14 +85,14 @@ public class CycleFinder
       if (foundInStep[succ] == 0)
       {
         tarjan(succN);
-        earliestFoundSuccessor[node] = Math.min(earliestFoundSuccessor[node], earliestFoundSuccessor[succ]);
+        lowLink[node] = Math.min(lowLink[node], lowLink[succ]);
       }
       else if (isOnStack[succ])
       {
-        earliestFoundSuccessor[node] = Math.min(earliestFoundSuccessor[node], earliestFoundSuccessor[succ]);
+        lowLink[node] = Math.min(lowLink[node], lowLink[succ]);
       }
     }
-    if (earliestFoundSuccessor[node] == foundInStep[node])
+    if (lowLink[node] == foundInStep[node])
     {
       List<IndexedNode> component = new ArrayList<>();
       strongComponents.add(component);
