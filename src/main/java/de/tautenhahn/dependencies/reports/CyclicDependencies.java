@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.testutils;
+package de.tautenhahn.dependencies.reports;
 
 import java.nio.file.Files;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
+import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.Node;
@@ -17,11 +18,12 @@ import de.tautenhahn.dependencies.parser.ProjectScanner;
 /**
  * Checks the enclosing project for cyclic dependencies on package and jar level. Define an own test class
  * which fails if results are worse than expected.
- * 
+ *
  * @author TT
  */
-public class CyclicDependencies
+public abstract class CyclicDependencies
 {
+
 
   public String getPackageCycleReport()
   {

@@ -1,9 +1,11 @@
-package de.tautenhahn.dependencies.testutils;
+package de.tautenhahn.dependencies.reports;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,10 +13,12 @@ import java.util.Collections;
 
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.parser.ClassPathUtils;
+
 
 /**
  * Unit test for {@link ClassPathUtils}. May require Java 10. TODO: provide older Alien.class!
- * 
+ *
  * @author TT
  */
 public class TestClasspathUtils
@@ -31,7 +35,7 @@ public class TestClasspathUtils
 
   /**
    * Asserts that created class loader has access to elements of given class path.
-   * 
+   *
    * @throws SecurityException
    * @throws NoSuchMethodException
    */
@@ -50,6 +54,7 @@ public class TestClasspathUtils
   @Test(expected = ClassNotFoundException.class)
   public void loadClassNegative() throws ClassNotFoundException
   {
+    assumeThat("java version", System.getProperty("java.version"), startsWith("1.10"));
     createAlienLoader().loadClass(this.getClass().getName());
   }
 

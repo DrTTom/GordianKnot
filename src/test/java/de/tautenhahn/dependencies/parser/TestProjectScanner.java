@@ -33,8 +33,8 @@ public class TestProjectScanner
                                          Paths.get("build", "classes", "java", "test"));
     ContainerNode root = systemUnderTest.scan(classPath);
 
-    Node testNode = root.find("test:." + TestProjectScanner.class.getName());
-    Node scannerNode = root.find("main:." + ProjectScanner.class.getName());
+    Node testNode = root.find("dir:test." + TestProjectScanner.class.getName());
+    Node scannerNode = root.find("dir:main." + ProjectScanner.class.getName());
     assertThat("This test class depends on", testNode.getSuccessors(), hasItem(scannerNode));
 
     Node corePackage = scannerNode.getParent();
