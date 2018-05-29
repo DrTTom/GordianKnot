@@ -24,7 +24,7 @@ public class TestCyclicDependencies
 {
 
   /**
-   * TODO: make it a real test
+   * Assert that report mentions causing classes.
    */
   @Test
   public void report()

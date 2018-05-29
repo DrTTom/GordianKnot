@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.parser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -105,11 +106,24 @@ public abstract class Node
   public abstract boolean hasOwnContent();
 
   /**
-   * Returns a list of pairs (a,b) where a is a child of the current node, b a child of the other node, a
-   * depends on b and both a and b represent the smallest known units containing the dependency. This looks
-   * into collapsed nodes.
+   * Returns a list of pairs (a,b) denoting the smallest known units where a is a child of the current node, b
+   * a child of the other node, a depends on b and both a and b represent the smallest known units containing
+   * the dependency. This looks into collapsed nodes.
    */
   public abstract List<Pair<Node, Node>> getDependencyReason(Node other);
+
+  /**
+   * Same as {@link #getDependencyReason(Node)} but returns pairs of short comprehensive strings.
+   *
+   * @param other
+   */
+  public List<Pair<String, String>> explainDependencyTo(Node other)
+  {
+    return getDependencyReason(other).stream()
+                                     .map(p -> new Pair<>(p.getFirst().getRelativeName(this),
+                                                          p.getSecond().getRelativeName(other)))
+                                     .collect(Collectors.toList());
+  }
 
   /**
    * Returns a stream of children in depth-first order, ignoring parts of collapsed nodes.
@@ -185,5 +199,21 @@ public abstract class Node
   public String toString()
   {
     return getClass().getSimpleName() + "(" + getName() + ")";
+  }
+
+  /**
+   * Returns the name relative to another node. Will throw exception if not in the subtree.
+   */
+  public String getRelativeName(Node ancestor)
+  {
+    if (ancestor == parent)
+    {
+      return simpleName;
+    }
+    if (parent == null)
+    {
+      throw new IllegalArgumentException(ancestor + " is not an anchestor");
+    }
+    return parent.getRelativeName(ancestor) + SEPARATOR + simpleName;
   }
 }
