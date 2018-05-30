@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.nio.file.Path;
@@ -45,6 +46,26 @@ public class TestProjectScanner
     assertThat("reason",
                testCorePackage.getDependencyReason(corePackage),
                hasItem(new Pair<>(testNode, scannerNode)));
+  }
+
+  /**
+   * Checks whether parsing is fast enough to handle projects jar files.
+   */
+  @SuppressWarnings("boxing")
+  @Test
+  public void checkJars()
+  {
+    long startTime = System.currentTimeMillis();
+    ProjectScanner systemUnderTest = new ProjectScanner(new Filter());
+    List<Path> classPath = ClassPathUtils.getClassPath();
+    // classPath = Collections.singletonList(classPath.get(3));
+    ContainerNode root = systemUnderTest.scan(classPath);
+    String junitJar = "jar:junit-4_12_jar.";
+    String hamcrestJar = "jar:hamcrest-all-1_3_jar.";
+    Node assertNode = root.find(junitJar + "org.junit.Assert");
+    Node matcherAssertNode = root.find(hamcrestJar + "org.hamcrest.MatcherAssert");
+    assertThat("predecessors", matcherAssertNode.getPredecessors(), hasItem(assertNode));
+    assertThat("duration", System.currentTimeMillis() - startTime, lessThan(5000L));
   }
 
 }

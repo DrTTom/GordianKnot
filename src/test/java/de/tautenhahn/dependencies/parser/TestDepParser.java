@@ -64,7 +64,7 @@ public class TestDepParser
       jdepResult.stream()
                 .map(this::extractClassName)
                 .filter(Objects::nonNull)
-                .filter(n -> !ignored.contains(n))
+                // .filter(n -> !ignored.contains(n))
                 .forEach(n -> assertTrue(n + " not listed", myResult.remove(n)));
 
       assertThat("listed deps not mentioned by jDeps",

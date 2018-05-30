@@ -53,11 +53,11 @@ public class DependencyParser
 
   private String[] strings;
 
-  private final List<Integer> classIndex = new ArrayList<>();
+  private List<Integer> classIndex;
 
-  private final List<Integer> methodDescriptorIndex = new ArrayList<>();
+  private List<Integer> methodDescriptorIndex;
 
-  private final byte[] buf = new byte[2048];
+  private byte[] buf = new byte[1024];
 
   /**
    * Returns a list of classes the given class depends on.
@@ -78,14 +78,28 @@ public class DependencyParser
       // TODO: check version: System.out.println("Version: " + data.readShort() + "." + data.readShort());
       int poolSize = data.readShort();
       strings = new String[poolSize + 1];
+      classIndex = new ArrayList<>();
+      methodDescriptorIndex = new ArrayList<>();
       int readItems = 0;
+
       for ( int i = 1 ; i < poolSize ; i += readItems )
       {
         readItems = readPoolEntry(i, data);
       }
       HashSet<String> result = new HashSet<>();
+
+      // Trying to parse all the strings to get those not referenced inside constant pool:
+      for ( int i = 1 ; i < poolSize ; i++ )
+      {
+        if (strings[i] != null && strings[i].matches("\\(.*\\).*"))
+        {
+          addClassNames(strings[i], result);
+        }
+      }
+      // end debug code
+
       classIndex.stream().map(i -> strings[i]).filter(s -> !s.startsWith("[")).forEach(result::add);
-      methodDescriptorIndex.stream().map(i -> strings[i]).forEach(n -> addClassNames(n, result));
+      // methodDescriptorIndex.stream().map(i -> strings[i]).forEach(n -> addClassNames(n, result));
       result.remove(name.replace(".", "/"));
       return result;
     }
@@ -159,7 +173,10 @@ public class DependencyParser
   private void readStringValue(int index, DataInputStream data) throws IOException
   {
     int length = data.readShort();
-
+    if (buf.length < length)
+    {
+      buf = new byte[length];
+    }
     int readBytes = 0;
     while (readBytes < length)
     {

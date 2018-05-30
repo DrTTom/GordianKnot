@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 /**
@@ -68,7 +71,23 @@ public class ProjectScanner
     {
       if (isFile(path, ".jar"))
       {
-        // TODO: handle Zip
+        DependencyParser parser = new DependencyParser();
+        ContainerNode jarNode = root.createInnerChild("jar:" + path.getFileName().toString().replace(".", "_"));
+        try (ZipInputStream zip = new ZipInputStream(new FileInputStream(path.toFile())))
+        {
+          ZipEntry entry = zip.getNextEntry();
+          while (entry != null)
+          {
+            if (entry.getName().endsWith(".class"))
+            {
+              String className = entry.getName().replace(".class", "").replace('/', '.');
+              ClassNode node = jarNode.createLeaf(className);
+              classFirstSeenAt.put(className, node);
+              deps.put(node, parser.listDependencies(className, new NonClosingStream(zip)));
+            }
+            entry = zip.getNextEntry();
+          }
+        }
       }
       else if (Files.isDirectory(path))
       {
@@ -80,6 +99,22 @@ public class ProjectScanner
       // TODO:
       e.printStackTrace();
     }
+  }
+
+  private static class NonClosingStream extends FilterInputStream
+  {
+
+    NonClosingStream(InputStream in)
+    {
+      super(in);
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+      // not closing stream on purpose
+    }
+
   }
 
   private String getContextDirName(Path path)
