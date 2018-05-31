@@ -3,7 +3,9 @@ package de.tautenhahn.dependencies.rest;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.options;
+import static spark.Spark.staticFiles;
 
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,19 +33,27 @@ import spark.ResponseTransformer;
 public class Server
 {
 
+  static PrintStream out = System.out;
+
   private ContainerNode root;
 
   private final List<Function<DiGraph, DiGraph>> operations = new ArrayList<>();
 
+  /**
+   * Command line call.
+   *
+   * @param args
+   */
   public static void main(String... args)
   {
     if (args.length == 0 || args[0].toLowerCase().matches("--?h(elp)?"))
     {
-      System.out.println("\"Gordic Knot\" dependency checker version 0.2 alpha"
-                         + "\nUsage: gordicKnot <classpathToCheck> [projectName] [options]");
+      out.println("\"Gordic Knot\" dependency checker version 0.2 alpha"
+                  + "\nUsage: gordicKnot <classpathToCheck> [projectName] [options]");
       return;
     }
     new Server().init(args[0], args[1]);
+    out.println("Server started, point your browsert to http://localhost:4567/index.html");
   }
 
   void init(String classPath, String name)
@@ -56,6 +66,7 @@ public class Server
 
   void startSpark()
   {
+    staticFiles.location("frontend");
     allowCrossSiteCalls();
     get("view", this::getDisplayableGraph, new JsonTransformer());
   }
@@ -120,9 +131,11 @@ public class Server
     });
   }
 
-  public void showOnlyCycles()
+  /**
+   * Hides everything except nodes and arcs which are part of a cyclic dependency.
+   */
+  void showOnlyCycles()
   {
     operations.add(this::restrictToCycles);
-
   }
 }
