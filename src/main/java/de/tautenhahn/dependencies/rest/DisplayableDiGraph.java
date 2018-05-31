@@ -27,6 +27,8 @@ public class DisplayableDiGraph
 
     String id;
 
+    String additionalInfo = "Kommt noch";
+
     VisNode(String label, String id)
     {
       this.label = label;
@@ -44,10 +46,15 @@ public class DisplayableDiGraph
 
     String arrows = "middle";
 
+    String id;
+
+    String additionalInfo = "Kommt auch noch";
+
     VisEdge(String i, String j)
     {
       this.from = i;
       this.to = j;
+      id = from + "->" + to;
     }
 
   }

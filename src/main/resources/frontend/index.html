@@ -14,6 +14,12 @@
 </head>
 <body>
 <div id="mynetwork" style="heigth: 600pt; width: 600pt;"></div>
+<h2>Graph</h2>
+reset nodes to level <button>class</button> <button>package</button> <button>container</button><br/>
+show <button>all</button> <button>cycles only</button> <button>needed by selection</button> <button>using selection</button>
+
+<h2>Selected Element</h2>
+<div id="description">Click element to select</div>
 
 <script type="text/javascript">
  var xhr = new XMLHttpRequest();
@@ -26,6 +32,7 @@ function processRequest(e) {
 	if (xhr.readyState == 4 ) {		
 		var response = JSON.parse(xhr.responseText);
 		var nodes = new vis.DataSet(response.nodes);
+		
 		var edges = new vis.DataSet(response.edges);
 
   var container = document.getElementById('mynetwork');
@@ -35,8 +42,19 @@ function processRequest(e) {
   };
   var options = {   };
   var network = new vis.Network(container, data, options);
-
+	
+  network.on("stabilized", function (params) {
+	  network.setOptions( { physics: false } );
+	  });
+	
+	 network.on("click", function (params) {
+	        params.event = "[original event]";
+	        document.getElementById('description').innerHTML = 'got '+ JSON.stringify(params, null, 4);
+	        console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
+	    });
+	 
     }
+
 }
 </script>
 

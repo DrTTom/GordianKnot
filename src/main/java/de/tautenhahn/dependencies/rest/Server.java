@@ -3,6 +3,7 @@ package de.tautenhahn.dependencies.rest;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.options;
+import static spark.Spark.put;
 import static spark.Spark.staticFiles;
 
 import java.io.PrintStream;
@@ -52,7 +53,7 @@ public class Server
                   + "\nUsage: gordicKnot <classpathToCheck> [projectName] [options]");
       return;
     }
-    new Server().init(args[0], args[1]);
+    new Server().init(args[0], args.length > 1 ? args[1] : null);
     out.println("Server started, point your browsert to http://localhost:4567/index.html");
   }
 
@@ -61,6 +62,7 @@ public class Server
     List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
     ProjectScanner analyzer = new ProjectScanner(new Filter());
     root = analyzer.scan(parsedPath);
+    // root.walkSubTree().forEach(n -> n.setListMode(ListMode.LEAFS_COLLAPSED));
     startSpark();
   }
 
@@ -69,6 +71,8 @@ public class Server
     staticFiles.location("frontend");
     allowCrossSiteCalls();
     get("view", this::getDisplayableGraph, new JsonTransformer());
+    put("view/node/:id/:command", null, new JsonTransformer());
+
   }
 
   DisplayableDiGraph getDisplayableGraph(Request req, Response res)
