@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Node;
@@ -78,15 +79,20 @@ public class DiGraph
 
   /**
    * Returns an instance created from all visible nodes which have some content.
-   * 
+   *
    * @param root
    */
   public DiGraph(ContainerNode root)
   {
-    nodes = root.walkSubTree()
-                .filter(Node::hasOwnContent)
-                .map(IndexedNode::new)
-                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+    this(root.walkSubTree().filter(Node::hasOwnContent));
+  }
+
+  /**
+   * Creates instance created for specified nodes only.
+   */
+  public DiGraph(Stream<Node> originalNodes)
+  {
+    nodes = originalNodes.map(IndexedNode::new).collect(Collectors.toCollection(() -> new ArrayList<>()));
     Map<Node, IndexedNode> indexes = new HashMap<>();
     for ( int i = 0 ; i < nodes.size() ; i++ )
     {

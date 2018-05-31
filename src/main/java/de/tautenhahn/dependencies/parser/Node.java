@@ -203,10 +203,11 @@ public abstract class Node
 
   /**
    * Returns the name relative to another node. Will throw exception if not in the subtree.
+   * In case of nodes are same, the simple name is returned instead because its more useful. 
    */
   public String getRelativeName(Node ancestor)
   {
-    if (ancestor == parent)
+    if (ancestor == parent || ancestor == this)
     {
       return simpleName;
     }
