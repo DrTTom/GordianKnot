@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.nio.file.Paths;
+
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
@@ -17,6 +19,22 @@ import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
 public class TestServer
 {
 
+  private static class InactiveServer extends Server
+  {
+
+    @Override
+    void startSpark()
+    {
+      // deactivated to allow unit tests without using port
+    }
+  }
+
+  @Test
+  public void help()
+  {
+    Server.main("-H");
+  }
+
   /**
    * Simple smoke test until other routes are up.
    */
@@ -24,8 +42,12 @@ public class TestServer
   public void getView()
   {
     assertThat("just creating a cycle to report", TestCyclicDependencies.class, notNullValue());
-    String result = new Server.JsonTransformer().render(Server.displayGraph(null, null));
-    assertThat("view result", result, containsString("DisplayableDiGraph"));
+    Server server = new InactiveServer();
+    server.init(Paths.get("build", "classes", "java", "test").toAbsolutePath().toString(), "dummy");
+    server.showOnlyCycles();
+
+    String result = new Server.JsonTransformer().render(server.getDisplayableGraph(null, null));
+    assertThat("view result", result, containsString("TestCyclicDependencies"));
   }
 
 }

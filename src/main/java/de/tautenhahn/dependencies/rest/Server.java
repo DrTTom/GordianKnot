@@ -5,15 +5,16 @@ import static spark.Spark.get;
 import static spark.Spark.options;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
@@ -30,25 +31,53 @@ import spark.ResponseTransformer;
 public class Server
 {
 
+  private ContainerNode root;
+
+  private final List<Function<DiGraph, DiGraph>> operations = new ArrayList<>();
+
   public static void main(String... args)
   {
-    allowCrossSiteCalls();
-    get("view", Server::displayGraph, new JsonTransformer());
+    if (args.length == 0 || args[0].toLowerCase().matches("--?h(elp)?"))
+    {
+      System.out.println("\"Gordic Knot\" dependency checker version 0.2 alpha"
+                         + "\nUsage: gordicKnot <classpathToCheck> [projectName] [options]");
+      return;
+    }
+    new Server().init(args[0], args[1]);
   }
 
-  static DisplayableDiGraph displayGraph(Request req, Response res)
+  void init(String classPath, String name)
   {
+    List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
     ProjectScanner analyzer = new ProjectScanner(new Filter());
-    List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
-                                         Paths.get("build", "classes", "java", "test"));
-    ContainerNode root = analyzer.scan(classPath);
-    DiGraph deps = new DiGraph(root);
-    CycleFinder c = new CycleFinder(deps);
-    return new DisplayableDiGraph(c.createGraphFromCycles());
+    root = analyzer.scan(parsedPath);
+    startSpark();
   }
+
+  void startSpark()
+  {
+    allowCrossSiteCalls();
+    get("view", this::getDisplayableGraph, new JsonTransformer());
+  }
+
+  DisplayableDiGraph getDisplayableGraph(Request req, Response res)
+  {
+    DiGraph graph = new DiGraph(root);
+    for ( Function<DiGraph, DiGraph> fn : operations )
+    {
+      graph = fn.apply(graph);
+    }
+    return new DisplayableDiGraph(graph);
+  }
+
+  private DiGraph restrictToCycles(DiGraph input)
+  {
+    return new CycleFinder(input).createGraphFromCycles();
+  }
+
 
   /**
-   * All structured output top frontend is JSON.
+   * All structured output to front end is JSON.
    */
   static class JsonTransformer implements ResponseTransformer
   {
@@ -91,6 +120,9 @@ public class Server
     });
   }
 
+  public void showOnlyCycles()
+  {
+    operations.add(this::restrictToCycles);
 
-
+  }
 }
