@@ -1,5 +1,6 @@
 package de.tautenhahn.dependencies.parser;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,7 +88,9 @@ public abstract class Node
   /**
    * Returns the direct children on the container structure, empty in case of collapsed nodes.
    */
-  public abstract List<Node> getChildren();
+  public abstract Collection<Node> getChildren();
+
+  abstract Node getChildByName(String simpleName);
 
   /**
    * Returns the nodes which depend on this node. In case an inner node is collapsed, it will be returned
@@ -158,9 +161,7 @@ public abstract class Node
   public Node find(String path)
   {
     Pair<String, String> parts = splitPath(path);
-    Optional<Node> result = getChildren().stream()
-                                         .filter(n -> n.getSimpleName().equals(parts.getFirst()))
-                                         .findAny();
+    Optional<Node> result = Optional.ofNullable(getChildByName(parts.getFirst()));
     return result.map(n -> Optional.ofNullable(parts.getSecond()).map(s -> n.find(s)).orElse(n)).orElse(null);
   }
 
@@ -202,8 +203,8 @@ public abstract class Node
   }
 
   /**
-   * Returns the name relative to another node. Will throw exception if not in the subtree.
-   * In case of nodes are same, the simple name is returned instead because its more useful. 
+   * Returns the name relative to another node. Will throw exception if not in the subtree. In case of nodes
+   * are same, the simple name is returned instead because its more useful.
    */
   public String getRelativeName(Node ancestor)
   {

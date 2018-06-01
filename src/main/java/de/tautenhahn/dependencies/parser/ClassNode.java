@@ -53,7 +53,7 @@ public class ClassNode extends Node
 
   /**
    * Adds a successor, namely a node for a class own class depends on.
-   * 
+   *
    * @param successor
    */
   public void addSuccessor(ClassNode successor)
@@ -106,5 +106,11 @@ public class ClassNode extends Node
   void setMissingDependencies(Collection<String> missingDependencies)
   {
     this.missingDependencies = missingDependencies;
+  }
+
+  @Override
+  Node getChildByName(String simpleName)
+  {
+    return null;
   }
 }

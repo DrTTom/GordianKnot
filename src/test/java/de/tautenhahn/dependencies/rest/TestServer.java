@@ -19,7 +19,7 @@ import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
 public class TestServer
 {
 
-  private static class InactiveServer extends Server
+  static class InactiveServer extends Server
   {
 
     @Override
@@ -29,6 +29,9 @@ public class TestServer
     }
   }
 
+  /**
+   * Just calling the main method.
+   */
   @Test
   public void help()
   {
@@ -47,7 +50,7 @@ public class TestServer
     server.showOnlyCycles();
 
     String result = new Server.JsonTransformer().render(server.getDisplayableGraph(null, null));
-    assertThat("view result", result, containsString("TestCyclicDependencies"));
+    assertThat("view result", result, containsString("rest"));
   }
 
 }

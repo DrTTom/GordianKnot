@@ -60,12 +60,15 @@ public class TestProjectScanner
     List<Path> classPath = ClassPathUtils.getClassPath();
     // classPath = Collections.singletonList(classPath.get(3));
     ContainerNode root = systemUnderTest.scan(classPath);
+    System.out.println("duration " + (System.currentTimeMillis() - startTime));
+    assertThat("duration", System.currentTimeMillis() - startTime, lessThan(5000L));
+
     String junitJar = "jar:junit-4_12_jar.";
     String hamcrestJar = "jar:hamcrest-all-1_3_jar.";
     Node assertNode = root.find(junitJar + "org.junit.Assert");
     Node matcherAssertNode = root.find(hamcrestJar + "org.hamcrest.MatcherAssert");
     assertThat("predecessors", matcherAssertNode.getPredecessors(), hasItem(assertNode));
-    assertThat("duration", System.currentTimeMillis() - startTime, lessThan(5000L));
+
   }
 
 }

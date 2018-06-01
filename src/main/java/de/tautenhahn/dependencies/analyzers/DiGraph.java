@@ -50,7 +50,6 @@ public class DiGraph
         ? ((ContainerNode)node).getContainedLeafs().count() : 1);
     }
 
-
     IndexedNode(IndexedNode original)
     {
       node = original.node;
@@ -73,6 +72,11 @@ public class DiGraph
     public Collection<IndexedNode> getSuccessors()
     {
       return successors;
+    }
+
+    public int getNumberClasses()
+    {
+      return numberClasses;
     }
 
   }

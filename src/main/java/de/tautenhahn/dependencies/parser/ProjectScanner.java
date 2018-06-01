@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -23,7 +24,7 @@ import java.util.zip.ZipInputStream;
 public class ProjectScanner
 {
 
-  private final Map<String, ClassNode> classFirstSeenAt = new HashMap<>();
+  private final Map<String, ClassNode> classFirstSeenAt = new Hashtable<>();
 
   private final Map<ClassNode, Collection<String>> deps = new HashMap<>();
 
@@ -51,7 +52,7 @@ public class ProjectScanner
    */
   public ContainerNode scan(Collection<Path> classPath)
   {
-    classPath.stream().forEach(this::handleInput);
+    classPath.stream().parallel().forEach(this::handleInput);
     for ( Entry<ClassNode, Collection<String>> entry : deps.entrySet() )
     {
       entry.getValue()
@@ -72,13 +73,14 @@ public class ProjectScanner
       if (isFile(path, ".jar"))
       {
         DependencyParser parser = new DependencyParser();
-        ContainerNode jarNode = root.createInnerChild("jar:" + path.getFileName().toString().replace(".", "_"));
+        ContainerNode jarNode = root.createInnerChild("jar:"
+                                                      + path.getFileName().toString().replace(".", "_"));
         try (ZipInputStream zip = new ZipInputStream(new FileInputStream(path.toFile())))
         {
           ZipEntry entry = zip.getNextEntry();
           while (entry != null)
           {
-            if (entry.getName().endsWith(".class"))
+            if (entry.getName().endsWith(".class") && !entry.getName().endsWith("module-info.class"))
             {
               String className = entry.getName().replace(".class", "").replace('/', '.');
               ClassNode node = jarNode.createLeaf(className);
@@ -91,7 +93,9 @@ public class ProjectScanner
       }
       else if (Files.isDirectory(path))
       {
-        Files.walk(path).filter(p -> isFile(p, ".class")).forEach(p -> handleClassFile(p, path));
+        Files.walk(path)
+             .filter(p -> isFile(p, ".class") && !path.getFileName().toString().equals("module-info.class"))
+             .forEach(p -> handleClassFile(p, path));
       }
     }
     catch (IOException e)

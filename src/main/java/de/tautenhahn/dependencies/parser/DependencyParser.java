@@ -59,6 +59,8 @@ public class DependencyParser
 
   private byte[] buf = new byte[1024];
 
+  private String name;
+
   /**
    * Returns a list of classes the given class depends on.
    *
@@ -68,6 +70,7 @@ public class DependencyParser
    */
   public Collection<String> listDependencies(String name, InputStream ins) throws IOException
   {
+    this.name = name;
     try (DataInputStream data = new DataInputStream(ins))
     {
       if (data.readInt() != MAGIC)
@@ -142,7 +145,8 @@ public class DependencyParser
         skip(data, 3);
         break;
       default:
-        throw new IllegalArgumentException("not a class, constant pool contains illegal tag " + tag);
+        throw new IllegalArgumentException(name + " is not a class, constant pool contains illegal tag "
+                                           + tag);
     }
     return 1;
   }
@@ -172,7 +176,7 @@ public class DependencyParser
 
   private void readStringValue(int index, DataInputStream data) throws IOException
   {
-    int length = data.readShort();
+    int length = 0x0000FFFF & data.readShort();
     if (buf.length < length)
     {
       buf = new byte[length];

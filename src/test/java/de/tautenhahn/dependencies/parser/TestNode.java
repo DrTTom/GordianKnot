@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,7 +30,7 @@ public class TestNode
 
   private static ContainerNode root;
 
-  private static final String PKG_1 = "example:.de.tautenhahn.example";
+  private static final String PKG_1 = "dir:example.de.tautenhahn.example";
 
   private static final String PKG_1_NESTED = PKG_1 + ".impl";
 
@@ -85,7 +86,9 @@ public class TestNode
     assertThat("direct predecessor", alien.getPredecessors(), contains(nested));
 
     systemUnderTest.setListMode(ListMode.COLLAPSED);
-    assertThat("successors of collapsed node", systemUnderTest.getSuccessors(), contains(other, alien));
+    assertThat("successors of collapsed node",
+               systemUnderTest.getSuccessors(),
+               containsInAnyOrder(other, alien));
     assertThat("subtree of collapsed", systemUnderTest.walkSubTree().collect(Collectors.toList()), empty());
     assertThat("parents subtree",
                systemUnderTest.getParent().walkSubTree().collect(Collectors.toList()),

@@ -20,6 +20,7 @@ import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
+import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import spark.Request;
 import spark.Response;
@@ -27,7 +28,8 @@ import spark.ResponseTransformer;
 
 
 /**
- * The REST server. Supplies the graph for displaying and allows calling some commands.
+ * The REST server. Supplies the graph for displaying and allows calling some commands. Current implementation
+ * is for one session only.
  *
  * @author TT
  */
@@ -39,6 +41,8 @@ public class Server
   private ContainerNode root;
 
   private final List<Function<DiGraph, DiGraph>> operations = new ArrayList<>();
+
+  private DiGraph currentlyShown;
 
   /**
    * Command line call.
@@ -62,7 +66,8 @@ public class Server
     List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
     ProjectScanner analyzer = new ProjectScanner(new Filter());
     root = analyzer.scan(parsedPath);
-    // root.walkSubTree().forEach(n -> n.setListMode(ListMode.LEAFS_COLLAPSED));
+    root.walkSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:") ? ListMode.COLLAPSED
+      : ListMode.LEAFS_COLLAPSED));
     startSpark();
   }
 
@@ -71,8 +76,21 @@ public class Server
     staticFiles.location("frontend");
     allowCrossSiteCalls();
     get("view", this::getDisplayableGraph, new JsonTransformer());
+    get("view/node/:id", this::getNodeInfo, new JsonTransformer());
+    get("view/arc/:id", this::getArcInfo, new JsonTransformer());
     put("view/node/:id/:command", null, new JsonTransformer());
 
+  }
+
+  NodeInfo getNodeInfo(Request req, Response res)
+  {
+    int nodeNumber = Integer.parseInt(req.params("id"));
+    return new NodeInfo(currentlyShown, nodeNumber);
+  }
+
+  ArcInfo getArcInfo(Request req, Response res)
+  {
+    return new ArcInfo(currentlyShown, req.params("id"));
   }
 
   DisplayableDiGraph getDisplayableGraph(Request req, Response res)
@@ -82,6 +100,7 @@ public class Server
     {
       graph = fn.apply(graph);
     }
+    currentlyShown = graph;
     return new DisplayableDiGraph(graph);
   }
 

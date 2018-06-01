@@ -1,8 +1,10 @@
 package de.tautenhahn.dependencies.parser;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ import java.util.stream.Stream;
 public class ContainerNode extends Node
 {
 
-  private final List<Node> children = new ArrayList<>();
+  private final Map<String, Node> children = new HashMap();
 
   private ContainerNode(Node parent, String name)
   {
@@ -51,18 +53,21 @@ public class ContainerNode extends Node
     if (parts.getSecond() == null)
     {
       T result = constructor.apply(this, name);
-      children.add(result);
+      synchronized (children)
+      {
+        children.put(result.getSimpleName(), result);
+      }
       return result;
     }
 
-    Node intermed = find(parts.getFirst());
+    Node intermed = null;
+    synchronized (children)
+    {
+      intermed = children.computeIfAbsent(parts.getFirst(), key -> new ContainerNode(this, key));
+    }
     if (intermed instanceof ClassNode)
     {
       throw new IllegalArgumentException("cannot add a child of " + intermed.getName());
-    }
-    if (intermed == null)
-    {
-      intermed = createInnerChild(parts.getFirst());
     }
     return ((ContainerNode)intermed).createChild(parts.getSecond(), constructor);
   }
@@ -80,9 +85,9 @@ public class ContainerNode extends Node
    * Returns the children on the container structure.
    */
   @Override
-  public List<Node> getChildren()
+  public Collection<Node> getChildren()
   {
-    return Collections.unmodifiableList(children);
+    return Collections.unmodifiableCollection(children.values());
   }
 
   /**
@@ -125,11 +130,11 @@ public class ContainerNode extends Node
       case COLLAPSED:
         return Stream.empty();
       case LEAFS_COLLAPSED:
-        return children.stream()
-                       .filter(c -> c instanceof ContainerNode)
-                       .flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+        return getChildren().stream()
+                            .filter(c -> c instanceof ContainerNode)
+                            .flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
       case EXPANDED:
-        return children.stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
+        return getChildren().stream().flatMap(n -> Stream.concat(n.walkSubTree(), Stream.of(n)));
       default:
         throw new IllegalStateException("unsupported list mode");
     }
@@ -145,7 +150,7 @@ public class ContainerNode extends Node
       case COLLAPSED:
         return getAllDescendentLeafs();
       case LEAFS_COLLAPSED:
-        return children.stream().filter(n -> n instanceof ClassNode).map(l -> (ClassNode)l);
+        return getChildren().stream().filter(n -> n instanceof ClassNode).map(l -> (ClassNode)l);
       case EXPANDED:
         return Stream.empty();
       default:
@@ -155,13 +160,19 @@ public class ContainerNode extends Node
 
   private Stream<ClassNode> getAllDescendentLeafs()
   {
-    return children.stream().flatMap(n -> n instanceof ContainerNode ? ((ContainerNode)n).getAllDescendentLeafs()
-      : Stream.of((ClassNode)n));
+    return getChildren().stream().flatMap(n -> n instanceof ContainerNode
+      ? ((ContainerNode)n).getAllDescendentLeafs() : Stream.of((ClassNode)n));
   }
 
   @Override
   public boolean hasOwnContent()
   {
     return getContainedLeafs().findAny().isPresent();
+  }
+
+  @Override
+  Node getChildByName(String simpleName)
+  {
+    return children.get(simpleName);
   }
 }
