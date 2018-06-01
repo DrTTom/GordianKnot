@@ -53,8 +53,8 @@ public class Server
   {
     if (args.length == 0 || args[0].toLowerCase().matches("--?h(elp)?"))
     {
-      out.println("\"Gordic Knot\" dependency checker version 0.2 alpha"
-                  + "\nUsage: gordicKnot <classpathToCheck> [projectName] [options]");
+      out.println("\"Gordian Knot\" dependency checker version 0.2 alpha"
+                  + "\nUsage: GordianKnot <classpathToCheck> [projectName] [options]");
       return;
     }
     new Server().init(args[0], args.length > 1 ? args[1] : null);
