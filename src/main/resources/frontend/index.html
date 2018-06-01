@@ -6,6 +6,9 @@
   <script src="vis.min.js"></script>
   <link href="vis.min.css" rel="stylesheet" type="text/css" />
   <style>
+    body {
+    font-family: Arial, Helvetica, sans-serif;
+    }
     #mynetwork {
       width: 650px;
       height: 650px;
@@ -28,55 +31,67 @@ show <button>all</button> <button>cycles only</button> <button>needed by selecti
 </div>
 
 <script>
- var xhr = new XMLHttpRequest();
- xhr.open('GET', "http://localhost:4567/view", true);
- xhr.send();
- xhr.onreadystatechange = processRequest;
- 
-function processRequest(e) {
-	if (xhr.readyState == 4 ) {		
-		var response = JSON.parse(xhr.responseText);
-		var nodes = new vis.DataSet(response.nodes);
-		var edges = new vis.DataSet(response.edges);
+get("http://localhost:4567/view", showGraph);
 
-  var container = document.getElementById('mynetwork');
-  var data = {
-    nodes: nodes,
-    edges: edges
-  };
-  var options = {   };
-  var network = new vis.Network(container, data, options);
-	
-  network.on("stabilized", function (params) {
-	  network.setOptions( { physics: false } );
-	  });
-	
-	 network.on("click", function (params) {
-	        params.event = "[original event]";
-	        var content= "nothing selected";
-	        if ( params.nodes.length == 1)
-        	{
-        	  content=getNodeInfo(params.nodes[0]);
-        	}
-	        if ( params.edges.length == 1)
-        	{
-        	  content=getArcInfo(params.edges[0]);
-        	}
-	        document.getElementById('description').innerHTML = content;
-	    });
-	 
+function get(url, callBack) {
+    var req = new XMLHttpRequest();
+    req.open('GET', url, true);
+    req.send();
+    req.onreadystatechange = function(e) {
+        if (req.readyState == 4) {
+            callBack(req.responseText);
+        }
     }
-	
-	function getNodeInfo(id) 
-	{
-		return "NodeInfo "+ id; 
-	}
+}
 
-	function getArcInfo(id) 
-	{
-		return "ArcInfo "+ id; 
-	}
+function showGraph(responseText) {
+    var response = JSON.parse(responseText);
+    var nodes = new vis.DataSet(response.nodes);
+    var edges = new vis.DataSet(response.edges);
 
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {};
+    var network = new vis.Network(container, data, options);
+
+    network.on("stabilized", function(params) {
+        network.setOptions({
+            physics: false
+        });
+    });
+
+    network.on("click", function(params) {
+        params.event = "[original event]";
+        var content = "nothing selected";
+        if (params.nodes.length == 1) {
+            content = getNodeInfo(params.nodes[0]);
+        } else if (params.edges.length == 1) {
+            content = getArcInfo(params.edges[0]);
+        }
+        document.getElementById('description').innerHTML = content;
+    });
+
+}
+
+function getNodeInfo(id) {
+    get("http://localhost:4567/view/node/" + id, function(e) {
+    var nodeInfo= JSON.parse(e);
+    document.getElementById('description').innerHTML = '<h3>'+nodeInfo.type+' '+nodeInfo.name+'</h3>'+e+"<br>"+id;
+    });
+}
+
+function getArcInfo(id) {
+    get("http://localhost:4567/view/arc/" + id, function(e) {
+    var arcInfo= JSON.parse(e);
+    var description='<h3>'+ arcInfo.from.name+ ' depends on ' + arcInfo.to.name +
+    '</h3> Reason: <table>';
+    arcInfo.reason.forEach( function (pair){ description=description+'<tr><td>'+pair.first+'</td><td> depends on </td><td>'+pair.second+'</td></tr>'});
+    
+    document.getElementById('description').innerHTML =  description+'</table>';
+   });
 }
 </script>
 

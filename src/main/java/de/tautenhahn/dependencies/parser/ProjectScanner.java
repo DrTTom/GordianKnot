@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,7 +25,7 @@ public class ProjectScanner
 
   private final Map<String, ClassNode> classFirstSeenAt = new Hashtable<>();
 
-  private final Map<ClassNode, Collection<String>> deps = new HashMap<>();
+  private final Map<ClassNode, Collection<String>> deps = new Hashtable<>();
 
   private final ContainerNode root = ContainerNode.createRoot();
 

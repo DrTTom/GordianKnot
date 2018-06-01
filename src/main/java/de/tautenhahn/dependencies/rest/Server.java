@@ -58,7 +58,7 @@ public class Server
       return;
     }
     new Server().init(args[0], args.length > 1 ? args[1] : null);
-    out.println("Server started, point your browsert to http://localhost:4567/index.html");
+    out.println("Server started, point your browser to http://localhost:4567/index.html");
   }
 
   void init(String classPath, String name)
