@@ -29,7 +29,8 @@ show <button>all</button> <button>cycles only</button> <button>needed by selecti
 <h2>Selected Element</h2>
 <div id="description">Click element to select</div>
 </div>
-
+<button onClick="changeListMode('EXPANDED')">expand</button>
+<button onClick="changeListMode('COLLAPSE_PARENT')">collapse into parent container</button>
 <script>
 get("http://localhost:4567/view", showGraph);
 
@@ -64,17 +65,17 @@ function showGraph(responseText) {
     });
 
     network.on("click", function(params) {
+    	selectedNode='';
         params.event = "[original event]";
-        var content = "nothing selected";
         if (params.nodes.length == 1) {
-            content = getNodeInfo(params.nodes[0]);
+            getNodeInfo(params.nodes[0]);
         } else if (params.edges.length == 1) {
-            content = getArcInfo(params.edges[0]);
-        }
-        document.getElementById('description').innerHTML = content;
+            getArcInfo(params.edges[0]);
+        } else document.getElementById('description').innerHTML = "nothing selected";
     });
-
 }
+
+var selectedNode ='';
 
 function getNodeInfo(id) {
     get("http://localhost:4567/view/node/" + id, function(e) {
@@ -82,17 +83,24 @@ function getNodeInfo(id) {
     var value = '<h3>'+nodeInfo.type+' '+nodeInfo.name+'</h3>';
     if (typeof nodeInfo.resourceType!='undefined')
     	{
-    	value=value+ "found in "+nodeInfo.resourceType+" "+ nodeInfo.resourceName +"<br>";
+    	value=value+ "found in: "+nodeInfo.resourceType+" "+ nodeInfo.resourceName +"<br>";
     	}
+    if (nodeInfo.type != 'class'){
     value=value+ "represents "+nodeInfo.numberContainedClasses +" classes<br>";
-    value=value+"node number is "+id;
-    if (nodeInfo.listMode!='EXPANDED')
-    	{
-    	value=value+"<button>expand</button>"
-    	}
-    document.getElementById('description').innerHTML =  value;
+    }
+    value=value+"current reference is: "+id;
+    selectedNode=id
+    document.getElementById('description').innerHTML = value;
     });
 }
+
+function changeListMode(mode)
+{
+	if (selectedNode!='')
+		{
+		get("http://localhost:4567/view/node/"+selectedNode+"/listmode/"+mode, showGraph);
+		}
+	}
 
 function getArcInfo(id) {
     get("http://localhost:4567/view/arc/" + id, function(e) {

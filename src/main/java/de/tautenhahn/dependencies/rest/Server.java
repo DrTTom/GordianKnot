@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
@@ -89,12 +90,22 @@ public class Server
   DisplayableDiGraph setListMode(Request req, Response res)
   {
     int nodeNumber = Integer.parseInt(req.params("id"));
-    ListMode mode = ListMode.valueOf(req.params("value"));
+    String operation = req.params("value");
     Node node = currentGraph.getAllNodes().get(nodeNumber).getNode();
-    if (node.getListMode() != mode)
+    if ("COLLAPSE_PARENT".equals(operation)) // TODO: other route!
     {
-      node.setListMode(mode);
+      node.getParent().setListMode(node instanceof ClassNode ? ListMode.LEAFS_COLLAPSED : ListMode.COLLAPSED);
       computeGraph();
+    }
+    else
+    {
+      ListMode mode = ListMode.valueOf(req.params("value"));
+
+      if (node.getListMode() != mode)
+      {
+        node.setListMode(mode);
+        computeGraph();
+      }
     }
     return currentlyShown;
   }
