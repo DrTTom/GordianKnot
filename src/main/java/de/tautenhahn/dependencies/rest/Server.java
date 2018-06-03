@@ -3,7 +3,6 @@ package de.tautenhahn.dependencies.rest;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.options;
-import static spark.Spark.put;
 import static spark.Spark.staticFiles;
 
 import java.io.PrintStream;
@@ -20,6 +19,7 @@ import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
+import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import spark.Request;
@@ -42,7 +42,10 @@ public class Server
 
   private final List<Function<DiGraph, DiGraph>> operations = new ArrayList<>();
 
-  private DiGraph currentlyShown;
+  private DiGraph currentGraph;
+
+  private DisplayableDiGraph currentlyShown;
+
 
   /**
    * Command line call.
@@ -59,6 +62,7 @@ public class Server
     }
     new Server().init(args[0], args.length > 1 ? args[1] : null);
     out.println("Server started, point your browser to http://localhost:4567/index.html");
+    out.println(System.getProperty("java.class.path"));
   }
 
   void init(String classPath, String name)
@@ -78,30 +82,53 @@ public class Server
     get("view", this::getDisplayableGraph, new JsonTransformer());
     get("view/node/:id", this::getNodeInfo, new JsonTransformer());
     get("view/arc/:id", this::getArcInfo, new JsonTransformer());
-    put("view/node/:id/:command", null, new JsonTransformer());
-
+    get("view/node/:id/listmode/:value", this::setListMode, new JsonTransformer()); // TODO change to put when
+                                                                                    // everything works!
   }
+
+  DisplayableDiGraph setListMode(Request req, Response res)
+  {
+    int nodeNumber = Integer.parseInt(req.params("id"));
+    ListMode mode = ListMode.valueOf(req.params("value"));
+    Node node = currentGraph.getAllNodes().get(nodeNumber).getNode();
+    if (node.getListMode() != mode)
+    {
+      node.setListMode(mode);
+      computeGraph();
+    }
+    return currentlyShown;
+  }
+
 
   NodeInfo getNodeInfo(Request req, Response res)
   {
     int nodeNumber = Integer.parseInt(req.params("id"));
-    return new NodeInfo(currentlyShown, nodeNumber);
+    return new NodeInfo(currentGraph, nodeNumber);
   }
 
   ArcInfo getArcInfo(Request req, Response res)
   {
-    return new ArcInfo(currentlyShown, req.params("id"));
+    return new ArcInfo(currentGraph, req.params("id"));
   }
 
   DisplayableDiGraph getDisplayableGraph(Request req, Response res)
+  {
+    if (currentlyShown == null)
+    {
+      computeGraph();
+    }
+    return currentlyShown;
+  }
+
+  private void computeGraph()
   {
     DiGraph graph = new DiGraph(root);
     for ( Function<DiGraph, DiGraph> fn : operations )
     {
       graph = fn.apply(graph);
     }
-    currentlyShown = graph;
-    return new DisplayableDiGraph(graph);
+    currentGraph = graph;
+    currentlyShown = new DisplayableDiGraph(graph);
   }
 
   private DiGraph restrictToCycles(DiGraph input)

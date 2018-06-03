@@ -79,7 +79,18 @@ function showGraph(responseText) {
 function getNodeInfo(id) {
     get("http://localhost:4567/view/node/" + id, function(e) {
     var nodeInfo= JSON.parse(e);
-    document.getElementById('description').innerHTML = '<h3>'+nodeInfo.type+' '+nodeInfo.name+'</h3>'+e+"<br>"+id;
+    var value = '<h3>'+nodeInfo.type+' '+nodeInfo.name+'</h3>';
+    if (typeof nodeInfo.resourceType!='undefined')
+    	{
+    	value=value+ "found in "+nodeInfo.resourceType+" "+ nodeInfo.resourceName +"<br>";
+    	}
+    value=value+ "represents "+nodeInfo.numberContainedClasses +" classes<br>";
+    value=value+"node number is "+id;
+    if (nodeInfo.listMode!='EXPANDED')
+    	{
+    	value=value+"<button>expand</button>"
+    	}
+    document.getElementById('description').innerHTML =  value;
     });
 }
 
