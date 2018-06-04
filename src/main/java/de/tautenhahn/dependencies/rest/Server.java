@@ -71,8 +71,7 @@ public class Server
     List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
     ProjectScanner analyzer = new ProjectScanner(new Filter());
     root = analyzer.scan(parsedPath);
-    root.walkSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:") ? ListMode.COLLAPSED
-      : ListMode.LEAFS_COLLAPSED));
+    resetListMode(null, null);
     startSpark();
   }
 
@@ -85,6 +84,24 @@ public class Server
     get("view/arc/:id", this::getArcInfo, new JsonTransformer());
     get("view/node/:id/listmode/:value", this::setListMode, new JsonTransformer()); // TODO change to put when
                                                                                     // everything works!
+    get("view/filters/cycles", this::showOnlyCycles, new JsonTransformer());
+    get("view/filters/none", this::clearFilters, new JsonTransformer());
+    get("view/filters/resetListMode", this::resetListMode, new JsonTransformer());
+  }
+
+  DisplayableDiGraph clearFilters(Request req, Response res)
+  {
+    operations.clear();
+    computeGraph();
+    return currentlyShown;
+  }
+
+  DisplayableDiGraph resetListMode(Request req, Response res)
+  {
+    root.walkSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:") ? ListMode.COLLAPSED
+      : ListMode.LEAFS_COLLAPSED)); // TODO: list all the nodes!
+    computeGraph();
+    return currentlyShown;
   }
 
   DisplayableDiGraph setListMode(Request req, Response res)
@@ -94,7 +111,11 @@ public class Server
     Node node = currentGraph.getAllNodes().get(nodeNumber).getNode();
     if ("COLLAPSE_PARENT".equals(operation)) // TODO: other route!
     {
-      node.getParent().setListMode(node instanceof ClassNode ? ListMode.LEAFS_COLLAPSED : ListMode.COLLAPSED);
+      if (node.getParent().getParent() != null)
+      {
+        node.getParent()
+            .setListMode(node instanceof ClassNode ? ListMode.LEAFS_COLLAPSED : ListMode.COLLAPSED);
+      }
       computeGraph();
     }
     else
@@ -195,8 +216,10 @@ public class Server
   /**
    * Hides everything except nodes and arcs which are part of a cyclic dependency.
    */
-  void showOnlyCycles()
+  DisplayableDiGraph showOnlyCycles(Request req, Response res)
   {
     operations.add(this::restrictToCycles);
+    computeGraph();
+    return currentlyShown;
   }
 }

@@ -47,7 +47,7 @@ public class TestServer
     assertThat("just creating a cycle to report", TestCyclicDependencies.class, notNullValue());
     Server server = new InactiveServer();
     server.init(Paths.get("build", "classes", "java", "test").toAbsolutePath().toString(), "dummy");
-    server.showOnlyCycles();
+    server.showOnlyCycles(null, null);
 
     String result = new Server.JsonTransformer().render(server.getDisplayableGraph(null, null));
     assertThat("view result", result, containsString("rest"));
