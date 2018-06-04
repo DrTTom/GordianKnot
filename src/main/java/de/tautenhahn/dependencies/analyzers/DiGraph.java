@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,7 +78,7 @@ public class DiGraph
      */
     public Collection<IndexedNode> getSuccessors()
     {
-      return successors;
+      return Collections.unmodifiableCollection(successors);
     }
 
     /**
@@ -103,6 +104,7 @@ public class DiGraph
   /**
    * Creates instance created for specified nodes only.
    */
+  @SuppressWarnings("synthetic-access")
   public DiGraph(Stream<Node> originalNodes)
   {
     nodes = originalNodes.map(IndexedNode::new).collect(Collectors.toCollection(() -> new ArrayList<>()));
@@ -110,7 +112,7 @@ public class DiGraph
     for ( int i = 0 ; i < nodes.size() ; i++ )
     {
       IndexedNode node = nodes.get(i);
-      node.index = i;
+      node.index = i; // NOPMD want to disable access for any other class
       indexes.put(node.getNode(), node);
     }
     for ( IndexedNode node : nodes )
@@ -127,11 +129,12 @@ public class DiGraph
   /**
    * Numbers the nodes from 0 to number of nodes. Sequence is not defined.
    */
-  public void renumber()
+  @SuppressWarnings("synthetic-access")
+  public final void renumber()
   {
     for ( int i = 0 ; i < nodes.size() ; i++ )
     {
-      nodes.get(i).index = i;
+      nodes.get(i).index = i; // NOPMD want to disable access for any other class
     }
   }
 
@@ -145,10 +148,11 @@ public class DiGraph
     for ( IndexedNode original : nodesToRetain )
     {
       IndexedNode copy = indexes.get(original.getNode());
-      original.successors.stream()
-                         .map(s -> indexes.get(s.getNode()))
-                         .filter(Objects::nonNull)
-                         .forEach(s -> addArc(copy, s));
+      original.getSuccessors()
+              .stream()
+              .map(s -> indexes.get(s.getNode()))
+              .filter(Objects::nonNull)
+              .forEach(s -> addArc(copy, s));
     }
     renumber();
   }
@@ -170,10 +174,11 @@ public class DiGraph
    * @param from
    * @param to
    */
+  @SuppressWarnings("synthetic-access")
   public void removeArc(IndexedNode from, IndexedNode to)
   {
-    to.predecessors.remove(from);
-    from.successors.remove(to);
+    to.predecessors.remove(from); // NOPMD want to hide this access from all other classes
+    from.successors.remove(to); // NOPMD
   }
 
   /**
@@ -182,10 +187,11 @@ public class DiGraph
    * @param from
    * @param to
    */
+  @SuppressWarnings("synthetic-access")
   public void addArc(IndexedNode from, IndexedNode to)
   {
-    to.predecessors.add(from);
-    from.successors.add(to);
+    to.predecessors.add(from); // NOPMD want to hide this access from all other classes
+    from.successors.add(to); // NOPMD
   }
 
   /**

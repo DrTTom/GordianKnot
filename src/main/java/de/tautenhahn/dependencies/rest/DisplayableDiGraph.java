@@ -20,6 +20,9 @@ public class DisplayableDiGraph
 
   private final List<VisEdge> edges = new ArrayList<>();
 
+  /**
+   * Data record for a node.
+   */
   private static class VisNode
   {
 
@@ -37,6 +40,9 @@ public class DisplayableDiGraph
 
   }
 
+  /**
+   * Data record for an edge.
+   */
   private static class VisEdge
   {
 

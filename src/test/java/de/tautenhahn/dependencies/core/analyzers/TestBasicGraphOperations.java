@@ -29,7 +29,7 @@ public class TestBasicGraphOperations
     ContainerNode root = ContainerNode.createRoot();
     for ( char label = 'a' ; label < 'd' ; label++ )
     {
-      root.createLeaf("" + label);
+      root.createLeaf(new String(new char[]{label}));
     }
     ((ClassNode)root.find("a")).addSuccessor((ClassNode)root.find("b"));
     ((ClassNode)root.find("b")).addSuccessor((ClassNode)root.find("c"));

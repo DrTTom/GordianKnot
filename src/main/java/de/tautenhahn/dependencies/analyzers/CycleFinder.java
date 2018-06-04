@@ -102,7 +102,7 @@ public class CycleFinder
         other = pop();
         component.add(other);
       }
-      while (other != inode);
+      while (other != inode); // NOPMD we really mean the same object
     }
   }
 

@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -60,13 +59,10 @@ public class TestDepParser
     {
       Collection<String> myResult = systemUnderTest.listDependencies(clazz.getName(), classContent);
       long myDuration = System.currentTimeMillis() - start;
-      List<String> ignored = Arrays.asList("java/util/Enumeration", "java/util/Collection");
       jdepResult.stream()
                 .map(this::extractClassName)
                 .filter(Objects::nonNull)
-                // .filter(n -> !ignored.contains(n))
                 .forEach(n -> assertTrue(n + " not listed", myResult.remove(n)));
-
       assertThat("listed deps not mentioned by jDeps",
                  myResult,
                  anyOf(empty(), contains("java/util/Collection")));
@@ -84,7 +80,8 @@ public class TestDepParser
     List<String> result = new ArrayList<>();
     DependencyParser systemUnderTest = new DependencyParser();
     systemUnderTest.addClassNames(input, result);
-    assertThat(result,
+    assertThat("parsed class names",
+               result,
                containsInAnyOrder("java/util/concurrent/ConcurrentHashMap$BulkTask",
                                   "java/util/concurrent/ConcurrentHashMap$Node",
                                   "java/util/concurrent/ConcurrentHashMap$ReduceValuesTask",
@@ -93,7 +90,7 @@ public class TestDepParser
 
   private String extractClassName(String line)
   {
-    int first = line.indexOf(">") + 2;
+    int first = line.indexOf('>') + 2;
     int end = line.indexOf(" ", first + 1);
     return first < 0 || end < 0 ? null : line.substring(first, end).replace(".", "/");
   }

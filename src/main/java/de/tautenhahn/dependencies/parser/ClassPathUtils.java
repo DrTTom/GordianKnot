@@ -29,7 +29,7 @@ public final class ClassPathUtils
 
   /**
    * Returns a collection of Path instances representing given class path.
-   * 
+   *
    * @param classpath
    */
   public static List<Path> parseClassPath(String classpath)

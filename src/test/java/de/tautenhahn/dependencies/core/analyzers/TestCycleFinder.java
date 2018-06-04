@@ -31,7 +31,7 @@ public class TestCycleFinder
     ContainerNode root = ContainerNode.createRoot();
     for ( char label = 'a' ; label < 'g' ; label++ )
     {
-      root.createLeaf("" + label);
+      root.createLeaf(new String(new char[]{label}));
     }
     ((ClassNode)root.find("a")).addSuccessor((ClassNode)root.find("d"));
     ((ClassNode)root.find("a")).addSuccessor((ClassNode)root.find("f"));

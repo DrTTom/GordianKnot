@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 import com.google.gson.Gson;
@@ -56,7 +57,7 @@ public class Server
    */
   public static void main(String... args)
   {
-    if (args.length == 0 || args[0].toLowerCase().matches("--?h(elp)?"))
+    if (args.length == 0 || args[0].toLowerCase(Locale.ENGLISH).matches("--?h(elp)?"))
     {
       out.println("\"Gordian Knot\" dependency checker version 0.2 alpha"
                   + "\nUsage: GordianKnot <classpathToCheck> [projectName] [options]");
@@ -93,7 +94,7 @@ public class Server
     installFilterRoute("resetListMode", this::resetListMode);
   }
 
-  private void installFilterRoute(String filter, Runnable modification)
+  private void installFilterRoute(String filter, Runnable modification) // NOPMD no threads here!
   {
     // TODO change to put when everything works!
     get("view/filters/" + filter, (req, res) -> {

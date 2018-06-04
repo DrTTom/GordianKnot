@@ -19,6 +19,9 @@ import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
 public class TestServer
 {
 
+  /**
+   * Special sub-class which does not neet a free port.
+   */
   static class InactiveServer extends Server
   {
 

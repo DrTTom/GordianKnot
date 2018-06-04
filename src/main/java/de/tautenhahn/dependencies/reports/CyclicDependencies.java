@@ -35,12 +35,12 @@ public abstract class CyclicDependencies
               .append(entry.getKey().getFirst())
               .append(" -> ")
               .append(entry.getKey().getSecond())
-              .append("     (");
+              .append("     ("); // NOPMD not called with consecutive literals
         entry.getValue()
              .forEach(p -> result.append(p.getFirst()).append(" -> ").append(p.getSecond()).append(", "));
-        result.append(")");
+        result.append(')');
       }
-      result.append("\n");
+      result.append('\n');
     }
     return result.toString();
 

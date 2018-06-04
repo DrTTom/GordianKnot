@@ -30,23 +30,20 @@ public final class BasicGraphOperations
     return 1.0 * numberNodesAndArcs[1] / (numberNodes * (numberNodes - 1));
   }
 
-  private static void count(IndexedNode n, int[] numberNodesAndArcs)
+  private static void count(IndexedNode n, int... numberNodesAndArcs)
   {
     numberNodesAndArcs[0]++;
     numberNodesAndArcs[1] += n.getSuccessors().size();
   }
 
   /**
-   * Returns the transitive closure of a given graph.
+   * Returns the transitive closure of a given graph using repeated algorithm of Floyd/Warshall. In case of
+   * performance problems, implement Purdom's algorithm instead!
    *
    * @param graph
    */
   public static DiGraph transitiveClosure(DiGraph graph)
   {
-    DiGraph result = new DiGraph(graph);
-
-    // TODO
-    return result;
-
+    return new DiGraph(graph); // TODO!
   }
 }

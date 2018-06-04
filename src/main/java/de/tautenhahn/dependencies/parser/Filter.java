@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * TODO: get the logic clean!
- * 
+ *
  * @author TT
  */
 public class Filter
@@ -34,18 +34,18 @@ public class Filter
 
   /**
    * Returns true if name denotes a source not to be parsed.
-   * 
+   *
    * @param name
    */
   public boolean isIgnoredSource(String name)
   {
-    return false;
+    return ignoredSources.stream().anyMatch(s -> s.matcher(name).matches());
   }
 
   /**
    * Returns true if name is the class name of an ignored class. Dependency to such classes are ignored as
    * well.
-   * 
+   *
    * @param name
    */
   public boolean isIgnoredClass(String name)
@@ -56,7 +56,7 @@ public class Filter
 
   /**
    * Returns true if name denotes a class which should undergo all the analyzing procedures.
-   * 
+   *
    * @param name
    */
   public boolean isInFocus(String name)
@@ -69,7 +69,7 @@ public class Filter
    * of the class path but will be excluded from every other analysis. More precisely, if some required class
    * depends on this class, it is required to be present in the class path too. That is all we ever expect
    * from a supporting class.
-   * 
+   *
    * @param name
    */
   public boolean isSupporting(String name)

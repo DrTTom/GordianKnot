@@ -208,7 +208,7 @@ public abstract class Node
    */
   public String getRelativeName(Node ancestor)
   {
-    if (ancestor == parent || ancestor == this)
+    if (ancestor == parent || ancestor == this) // NOPMD we mean the same object
     {
       return simpleName;
     }

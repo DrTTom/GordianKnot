@@ -1,5 +1,6 @@
 package de.tautenhahn.dependencies.rest;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
@@ -12,13 +13,10 @@ import de.tautenhahn.dependencies.parser.Pair;
 public class ArcInfo
 {
 
-  @SuppressWarnings("unused") // read by GSON
   private final NodeInfo from;
 
-  @SuppressWarnings("unused") // read by GSON
   private final NodeInfo to;
 
-  @SuppressWarnings("unused") // read by GSON
   private final List<Pair<String, String>> reason;
 
   /**
@@ -38,6 +36,30 @@ public class ArcInfo
                   .get(fromNumber)
                   .getNode()
                   .explainDependencyTo(graph.getAllNodes().get(toNumber).getNode());
+  }
+
+  /**
+   * Returns arcs start node.
+   */
+  public NodeInfo getFrom()
+  {
+    return from;
+  }
+
+  /**
+   * Returns arcs end node.
+   */
+  public NodeInfo getTo()
+  {
+    return to;
+  }
+
+  /**
+   * Returns pairs of relative class names causing this dependency arc.
+   */
+  public List<Pair<String, String>> getReason()
+  {
+    return Collections.unmodifiableList(reason);
   }
 
 }

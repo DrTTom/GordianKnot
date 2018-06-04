@@ -14,6 +14,9 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Analyzes a project and builds the dependency structure.
@@ -22,6 +25,8 @@ import java.util.zip.ZipInputStream;
  */
 public class ProjectScanner
 {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectScanner.class);
 
   private final Map<String, ClassNode> classFirstSeenAt = new Hashtable<>();
 
@@ -102,11 +107,13 @@ public class ProjectScanner
     }
     catch (IOException e)
     {
-      // TODO:
-      e.printStackTrace();
+      LOG.error("cannot read {}", path, e);
     }
   }
 
+  /**
+   * Cannot close the zip stream when entry is finished.
+   */
   private static class NonClosingStream extends FilterInputStream
   {
 
@@ -151,8 +158,7 @@ public class ProjectScanner
     }
     catch (IOException e)
     {
-      // TODO:
-      e.printStackTrace();
+      LOG.error("cannot read {}", clazz, e);
     }
   }
 }

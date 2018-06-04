@@ -57,9 +57,9 @@ function showGraph(responseText) {
     };
     var options = {};
     var network = new vis.Network(container, data, options);
-    selectedNode='';
+    selectedNode = '';
     document.getElementById('description').innerHTML = "Click on node or arc to select it."
-    
+
     network.on("stabilized", function(params) {
         network.setOptions({
             physics: false
@@ -67,7 +67,7 @@ function showGraph(responseText) {
     });
 
     network.on("click", function(params) {
-    	selectedNode='';
+        selectedNode = '';
         params.event = "[original event]";
         if (params.nodes.length == 1) {
             getNodeInfo(params.nodes[0]);
@@ -77,51 +77,48 @@ function showGraph(responseText) {
     });
 }
 
-var selectedNode ='';
+var selectedNode = '';
 
 function getNodeInfo(id) {
     get("http://localhost:4567/view/node/" + id, function(e) {
-    var nodeInfo= JSON.parse(e);
-    var value = '<h3>'+nodeInfo.type+' '+nodeInfo.name+'</h3>';
-    if (typeof nodeInfo.resourceType!='undefined')
-    	{
-    	value=value+ "found in: "+nodeInfo.resourceType+" "+ nodeInfo.resourceName +"<br>";
-    	}
-    value=value+"current reference is: "+id+"<br>";
-    if (nodeInfo.type != 'class'){
-    value=value+ "represents "+nodeInfo.numberContainedClasses +" classes<br>";
-    value=value+"<button onClick=\"changeListMode('EXPANDED')\">expand</button>";
-    }    
-    value=value+"<button onClick=\"changeListMode('COLLAPSE_PARENT')\">collapse into parent container</button>";
+        var nodeInfo = JSON.parse(e);
+        var value = '<h3>' + nodeInfo.type + ' ' + nodeInfo.name + '</h3>';
+        if (typeof nodeInfo.resourceType != 'undefined') {
+            value = value + "found in: " + nodeInfo.resourceType + " " + nodeInfo.resourceName + "<br>";
+        }
+        value = value + "current reference is: " + id + "<br>";
+        if (nodeInfo.type != 'class') {
+            value = value + "represents " + nodeInfo.numberContainedClasses + " classes<br>";
+            value = value + "<button onClick=\"changeListMode('EXPANDED')\">expand</button>";
+        }
+        value = value + "<button onClick=\"changeListMode('COLLAPSE_PARENT')\">collapse into parent container</button>";
 
-    
-    selectedNode=id
-    document.getElementById('description').innerHTML = value;
+        selectedNode = id
+        document.getElementById('description').innerHTML = value;
     });
 }
 
-function changeListMode(mode)
-{
-	if (selectedNode!='')
-		{
-		get("http://localhost:4567/view/node/"+selectedNode+"/listmode/"+mode, showGraph);
-		}
-	}
+function changeListMode(mode) {
+    if (selectedNode != '') {
+        get("http://localhost:4567/view/node/" + selectedNode + "/listmode/" + mode, showGraph);
+    }
+}
 
-function setFilter(value)
-{
-	get("http://localhost:4567/view/filters/"+value, showGraph);
-	}
+function setFilter(value) {
+    get("http://localhost:4567/view/filters/" + value, showGraph);
+}
 
 function getArcInfo(id) {
     get("http://localhost:4567/view/arc/" + id, function(e) {
-    var arcInfo= JSON.parse(e);
-    var description='<h3>'+ arcInfo.from.name+ ' depends on ' + arcInfo.to.name +
-    '</h3> Reason: <table>';
-    arcInfo.reason.forEach( function (pair){ description=description+'<tr><td>'+pair.first+'</td><td> depends on </td><td>'+pair.second+'</td></tr>'});
-    
-    document.getElementById('description').innerHTML =  description+'</table>';
-   });
+        var arcInfo = JSON.parse(e);
+        var description = '<h3>' + arcInfo.from.name + ' depends on ' + arcInfo.to.name +
+            '</h3> Reason: <table>';
+        arcInfo.reason.forEach(function(pair) {
+            description = description + '<tr><td>' + pair.first + '</td><td> depends on </td><td>' + pair.second + '</td></tr>'
+        });
+
+        document.getElementById('description').innerHTML = description + '</table>';
+    });
 }
 </script>
 

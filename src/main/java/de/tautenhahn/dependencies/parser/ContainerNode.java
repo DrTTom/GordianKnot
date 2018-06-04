@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  *
  * @author TT
  */
-public class ContainerNode extends Node
+public final class ContainerNode extends Node
 {
 
   private final Map<String, Node> children = new HashMap<>();

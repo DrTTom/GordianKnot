@@ -58,9 +58,7 @@ public class TestProjectScanner
     long startTime = System.currentTimeMillis();
     ProjectScanner systemUnderTest = new ProjectScanner(new Filter());
     List<Path> classPath = ClassPathUtils.getClassPath();
-    // classPath = Collections.singletonList(classPath.get(3));
     ContainerNode root = systemUnderTest.scan(classPath);
-    System.out.println("duration " + (System.currentTimeMillis() - startTime));
     assertThat("duration", System.currentTimeMillis() - startTime, lessThan(5000L));
 
     String junitJar = "jar:junit-4_12_jar.";

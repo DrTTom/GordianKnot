@@ -23,33 +23,33 @@ public class DependencyParser
 
   private static final int MAGIC = 0xCAFEBABE;
 
-  private static final byte CONSTANT_Utf8 = 1;
+  private static final byte CONSTANT_UTF8 = 1;
 
-  private static final byte CONSTANT_Integer = 3;
+  private static final byte CONSTANT_INTEGER = 3;
 
-  private static final byte CONSTANT_Float = 4;
+  private static final byte CONSTANT_FLOAT = 4;
 
-  private static final byte CONSTANT_Long = 5;
+  private static final byte CONSTANT_LONG = 5;
 
-  private static final byte CONSTANT_Double = 6;
+  private static final byte CONSTANT_DOUBLE = 6;
 
-  private static final byte CONSTANT_Class = 7;
+  private static final byte CONSTANT_CLASS = 7;
 
-  private static final byte CONSTANT_String = 8;
+  private static final byte CONSTANT_STRING = 8;
 
-  private static final byte CONSTANT_FieldRef = 9;
+  private static final byte CONSTANT_FIELDREF = 9;
 
-  private static final byte CONSTANT_MethodRef = 10;
+  private static final byte CONSTANT_METHODREF = 10;
 
-  private static final byte CONSTANT_InterfaceMethodRef = 11;
+  private static final byte CONSTANT_INTERFACEMETHODREF = 11;
 
-  private static final byte CONSTANT_NameAndType = 12;
+  private static final byte CONSTANT_NAMEANDTYPE = 12;
 
-  private static final byte CONSTANT_MethodHandle = 15;
+  private static final byte CONSTANT_METHODHANDLE = 15;
 
-  private static final byte CONSTANT_MethodType = 16;
+  private static final byte CONSTANT_METHODTYPE = 16;
 
-  private static final byte CONSTANT_InvokeDynamic = 18;
+  private static final byte CONSTANT_INVOKEDYNAMIC = 18;
 
   private String[] strings;
 
@@ -61,6 +61,8 @@ public class DependencyParser
 
   private String name;
 
+  Pattern pattern = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+
   /**
    * Returns a list of classes the given class depends on.
    *
@@ -68,6 +70,7 @@ public class DependencyParser
    * @param ins
    * @throws IOException
    */
+  @SuppressWarnings("boxing")
   public Collection<String> listDependencies(String className, InputStream ins) throws IOException
   {
     this.name = className;
@@ -101,47 +104,50 @@ public class DependencyParser
       }
       // end debug code
 
-      classIndex.stream().map(i -> strings[i]).filter(s -> !s.startsWith("[")).forEach(result::add);
+      classIndex.stream().map(i -> strings[i]).filter(s -> s.charAt(0) != '[').forEach(result::add);
       // methodDescriptorIndex.stream().map(i -> strings[i]).forEach(n -> addClassNames(n, result));
       result.remove(className.replace(".", "/"));
       return result;
     }
   }
 
-  private int readPoolEntry(int index, DataInputStream data) throws IOException
+  /**
+   * Switch block for the different kinds of tags. Size was defined by Sun, this method just follows.
+   */
+  private int readPoolEntry(int index, DataInputStream data) throws IOException // NOPMD
   {
     byte tag = data.readByte();
     switch (tag)
     {
-      case CONSTANT_Utf8:
+      case CONSTANT_UTF8:
         readStringValue(index, data);
         break;
-      case CONSTANT_Integer:
-      case CONSTANT_Float:
-      case CONSTANT_FieldRef:
-      case CONSTANT_MethodRef:
-      case CONSTANT_InterfaceMethodRef:
-      case CONSTANT_InvokeDynamic:
+      case CONSTANT_INTEGER:
+      case CONSTANT_FLOAT:
+      case CONSTANT_FIELDREF:
+      case CONSTANT_METHODREF:
+      case CONSTANT_INTERFACEMETHODREF:
+      case CONSTANT_INVOKEDYNAMIC:
         skip(data, 4);
         break;
-      case CONSTANT_NameAndType:
+      case CONSTANT_NAMEANDTYPE:
         skip(data, 2);
         methodDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
-      case CONSTANT_Long:
-      case CONSTANT_Double:
+      case CONSTANT_LONG:
+      case CONSTANT_DOUBLE:
         skip(data, 8);
         return 2; // oracle agrees that this was a poor choice
-      case CONSTANT_String:
+      case CONSTANT_STRING:
         skip(data, 2);
         break;
-      case CONSTANT_MethodType:
+      case CONSTANT_METHODTYPE:
         methodDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
-      case CONSTANT_Class:
+      case CONSTANT_CLASS:
         classIndex.add(Integer.valueOf(data.readShort()));
         break;
-      case CONSTANT_MethodHandle:
+      case CONSTANT_METHODHANDLE:
         skip(data, 3);
         break;
       default:
@@ -160,15 +166,13 @@ public class DependencyParser
     }
   }
 
-  Pattern pattern = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+
 
   void addClassNames(String methodDecriptor, Collection<String> classNames)
   {
     Matcher m = pattern.matcher(methodDecriptor);
-    int pos = 0;
     while (m.find())
     {
-      pos = m.end();
       classNames.add(m.group(1));
     }
   }

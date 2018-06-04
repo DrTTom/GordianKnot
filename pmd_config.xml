@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <description>
+      Shall become bos default rule set.
+   </description>
+
+   <rule ref="category/java/bestpractices.xml">
+      <exclude name="JUnitTestsShouldIncludeAssert" /> <!-- contradicts usage of private check methods -->
+      <exclude name="MethodReturnsInternalArray" /> <!-- we decide if we want that -->
+      <exclude name="AccessorClassGeneration" /> <!-- singleton -->
+      <exclude name="ArrayIsStoredDirectly" /> <!-- different opinion -->
+      <exclude name="AbstractClassWithoutAbstractMethod" /> <!-- we want more explicit naming -->
+      <exclude name="AvoidStringBufferField" /> <!-- some classes need to build a text report -->
+   </rule>
+   <rule
+      ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+      <properties>
+         <property name="maximumAsserts" value="15" />
+      </properties>
+   </rule>
+
+   <rule ref="category/java/codestyle.xml">
+      <exclude name="DefaultPackage" />
+      <exclude name="CommentDefaultAccessModifier" />
+      <exclude name="MethodArgumentCouldBeFinal" />
+      <exclude name="LocalVariableCouldBeFinal" />
+      <exclude name="OnlyOneReturn" />
+      <exclude name="AtLeastOneConstructor" />
+      <exclude name="CallSuperInConstructor" /> <!-- no information gained by it -->
+      <exclude name="AbstractNaming" /> <!-- ugly to speak about this AbstractRule in this AbstractCategory -->
+      <exclude name="ShortVariable" /> <!-- want those in lambdas -->
+      <exclude name="AvoidFinalLocalVariable" /> <!-- contradicts "define everything in the minimal scope" -->
+      <exclude name="GenericsNaming" /> <!-- understanding complex generics requires speaking names -->
+      <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" /> <!--optional callback methods -->
+      <exclude name="ShortMethodName" /> <!-- fluent API might want methods like "of" -->
+      <exclude name="IdenticalCatchBranches" /> <!-- lots of false positives with PMD 6.4 -->
+   </rule>
+   <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+      <properties>
+         <property name="classPattern" value="[A-Z][a-zA-Z0-9]+" /> <!-- sometimes numbers are meant -->
+         <property name="abstractClassPattern" value="[A-Z][a-zA-Z0-9]+" />
+         <property name="interfacePattern" value="[A-Z][a-zA-Z0-9]+" />
+         <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+" /> <!-- naming should follow purpose -->
+      </properties>
+   </rule>
+   <rule ref="category/java/codestyle.xml/LongVariable">
+      <properties>
+         <property name="minimum" value="45" /> <!-- understandable names before shortness -->
+      </properties>
+   </rule>
+   <rule ref="category/java/codestyle.xml/TooManyStaticImports">
+      <properties>
+         <property name="maximumStaticImports" value="15" /> <!-- thinking of hamcrest matchers -->
+      </properties>
+   </rule>
+   <rule ref="category/java/codestyle.xml/ShortClassName">
+      <properties>
+         <property name="minimum" value="4" />
+      </properties>
+   </rule>
+
+   <rule ref="category/java/design.xml">
+      <exclude name="LawOfDemeter" /> <!-- fluent API -->
+      <exclude name="LoosePackageCoupling" /> <!-- requires specific configuration -->
+      <exclude name="SignatureDeclareThrowsException" /> <!-- TODO: specify different rules for test and exclude it only there -->
+      <exclude name="AvoidCatchingGenericException" /> <!-- at system boundaries, we want to send a code to the client -->
+      <exclude name="UseObjectForClearerAPI" /> <!-- too restrictive, not configurable -->
+      <exclude name="DataClass" /> <!-- contradicts rule above -->
+      <exclude name="GodClass" /> <!-- too restrictive, not configurable -->
+      <exclude name="AvoidRethrowingException" /> <!-- not compatible with some lambdas -->
+   </rule>
+   <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
+      <properties>
+         <property name="problemDepth" value="4" /> <!-- too many not so complex methods were marked -->
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/NcssCount">
+      <properties>
+         <property name="methodReportLevel" value="40" />
+         <property name="classReportLevel" value="600" />
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/ExcessiveImports">
+      <properties>
+         <property name="minimum" value="60" /> <!-- handling JAXB stuff -->
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/TooManyMethods">
+      <properties>
+         <property name="maxmethods" value="30" />
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/CyclomaticComplexity">
+      <properties>
+         <property name="methodReportLevel" value="12" />
+         <property name="classReportLevel" value="100" />
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/ExcessiveMethodLength">
+      <properties>
+         <property name="minimum" value="100" /> <!-- generous because we have NCSS count -->
+      </properties>
+   </rule>
+   <rule ref="category/java/design.xml/NPathComplexity">
+      <properties>
+         <property name="reportLevel" value="300" />
+      </properties>
+   </rule>
+
+   <rule ref="category/java/documentation.xml">
+      <exclude name="CommentSize" />
+   </rule>
+   <rule ref="category/java/documentation.xml/CommentRequired">
+      <properties>
+         <property name="fieldCommentRequirement" value="Ignored" />
+      </properties>
+   </rule>
+
+   <rule ref="category/java/errorprone.xml">
+      <exclude name="BeanMembersShouldSerialize" /> <!-- false positives -->
+      <exclude name="DataflowAnomalyAnalysis" /> <!-- false positives in each lambda -->
+      <exclude name="AvoidLiteralsInIfCondition" /> <!-- magic number check done with other rules, false positives -->
+      <exclude name="AvoidCatchingThrowable" /> <!-- at system boundaries, we want to send a code to the client or die trying -->
+      <exclude name="UseProperClassLoader" /> <!-- developer decides which class loader to use -->
+      <exclude name="NullAssignment" /> <!-- nulling object might be wanted -->
+      <exclude name="ReturnEmptyArrayRatherThanNull" /> <!-- that's a semantic question -->
+      <exclude name="MissingBreakInSwitch" /> <!-- false positives (last case) -->
+      <exclude name="CloneThrowsCloneNotSupportedException" /> <!-- declare only exceptions which are really thrown -->
+      <exclude name="ProperCloneImplementation" /> <!-- too many false positives -->
+   </rule>
+   <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+      <properties>
+         <property name="maxDuplicateLiterals" value="6" />
+         <property name="minimumLength" value="5" />
+         <property name="skipAnnotations" value="true" />
+      </properties>
+   </rule>
+
+   <rule ref="category/java/multithreading.xml">
+      <exclude name="UseConcurrentHashMap"></exclude> <!-- false positives -->
+      <exclude name="AvoidSynchronizedAtMethodLevel" /> <!-- developer decides which block to synchronize -->
+      <exclude name="AvoidUsingVolatile" /> <!-- developer decides about the need -->
+   </rule>
+
+   <rule ref="category/java/performance.xml">
+      <exclude name="AvoidFileStream" /> <!-- addresses an OpenJDK bug which is already fixed -->
+      <exclude name="AvoidInstantiatingObjectsInLoops" /> <!-- too many false positives, sometimes we need n objects -->
+      <exclude name="InsufficientStringBufferDeclaration" /> <!-- false positives: does not recognize if statements -->
+   </rule>
+
+   <rule ref="category/java/security.xml" />
+
+</ruleset>
