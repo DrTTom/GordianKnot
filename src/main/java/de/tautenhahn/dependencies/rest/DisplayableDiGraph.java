@@ -23,8 +23,10 @@ public class DisplayableDiGraph
   private static class VisNode
   {
 
+    @SuppressWarnings("unused") // read by GSON
     String label;
 
+    @SuppressWarnings("unused") // read by GSON
     String id;
 
     VisNode(String label, String id)
@@ -42,8 +44,10 @@ public class DisplayableDiGraph
 
     String to;
 
+    @SuppressWarnings("unused") // read by GSON
     String arrows = "middle";
 
+    @SuppressWarnings("unused") // read by GSON
     String id;
 
     VisEdge(String i, String j)
@@ -58,7 +62,7 @@ public class DisplayableDiGraph
   /**
    * Creates immutable instance filled with given information.
    *
-   * @param root
+   * @param graph
    */
   public DisplayableDiGraph(DiGraph graph)
   {

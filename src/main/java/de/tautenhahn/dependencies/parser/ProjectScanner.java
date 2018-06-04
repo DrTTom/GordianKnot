@@ -33,9 +33,9 @@ public class ProjectScanner
 
 
   /**
-   * Creates instance for one-time use. TODO: set includes static, create hidden instances.
+   * Creates instance for one-time use.
    *
-   * @param includes regular expressions for absolute node names.
+   * @param filter defines which classes to parse and to list.
    */
   public ProjectScanner(Filter filter)
   {
@@ -84,7 +84,10 @@ public class ProjectScanner
               String className = entry.getName().replace(".class", "").replace('/', '.');
               ClassNode node = jarNode.createLeaf(className);
               classFirstSeenAt.put(className, node);
-              deps.put(node, parser.listDependencies(className, new NonClosingStream(zip)));
+              try (InputStream entryContent = new NonClosingStream(zip))
+              {
+                deps.put(node, parser.listDependencies(className, entryContent));
+              }
             }
             entry = zip.getNextEntry();
           }
@@ -113,31 +116,27 @@ public class ProjectScanner
     }
 
     @Override
-    public void close() throws IOException
+    public void close()
     {
       // not closing stream on purpose
     }
 
   }
 
-  private String getContextDirName(Path path)
-  {
-    return "dir:" + path.getFileName().toString().replace('.', '_');
-  }
 
   private boolean isFile(Path path, String suffix)
   {
     return path.getFileName().toString().endsWith(suffix) && Files.isRegularFile(path);
   }
 
-  private void handleClassFile(Path clazz, Path root)
+  private void handleClassFile(Path clazz, Path resource)
   {
-    String className = root.relativize(clazz).toString().replace(".class", "").replace('/', '.');
+    String className = resource.relativize(clazz).toString().replace(".class", "").replace('/', '.');
     if (filter.isIgnoredClass(className))
     {
       return;
     }
-    String source = root.getFileName().toString().replace('.', '_');
+    String source = resource.getFileName().toString().replace('.', '_');
     String nodeName = "dir:" + source + "." + className;
     if (filter.isIgnoredSource(nodeName))
     {

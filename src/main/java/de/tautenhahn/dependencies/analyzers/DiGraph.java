@@ -56,24 +56,33 @@ public class DiGraph
       numberClasses = original.numberClasses;
     }
 
-
+    /**
+     * Returns the index of the node. Nodes should ne bumbered consecutively.
+     */
     public int getIndex()
     {
       return index;
     }
 
-
+    /**
+     * Returns the original parsed node represented by this object.
+     */
     public Node getNode()
     {
       return node;
     }
 
-
+    /**
+     * Returns the successors.
+     */
     public Collection<IndexedNode> getSuccessors()
     {
       return successors;
     }
 
+    /**
+     * Returns the number of represented classes.
+     */
     public int getNumberClasses()
     {
       return numberClasses;
@@ -102,18 +111,22 @@ public class DiGraph
     {
       IndexedNode node = nodes.get(i);
       node.index = i;
-      indexes.put(node.node, node);
+      indexes.put(node.getNode(), node);
     }
     for ( IndexedNode node : nodes )
     {
-      node.node.getSuccessors()
-               .stream()
-               .map(indexes::get)
-               .filter(Objects::nonNull)
-               .forEach(succ -> addArc(node, succ));
+      node.getNode()
+          .getSuccessors()
+          .stream()
+          .map(indexes::get)
+          .filter(Objects::nonNull)
+          .forEach(succ -> addArc(node, succ));
     }
   }
 
+  /**
+   * Numbers the nodes from 0 to number of nodes. Sequence is not defined.
+   */
   public void renumber()
   {
     for ( int i = 0 ; i < nodes.size() ; i++ )
@@ -127,13 +140,13 @@ public class DiGraph
     Map<Node, IndexedNode> indexes = new HashMap<>();
     nodes = nodesToRetain.stream()
                          .map(IndexedNode::new)
-                         .peek(n -> indexes.put(n.node, n))
+                         .peek(n -> indexes.put(n.getNode(), n))
                          .collect(Collectors.toCollection(() -> new ArrayList<>()));
     for ( IndexedNode original : nodesToRetain )
     {
-      IndexedNode copy = indexes.get(original.node);
+      IndexedNode copy = indexes.get(original.getNode());
       original.successors.stream()
-                         .map(s -> indexes.get(s.node))
+                         .map(s -> indexes.get(s.getNode()))
                          .filter(Objects::nonNull)
                          .forEach(s -> addArc(copy, s));
     }
@@ -151,18 +164,34 @@ public class DiGraph
     renumber();
   }
 
+  /**
+   * Removes specified arc from the graph, does not change underlying parsed structure.
+   *
+   * @param from
+   * @param to
+   */
   public void removeArc(IndexedNode from, IndexedNode to)
   {
     to.predecessors.remove(from);
     from.successors.remove(to);
   }
 
+  /**
+   * Adds an arc to the graph, does not change underlying parsed structure.
+   *
+   * @param from
+   * @param to
+   */
   public void addArc(IndexedNode from, IndexedNode to)
   {
     to.predecessors.add(from);
     from.successors.add(to);
   }
 
+  /**
+   * Returns the list of all nodes. If node set was not changed till creation or last call of
+   * {@link #renumber()}, list index is node index.
+   */
   public List<IndexedNode> getAllNodes()
   {
     return nodes;

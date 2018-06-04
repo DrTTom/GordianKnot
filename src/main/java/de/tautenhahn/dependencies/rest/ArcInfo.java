@@ -12,10 +12,13 @@ import de.tautenhahn.dependencies.parser.Pair;
 public class ArcInfo
 {
 
+  @SuppressWarnings("unused") // read by GSON
   private final NodeInfo from;
 
+  @SuppressWarnings("unused") // read by GSON
   private final NodeInfo to;
 
+  @SuppressWarnings("unused") // read by GSON
   private final List<Pair<String, String>> reason;
 
   /**

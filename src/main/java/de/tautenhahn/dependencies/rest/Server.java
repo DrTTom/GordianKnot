@@ -47,6 +47,7 @@ public class Server
 
   private DisplayableDiGraph currentlyShown;
 
+  private String projectName;
 
   /**
    * Command line call.
@@ -71,7 +72,8 @@ public class Server
     List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
     ProjectScanner analyzer = new ProjectScanner(new Filter());
     root = analyzer.scan(parsedPath);
-    resetListMode(null, null);
+    resetListMode();
+    projectName = name;
     startSpark();
   }
 
@@ -80,28 +82,31 @@ public class Server
     staticFiles.location("frontend");
     allowCrossSiteCalls();
     get("view", this::getDisplayableGraph, new JsonTransformer());
+    get("view/name", (res, req) -> projectName);
     get("view/node/:id", this::getNodeInfo, new JsonTransformer());
     get("view/arc/:id", this::getArcInfo, new JsonTransformer());
     get("view/node/:id/listmode/:value", this::setListMode, new JsonTransformer()); // TODO change to put when
                                                                                     // everything works!
-    get("view/filters/cycles", this::showOnlyCycles, new JsonTransformer());
-    get("view/filters/none", this::clearFilters, new JsonTransformer());
-    get("view/filters/resetListMode", this::resetListMode, new JsonTransformer());
+
+    installFilterRoute("cycles", this::showOnlyCycles);
+    installFilterRoute("none", () -> operations.clear());
+    installFilterRoute("resetListMode", this::resetListMode);
   }
 
-  DisplayableDiGraph clearFilters(Request req, Response res)
+  private void installFilterRoute(String filter, Runnable modification)
   {
-    operations.clear();
-    computeGraph();
-    return currentlyShown;
+    // TODO change to put when everything works!
+    get("view/filters/" + filter, (req, res) -> {
+      modification.run();
+      computeGraph();
+      return currentlyShown;
+    }, new JsonTransformer());
   }
 
-  DisplayableDiGraph resetListMode(Request req, Response res)
+  void resetListMode()
   {
     root.walkSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:") ? ListMode.COLLAPSED
       : ListMode.LEAFS_COLLAPSED)); // TODO: list all the nodes!
-    computeGraph();
-    return currentlyShown;
   }
 
   DisplayableDiGraph setListMode(Request req, Response res)
@@ -216,10 +221,8 @@ public class Server
   /**
    * Hides everything except nodes and arcs which are part of a cyclic dependency.
    */
-  DisplayableDiGraph showOnlyCycles(Request req, Response res)
+  void showOnlyCycles()
   {
     operations.add(this::restrictToCycles);
-    computeGraph();
-    return currentlyShown;
   }
 }

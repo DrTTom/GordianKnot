@@ -5,15 +5,24 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
-import de.tautenhahn.dependencies.analyzers.EdgeDensity;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 
 
-public class TestEdgeDensity
+/**
+ * Unit test for basic functions on a graph.
+ *
+ * @author TT
+ */
+public class TestBasicGraphOperations
 {
 
+  /**
+   * Asserts edge density is computed correctly.
+   */
+  @SuppressWarnings("boxing")
   @Test
   public void density()
   {
@@ -25,6 +34,6 @@ public class TestEdgeDensity
     ((ClassNode)root.find("a")).addSuccessor((ClassNode)root.find("b"));
     ((ClassNode)root.find("b")).addSuccessor((ClassNode)root.find("c"));
     DiGraph graph = new DiGraph(root);
-    assertThat("density", new EdgeDensity().getDensity(graph), closeTo(0.3333d, 0.001d));
+    assertThat("density", BasicGraphOperations.getDensity(graph), closeTo(0.3333d, 0.001d));
   }
 }

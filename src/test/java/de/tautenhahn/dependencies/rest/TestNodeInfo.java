@@ -1,7 +1,6 @@
 package de.tautenhahn.dependencies.rest;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -11,6 +10,11 @@ import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
+/**
+ * Unit tests for describing a node.
+ *
+ * @author TT
+ */
 public class TestNodeInfo
 {
 
@@ -26,31 +30,33 @@ public class TestNodeInfo
     ContainerNode pkg = jar.createInnerChild("somepackage");
     pkg.createLeaf("MyClass");
 
-    DiGraph ctx = new DiGraph(root);
-    NodeInfo systemUnderTest = new NodeInfo(ctx.getAllNodes().get(0));
-    assertThat("node name", systemUnderTest.getNodeName(), is("ear:dummy_1.jar:jarfile.somepackage.MyClass"));
-    assertThat("type", systemUnderTest.getType(), is("class"));
-    assertThat("name", systemUnderTest.getName(), is("somepackage.MyClass"));
-    assertThat("resource type", systemUnderTest.getResourceType(), is("jar"));
-    assertThat("resource name", systemUnderTest.getResourceName(), is("jarfile"));
+    checkFirstNode(root,
+                   "ear:dummy_1.jar:jarfile.somepackage.MyClass",
+                   "class",
+                   "somepackage.MyClass",
+                   "jar",
+                   "jarfile");
 
     jar.setListMode(ListMode.COLLAPSED);
-    ctx = new DiGraph(root);
-    systemUnderTest = new NodeInfo(ctx.getAllNodes().get(0));
-    assertThat("node name", systemUnderTest.getNodeName(), is("ear:dummy_1.jar:jarfile"));
-    assertThat("type", systemUnderTest.getType(), is("jar"));
-    assertThat("name", systemUnderTest.getName(), is("jarfile"));
-    assertThat("resource type", systemUnderTest.getResourceType(), is("ear"));
-    assertThat("resource name", systemUnderTest.getResourceName(), is("dummy_1"));
+    checkFirstNode(root, "ear:dummy_1.jar:jarfile", "jar", "jarfile", "ear", "dummy_1");
 
     ear.setListMode(ListMode.COLLAPSED);
-    ctx = new DiGraph(root);
-    systemUnderTest = new NodeInfo(ctx.getAllNodes().get(0));
-    assertThat("node name", systemUnderTest.getNodeName(), is("ear:dummy_1"));
-    assertThat("type", systemUnderTest.getType(), is("ear"));
-    assertThat("name", systemUnderTest.getName(), is("dummy_1"));
-    assertThat("resource type", systemUnderTest.getResourceType(), nullValue());
-    assertThat("resource name", systemUnderTest.getResourceName(), nullValue());
+    checkFirstNode(root, "ear:dummy_1", "ear", "dummy_1", null, null);
+  }
 
+  private void checkFirstNode(ContainerNode root,
+                              String nodeName,
+                              String type,
+                              String name,
+                              String resourceType,
+                              String resourceName)
+  {
+    DiGraph ctx = new DiGraph(root);
+    NodeInfo systemUnderTest = new NodeInfo(ctx.getAllNodes().get(0));
+    assertThat("node name", systemUnderTest.getNodeName(), is(nodeName));
+    assertThat("type", systemUnderTest.getType(), is(type));
+    assertThat("name", systemUnderTest.getName(), is(name));
+    assertThat("resource type", systemUnderTest.getResourceType(), is(resourceType));
+    assertThat("resource name", systemUnderTest.getResourceName(), is(resourceName));
   }
 }

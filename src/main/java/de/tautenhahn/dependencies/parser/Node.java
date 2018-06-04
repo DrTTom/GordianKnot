@@ -90,7 +90,7 @@ public abstract class Node
    */
   public abstract Collection<Node> getChildren();
 
-  abstract Node getChildByName(String simpleName);
+  abstract Node getChildByName(String simpleChildName);
 
   /**
    * Returns the nodes which depend on this node. In case an inner node is collapsed, it will be returned

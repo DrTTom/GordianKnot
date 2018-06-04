@@ -27,6 +27,11 @@ public final class ClassPathUtils
     // utility class
   }
 
+  /**
+   * Returns a collection of Path instances representing given class path.
+   * 
+   * @param classpath
+   */
   public static List<Path> parseClassPath(String classpath)
   {
     return Arrays.stream(classpath.split(File.pathSeparator)).map(Paths::get).collect(Collectors.toList());

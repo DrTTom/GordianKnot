@@ -36,6 +36,9 @@ public class TestNode
 
   private static final String PKG_2 = "someJar:.com.dummy";
 
+  /**
+   * Creates some dummy structure.
+   */
   @BeforeClass
   public static void init()
   {
@@ -99,6 +102,7 @@ public class TestNode
   /**
    * Just checking the trivial stuff too.
    */
+  @SuppressWarnings("boxing")
   @Test
   public void pairs()
   {

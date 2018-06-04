@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class ContainerNode extends Node
 {
 
-  private final Map<String, Node> children = new HashMap();
+  private final Map<String, Node> children = new HashMap<>();
 
   private ContainerNode(Node parent, String name)
   {

@@ -64,13 +64,13 @@ public class DependencyParser
   /**
    * Returns a list of classes the given class depends on.
    *
-   * @param name
+   * @param className
    * @param ins
    * @throws IOException
    */
-  public Collection<String> listDependencies(String name, InputStream ins) throws IOException
+  public Collection<String> listDependencies(String className, InputStream ins) throws IOException
   {
-    this.name = name;
+    this.name = className;
     try (DataInputStream data = new DataInputStream(ins))
     {
       if (data.readInt() != MAGIC)
@@ -103,7 +103,7 @@ public class DependencyParser
 
       classIndex.stream().map(i -> strings[i]).filter(s -> !s.startsWith("[")).forEach(result::add);
       // methodDescriptorIndex.stream().map(i -> strings[i]).forEach(n -> addClassNames(n, result));
-      result.remove(name.replace(".", "/"));
+      result.remove(className.replace(".", "/"));
       return result;
     }
   }
