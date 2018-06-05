@@ -141,6 +141,15 @@ public final class ContainerNode extends Node
   }
 
   /**
+   * Returns a stream of all contained nodes including those collapsed into their respective parents.
+   */
+  public Stream<Node> walkCompleteSubTree()
+  {
+    return children.values().stream().flatMap(n -> n instanceof ContainerNode
+      ? Stream.concat(((ContainerNode)n).walkCompleteSubTree(), Stream.of(n)) : Stream.of(n));
+  }
+
+  /**
    * Returns all Leafs currently represented by this node, excluding expanded stuff.
    */
   public Stream<ClassNode> getContainedLeafs()

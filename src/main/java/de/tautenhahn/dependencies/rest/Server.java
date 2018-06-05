@@ -106,8 +106,8 @@ public class Server
 
   void resetListMode()
   {
-    root.walkSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:") ? ListMode.COLLAPSED
-      : ListMode.LEAFS_COLLAPSED)); // TODO: list all the nodes!
+    root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
+      ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
   }
 
   DisplayableDiGraph setListMode(Request req, Response res)
