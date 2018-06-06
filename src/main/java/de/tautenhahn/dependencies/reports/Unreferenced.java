@@ -69,6 +69,8 @@ public class Unreferenced
       knownEntryClasses.addAll(Arrays.asList(name));
     }
 
+    // TODO move to own class which can be fed with more information about the project (test suites required,
+    // project is application or lib, ...)
     boolean isKnownAsNeeded(String className)
     {
       if (knownEntryClasses.contains(className))
@@ -99,7 +101,6 @@ public class Unreferenced
       }
       return false;
     }
-
   }
 
   /**
@@ -231,15 +232,27 @@ public class Unreferenced
     if (classes != null)
     {
       result.append("Unused classes:");
-      classes.forEach(u -> result.append("\n").append(u));
+      classes.forEach(u -> result.append('\n').append(u));
     }
 
     if (jars != null)
     {
       result.append("\nUnused libraries:");
-      jars.forEach(u -> result.append("\n").append(u));
+      jars.forEach(u -> result.append('\n').append(u));
     }
 
+    if (rarelyUsedLibs != null)
+    {
+      result.append("\nConsider removing these libraries only used by few classes:");
+      rarelyUsedLibs.forEach((lib, classes) -> result.append('\n').append(lib).append("  ").append(classes));
+    }
+
+    if (littleSupplyingLibs != null)
+    {
+      result.append("\nConsider removing these libraries which provide only few classes:");
+      littleSupplyingLibs.forEach((lib,
+                                   classes) -> result.append('\n').append(lib).append("  ").append(classes));
+    }
     return result.toString();
   }
 }
