@@ -6,19 +6,23 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 
 /**
- * Finds out which classes are referenced from a given class. Instances are not thread-safe!
+ * Finds out which classes are referenced from a given class. Instances are for one time uses!
  *
  * @author TT
  */
-public class DependencyParser
+public class ClassAndDependencyInfo
 {
 
   private static final int MAGIC = 0xCAFEBABE;
@@ -53,63 +57,86 @@ public class DependencyParser
 
   private String[] strings;
 
-  private List<Integer> classIndex;
+  private Map<Integer, Integer> classIndex;
 
-  private List<Integer> methodDescriptorIndex;
+  private List<Integer> MethodOrFieldDescriptorIndex;
+
+  private List<Integer> stringIndex;
 
   private byte[] buf = new byte[1024];
 
   private String name;
 
-  Pattern pattern = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+  private static Pattern pattern = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+
+  private String className;
+
+  private final Set<String> dependsOn = new HashSet<>();
 
   /**
-   * Returns a list of classes the given class depends on.
+   * Parse class content and return new instance.
    *
-   * @param className
-   * @param ins
+   * @param ins class content
    * @throws IOException
    */
-  @SuppressWarnings("boxing")
-  public Collection<String> listDependencies(String className, InputStream ins) throws IOException
+  public static ClassAndDependencyInfo parse(InputStream ins) throws IOException
   {
-    this.name = className;
+    return new ClassAndDependencyInfo(ins);
+  }
+
+  private ClassAndDependencyInfo(InputStream ins) throws IOException
+  {
     try (DataInputStream data = new DataInputStream(ins))
     {
       if (data.readInt() != MAGIC)
       {
         throw new IllegalArgumentException("not a class file (bad magic)");
       }
-      skip(data, 4);
+      skip(data, 4); // version
       // TODO: check version: System.out.println("Version: " + data.readShort() + "." + data.readShort());
       int poolSize = data.readShort();
       strings = new String[poolSize + 1];
-      classIndex = new ArrayList<>();
-      methodDescriptorIndex = new ArrayList<>();
+      classIndex = new HashMap<>();
+      MethodOrFieldDescriptorIndex = new ArrayList<>();
+      stringIndex = new ArrayList<>();
       int readItems = 0;
 
       for ( int i = 1 ; i < poolSize ; i += readItems )
       {
         readItems = readPoolEntry(i, data);
       }
-      HashSet<String> result = new HashSet<>();
-
-      // Trying to parse all the strings to get those not referenced inside constant pool:
-      for ( int i = 1 ; i < poolSize ; i++ )
-      {
-        if (strings[i] != null && strings[i].matches("\\(.*\\).*"))
-        {
-          addClassNames(strings[i], result);
-        }
-      }
-      // end debug code
-
-      classIndex.stream().map(i -> strings[i]).filter(s -> s.charAt(0) != '[').forEach(result::add);
-      // methodDescriptorIndex.stream().map(i -> strings[i]).forEach(n -> addClassNames(n, result));
-      result.remove(className.replace(".", "/"));
-      return result;
+      skip(data, 2); // access flags;
+      className = strings[classIndex.get(Integer.valueOf(data.readShort())).intValue()].replace('/', '.');
     }
+    registerReferencedStrings();
   }
+
+
+  /**
+   * Treats all the found strings which are not string constant and match the regex as field or method
+   * descriptors. Note that the usage of NameAndType is not consistent, later parts of the class file
+   * reference name and descriptor strings separately. We do not want to read the whole class file for
+   * performance reasons.
+   */
+  private void registerReferencedStrings()
+  {
+    classIndex.values()
+              .stream()
+              .map(i -> strings[i.intValue()])
+              .filter(s -> s.charAt(0) != '[')
+              .map(n -> n.replace('/', '.'))
+              .forEach(dependsOn::add);
+    for ( int i = 1 ; i < strings.length ; i++ )
+    {
+      Integer index = Integer.valueOf(i);
+      if (strings[i] != null && !stringIndex.contains(index))
+      {
+        addClassNames(strings[i], dependsOn);
+      }
+    }
+    dependsOn.remove(className);
+  }
+
 
   /**
    * Switch block for the different kinds of tags. Size was defined by Sun, this method just follows.
@@ -122,32 +149,32 @@ public class DependencyParser
       case CONSTANT_UTF8:
         readStringValue(index, data);
         break;
-      case CONSTANT_INTEGER:
-      case CONSTANT_FLOAT:
-      case CONSTANT_FIELDREF:
-      case CONSTANT_METHODREF:
-      case CONSTANT_INTERFACEMETHODREF:
+      case CONSTANT_INTEGER: // not interesting
+      case CONSTANT_FLOAT: // dito
+      case CONSTANT_FIELDREF: // contains index of ClassInfo and NameAndType which are parsed anyway
+      case CONSTANT_METHODREF: // dito
+      case CONSTANT_INTERFACEMETHODREF: // dito
       case CONSTANT_INVOKEDYNAMIC:
         skip(data, 4);
         break;
       case CONSTANT_NAMEANDTYPE:
-        skip(data, 2);
-        methodDescriptorIndex.add(Integer.valueOf(data.readShort()));
+        skip(data, 2); // name
+        MethodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
-      case CONSTANT_LONG:
-      case CONSTANT_DOUBLE:
+      case CONSTANT_LONG: // not interesting
+      case CONSTANT_DOUBLE: // not interesting
         skip(data, 8);
         return 2; // oracle agrees that this was a poor choice
-      case CONSTANT_STRING:
-        skip(data, 2);
+      case CONSTANT_STRING: // String constant, do not touch!
+        stringIndex.add(Integer.valueOf(data.readShort()));
         break;
       case CONSTANT_METHODTYPE:
-        methodDescriptorIndex.add(Integer.valueOf(data.readShort()));
+        MethodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
       case CONSTANT_CLASS:
-        classIndex.add(Integer.valueOf(data.readShort()));
+        classIndex.put(Integer.valueOf(index), Integer.valueOf(data.readShort()));
         break;
-      case CONSTANT_METHODHANDLE:
+      case CONSTANT_METHODHANDLE: // not interesting
         skip(data, 3);
         break;
       default:
@@ -168,12 +195,12 @@ public class DependencyParser
 
 
 
-  void addClassNames(String methodDecriptor, Collection<String> classNames)
+  static void addClassNames(String methodDecriptor, Collection<String> classNames)
   {
     Matcher m = pattern.matcher(methodDecriptor);
     while (m.find())
     {
-      classNames.add(m.group(1));
+      classNames.add(m.group(1).replace('/', '.'));
     }
   }
 
@@ -196,5 +223,21 @@ public class DependencyParser
       readBytes += readThisTime;
     }
     strings[index] = new String(buf, 0, length, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Returns the name of parsed class.
+   */
+  public String getClassName()
+  {
+    return className;
+  }
+
+  /**
+   * Returns names of classes this class depends on.
+   */
+  public Collection<String> getDependencies()
+  {
+    return Collections.unmodifiableCollection(dependsOn);
   }
 }

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertFalse;
@@ -60,7 +61,9 @@ public class TestNode
     assertThat("simple name", node.getSimpleName(), equalTo("example"));
     assertThat("name", node.getName(), equalTo(PKG_1));
     assertThat("toString", node.toString(), startsWith("ContainerNode"));
-    assertThat("name of leaf", node.find("Dummy").getName(), equalTo(PKG_1 + ".Dummy"));
+    ClassNode dummy = (ClassNode)node.find("Dummy");
+    assertThat("name of leaf", dummy.getName(), equalTo(PKG_1 + ".Dummy"));
+    assertThat("class name", dummy.getClassName(), equalTo("de.tautenhahn.example.Dummy"));
   }
 
 
@@ -97,6 +100,19 @@ public class TestNode
                systemUnderTest.getParent().walkSubTree().collect(Collectors.toList()),
                hasSize(1));
     assertThat("collapsed predecessor", alien.getPredecessors(), contains(systemUnderTest));
+  }
+
+  /**
+   * Checks whether the used method to expand many nodes at once really works.
+   */
+  @SuppressWarnings("boxing")
+  @Test
+  public void expandAll()
+  {
+    root.walkSubTree().forEach(n -> n.setListMode(ListMode.COLLAPSED));
+    assertThat("number visible nodes", root.walkSubTree().count(), is(2L));
+    root.walkCompleteSubTree().forEach(n -> n.setListMode(ListMode.EXPANDED));
+    assertThat("number visible nodes", root.walkCompleteSubTree().count(), is(11L));
   }
 
   /**

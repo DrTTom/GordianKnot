@@ -22,6 +22,8 @@ public class ClassNode extends Node
 
   private Collection<String> missingDependencies;
 
+  private final String className;
+
   /**
    * Creates instance.
    *
@@ -31,6 +33,7 @@ public class ClassNode extends Node
   ClassNode(Node parent, String name)
   {
     super(parent, name);
+    className = getName().replaceAll("[^\\.]+:[^\\.]+\\.", "");
   }
 
   @Override
@@ -112,5 +115,10 @@ public class ClassNode extends Node
   Node getChildByName(String simpleName)
   {
     return null;
+  }
+
+  public String getClassName()
+  {
+    return className;
   }
 }

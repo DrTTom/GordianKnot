@@ -76,7 +76,6 @@ public class ProjectScanner
     {
       if (isFile(path, ".jar"))
       {
-        DependencyParser parser = new DependencyParser();
         ContainerNode jarNode = root.createInnerChild("jar:"
                                                       + path.getFileName().toString().replace(".", "_"));
         try (ZipInputStream zip = new ZipInputStream(new FileInputStream(path.toFile())))
@@ -91,7 +90,7 @@ public class ProjectScanner
               classFirstSeenAt.put(className, node);
               try (InputStream entryContent = new NonClosingStream(zip))
               {
-                deps.put(node, parser.listDependencies(className, entryContent));
+                deps.put(node, ClassAndDependencyInfo.parse(entryContent).getDependencies());
               }
             }
             entry = zip.getNextEntry();
@@ -153,8 +152,8 @@ public class ProjectScanner
     classFirstSeenAt.put(className, node);
     try (InputStream in = new FileInputStream(clazz.toFile()))
     { // TODO: allow filter to switch off parsing the dependencies of supporting nodes.
-      DependencyParser parser = new DependencyParser();
-      deps.put(node, parser.listDependencies(className, in));
+      ClassAndDependencyInfo parser = ClassAndDependencyInfo.parse(in);
+      deps.put(node, parser.getDependencies());
     }
     catch (IOException e)
     {

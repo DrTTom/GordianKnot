@@ -1,12 +1,10 @@
 package de.tautenhahn.dependencies.parser;
 
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,11 +16,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -30,7 +35,7 @@ import org.junit.Test;
  *
  * @author TT
  */
-public class TestDepParser
+public class TestClassAndDependencyInfo
 {
 
   /**
@@ -50,23 +55,58 @@ public class TestDepParser
   {
     Class<?> clazz = ConcurrentHashMap.class;
     long start = System.currentTimeMillis();
-    Collection<String> jdepResult = callJdeps(clazz);
+    Collection<String> outputLines = callJdeps(clazz);
     long durationJDep = System.currentTimeMillis() - start;
+    Collection<String> fromJDeps = outputLines.stream()
+                                              .map(this::extractClassName)
+                                              .filter(Objects::nonNull)
+                                              .collect(Collectors.toSet());
 
-    DependencyParser systemUnderTest = new DependencyParser();
     start = System.currentTimeMillis();
     try (InputStream classContent = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
     {
-      Collection<String> myResult = systemUnderTest.listDependencies(clazz.getName(), classContent);
+      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent);
       long myDuration = System.currentTimeMillis() - start;
-      jdepResult.stream()
-                .map(this::extractClassName)
-                .filter(Objects::nonNull)
-                .forEach(n -> assertTrue(n + " not listed", myResult.remove(n)));
-      assertThat("listed deps not mentioned by jDeps",
-                 myResult,
-                 anyOf(empty(), contains("java/util/Collection")));
+      Collection<String> fromMe = systemUnderTest.getDependencies();
+      Set<String> notListedByMe = new HashSet<>(fromJDeps);
+      notListedByMe.removeAll(fromMe);
+
+      Set<String> addedByMe = new HashSet<>(fromMe);
+      addedByMe.removeAll(fromJDeps);
+
+      assertThat("dependencies not found but listed by jDeps", notListedByMe, empty());
+      assertThat("dependencies added but not listed by jDeps", addedByMe, empty());
       assertThat("duration", myDuration, lessThanOrEqualTo(durationJDep / 20));
+    }
+  }
+
+  /**
+   * Parses an example class and checks that field, annotation, argument, return value and variable types are
+   * listed while String constants and generic parameter types are ignored.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void newDependencyParser() throws IOException
+  {
+    try (InputStream classContent = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName()
+                                                                           + ".class"))
+    {
+      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent);
+      assertThat("parsed class name", systemUnderTest.getClassName(), is(ExampleClass.class.getName()));
+      System.out.println(systemUnderTest.getDependencies());
+      assertThat("dependencies",
+                 systemUnderTest.getDependencies(),
+                 containsInAnyOrder(Logger.class.getName(),
+                                    LoggerFactory.class.getName(),
+                                    HashMap.class.getName(),
+                                    String.class.getName(),
+                                    Supplier.class.getName(),
+                                    List.class.getName(),
+                                    Boolean.class.getName(),
+                                    Object.class.getName(),
+                                    Deprecated.class.getName(),
+                                    Class.class.getName()));
     }
   }
 
@@ -78,21 +118,20 @@ public class TestDepParser
   {
     String input = "(Ljava/util/concurrent/ConcurrentHashMap$BulkTask<V>;III[Ljava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$ReduceValuesTask;Ljava/util/function/BiFunction;)V";
     List<String> result = new ArrayList<>();
-    DependencyParser systemUnderTest = new DependencyParser();
-    systemUnderTest.addClassNames(input, result);
+    ClassAndDependencyInfo.addClassNames(input, result);
     assertThat("parsed class names",
                result,
-               containsInAnyOrder("java/util/concurrent/ConcurrentHashMap$BulkTask",
-                                  "java/util/concurrent/ConcurrentHashMap$Node",
-                                  "java/util/concurrent/ConcurrentHashMap$ReduceValuesTask",
-                                  "java/util/function/BiFunction"));
+               containsInAnyOrder("java.util.concurrent.ConcurrentHashMap$BulkTask",
+                                  "java.util.concurrent.ConcurrentHashMap$Node",
+                                  "java.util.concurrent.ConcurrentHashMap$ReduceValuesTask",
+                                  "java.util.function.BiFunction"));
   }
 
   private String extractClassName(String line)
   {
     int first = line.indexOf('>') + 2;
     int end = line.indexOf(" ", first + 1);
-    return first < 0 || end < 0 ? null : line.substring(first, end).replace(".", "/");
+    return first < 0 || end < 0 ? null : line.substring(first, end);
   }
 
   /**
