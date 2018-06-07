@@ -9,6 +9,16 @@
     body {
     font-family: Arial, Helvetica, sans-serif;
     }
+    button {
+    	 background-color: #4CAF50; /* Green */
+    	border: none;
+    	color: white;
+    	padding: 5px 10px;
+    	margin: 3px;
+    	text-align: center;
+    	text-decoration: none;
+    	display: inline-block;    	
+    }
     #mynetwork {
       width: 700px;
       height: 700px;
@@ -19,20 +29,67 @@
   </style>
 </head>
 <body>
-<h1>Dependency graph of project TODO</h1>
+<h1>Dependency graph of project <span id="projectName"></span></h1>
+
 <div id="mynetwork"></div>
 <div id="detailInfo">
 <h2>Graph</h2>
-reset nodes to own packages and thirdparty jars <button onClick="setFilter('resetListMode')">reset</button><br>
-show <button onClick="setFilter('none')">whole graph</button> 
+<h3>Nodes</h3>
+<button onClick="setFilter('resetListMode')">reset node set</button><button onClick="distribute()">distribute</button><br>
+<h3>Filters</h3>
+<button onClick="setFilter('none')">whole graph</button> 
      <button onClick="setFilter('cycles')">cycles only</button> 
 <br/><button>needed by selection (coming soon)</button> <button>using selection (coming soon)</button>
 
 <h2>Selected Element</h2>
 <div id="description"></div>
 </div>
+<div style="width: 100%; float: left">
+<h2>Classpath</h2> 
+<form action="" id="classpath">
+</form>
+<h2>Reference Problems</h2>
+The following information may help you to simplify your software by removing elements.
+<h3>Unreferenced classes</h3>
+<div id="unrefClasses"></div>
+<h3>Unreferenced libraries</h3>
+<div id="unrefJars"></div>
+<h3>Libraries used by few classes</h3>
+<div id="littleUsed"></div>
+<h3>Libraries providing few classes</h3>
+<div id="littleProviding"></div>
+</div>
 <script>
+get("http://localhost:4567/view/name", function(name) {document.getElementById('projectName').innerHTML = name});
 get("http://localhost:4567/view", showGraph);
+get("http://localhost:4567/view/classpath", showPath);
+get("http://localhost:4567/view/unrefReport", showReport);
+
+function showPath(value)
+{
+	var response = JSON.parse(value);
+	var list="";
+	response.forEach(function(entry) {
+        list=list+ "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" +entry+'<br>';
+    });
+	document.getElementById('classpath').innerHTML = list;
+}
+
+function showReport(value)
+{
+	var report = JSON.parse(value);
+	var unrefClass="";
+	report.classes.forEach(function(entry) {
+		unrefClass=unrefClass+ entry+'<br>';
+    });
+	document.getElementById('unrefClasses').innerHTML = unrefClass;
+	var unrefJars="";
+	report.jars.forEach(function(entry) {
+		unrefJars=unrefJars+ entry+'<br>';
+    });
+	document.getElementById('unrefJars').innerHTML = unrefJars;
+
+}
 
 function get(url, callBack) {
     var req = new XMLHttpRequest();
@@ -45,6 +102,8 @@ function get(url, callBack) {
     }
 }
 
+var network;
+
 function showGraph(responseText) {
     var response = JSON.parse(responseText);
     var nodes = new vis.DataSet(response.nodes);
@@ -56,7 +115,7 @@ function showGraph(responseText) {
         edges: edges
     };
     var options = {};
-    var network = new vis.Network(container, data, options);
+    network = new vis.Network(container, data, options);
     selectedNode = '';
     document.getElementById('description').innerHTML = "Click on node or arc to select it."
 
@@ -78,6 +137,13 @@ function showGraph(responseText) {
 }
 
 var selectedNode = '';
+
+function distribute()
+{
+        network.setOptions({
+	            physics: true
+	        });
+  }
 
 function getNodeInfo(id) {
     get("http://localhost:4567/view/node/" + id, function(e) {

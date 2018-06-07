@@ -49,10 +49,11 @@ public class TestServer
   {
     assertThat("just creating a cycle to report", TestCyclicDependencies.class, notNullValue());
     Server server = new InactiveServer();
-    server.init(Paths.get("build", "classes", "java", "test").toAbsolutePath().toString(), "dummy");
-    server.showOnlyCycles();
+    server.view = new ProjectView(Paths.get("build", "classes", "java", "test").toAbsolutePath().toString(),
+                                  "dummy");
+    server.view.showOnlyCycles();
 
-    String result = new Server.JsonTransformer().render(server.getDisplayableGraph(null, null));
+    String result = new Server.JsonTransformer().render(server.view.getDisplayableGraph());
     assertThat("view result", result, containsString("rest"));
   }
 
