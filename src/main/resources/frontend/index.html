@@ -5,7 +5,7 @@
     <title>Dependency Graph</title>
     <script src="vis.min.js"></script>
     <link href="vis.min.css" rel="stylesheet" type="text/css"/>
-    <script src="underscore-min.js"></script>
+    <script src="lodash.all.min.js"></script>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -16,12 +16,21 @@
             border: none;
             color: white;
             padding: 5px 10px;
-            margin: 3px;
+            margin-top: 5px;
+            margin-right: 5px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
         }
-
+        .row {        
+        display: flex;
+        }
+     .left {
+          flex: 40%;
+		}
+       .right {
+    	      flex: 60%;
+}
         #mynetwork {
             width: 700px;
             height: 700px;
@@ -35,41 +44,25 @@
 
 <script type="text/html" id="nodeInfo">
     <h3><%=type%> <%=name%></h3>
-    <table>
-        <tbody>
-        <% if(typeof resourceType != 'undefined'){ %>
-            <tr>
-                <td>
-                    found in:
-                </td>
-                <td>
-                    <%=resourceType%> <%=resourceName%>
-                </td>
-            </tr>
-        <% } %>
-        <tr>
-            <td>
-                represents:
-            </td>
-            <td>
-                <%=numberContainedClasses%> classes
-            </td>
-        </tr>
-        <tr>
-            <td>
-                current reference:
-            </td>
-            <td>
-                <%=id%>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <% if(type!='class'){ %>
-        <button id="expandNode" change-list-mode="EXPANDED">expand</button>
+    <% if(typeof resourceType != 'undefined'){ %>
+    <div class="row">
+        <div class="left">found in:</div>
+        <div class="right"><%=resourceType%> <%=resourceName%></div>
+    </div>
     <% } %>
-    <% if(type!='jar' && type!='dir'){ %>
-        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse (+ <%=numberSiblings%> siblings) into parent container</button>
+    <div class="row">
+        <div class="left">total number classes:</div>
+        <div class="right"><%=numberContainedClasses%></div>
+    </div>
+    <div class="row">
+        <div class="left">current reference:</div>
+        <div class="right"><%=id%></div>
+    </div>
+    <% if(type!='class'){ %>
+        <button id="expandNode" change-list-mode="EXPANDED">expand <%=numberExpandable %> nodes</button>
+    <% } %>
+    <% if(type=='class' || type=='package' || type =='package tree'){ %>
+        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse <%=numberCollapsable %> nodes into parent container</button>
     <% } %>
 </script>
 
@@ -203,6 +196,7 @@
         get("http://localhost:4567/view/node/" + id, function (e) {
             var nodeInfo = JSON.parse(e);
             nodeInfo.id=id;
+            
             selectedNode = id
             const tplInfo = _.template(document.getElementById('nodeInfo').innerHTML);
             const description = document.getElementById('description');

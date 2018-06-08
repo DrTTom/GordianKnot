@@ -30,11 +30,11 @@ public class NodeInfo
 
   private final String listMode;
 
-  private final String numberContainedClasses;
+  private final int numberContainedClasses;
 
-  private final String numberSiblings;
+  private final int numberCollapsable;
 
-  private final String numberChildren;
+  private final int numberExpandable;
 
   /**
    * Creates immutable instance
@@ -55,24 +55,16 @@ public class NodeInfo
   public NodeInfo(IndexedNode node)
   {
     nodeName = node.getNode().getName();
-    numberContainedClasses = Integer.toString(node.getNumberClasses());
-    numberChildren = Integer.toString(node.getNode().getAllChildren().size());
-    numberSiblings = Integer.toString(node.getNode().getParent().getAllChildren().size() - 1);
+    numberContainedClasses = node.getNumberClasses();
+    Node n = node.getNode();
+    ListMode originalMode = n.getListMode();
+    n.setListMode(ListMode.EXPANDED);
+    numberExpandable = (int)n.walkSubTree().count();
+    n.setListMode(originalMode);
+    numberCollapsable = (int)n.getParent().walkSubTree().count();
     listMode = node.getNode().getListMode().toString();
     parseName();
     type = getType(node.getNode());
-  }
-
-
-  public String getNumberSiblings()
-  {
-    return numberSiblings;
-  }
-
-
-  public String getNumberChildren()
-  {
-    return numberChildren;
   }
 
   private void parseName()
@@ -169,7 +161,7 @@ public class NodeInfo
   /**
    * Returns the number of represented classes.
    */
-  String getNumberContainedClasses()
+  int getNumberContainedClasses()
   {
     return numberContainedClasses;
   }

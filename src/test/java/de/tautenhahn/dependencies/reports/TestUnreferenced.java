@@ -23,7 +23,9 @@ public class TestUnreferenced
   @Test
   public void report()
   {
-    ContainerNode root = new ProjectScanner(new Filter()).scan(ClassPathUtils.getClassPath());
+    Filter filter = new Filter();
+    filter.addIgnoredClassName(".*\\.Alien");
+    ContainerNode root = new ProjectScanner(filter).scan(ClassPathUtils.getClassPath());
     Unreferenced.ReportConfig cfg = new Unreferenced.ReportConfig();
     cfg.setLoader(Thread.currentThread().getContextClassLoader());
     Unreferenced systemUnderTest = new Unreferenced(root, cfg);

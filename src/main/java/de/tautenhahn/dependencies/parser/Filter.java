@@ -31,7 +31,10 @@ public class Filter
     focus.add(Pattern.compile("dir:.*"));
   }
 
-
+  public void addIgnoredClassName(String regex)
+  {
+    ignoredClassNames.add(Pattern.compile(regex));
+  }
 
   /**
    * Returns true if name denotes a source not to be parsed.
