@@ -1,188 +1,239 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Dependency Graph</title>
-  <script src="vis.min.js"></script>
-  <link href="vis.min.css" rel="stylesheet" type="text/css" />
-  <style>
-    body {
-    font-family: Arial, Helvetica, sans-serif;
-    }
-    button {
-    	 background-color: #2a814d;
-    	border: none;
-    	color: white;
-    	padding: 5px 10px;
-    	margin: 3px;
-    	text-align: center;
-    	text-decoration: none;
-    	display: inline-block;    	
-    }
-    #mynetwork {
-      width: 700px;
-      height: 700px;
-      border: 1px solid lightgray;
-      float: left;
-      margin-right: 10px;
-      }
-  </style>
+    <meta charset="utf-8">
+    <title>Dependency Graph</title>
+    <script src="vis.min.js"></script>
+    <link href="vis.min.css" rel="stylesheet" type="text/css"/>
+    <script src="underscore-min.js"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+            background-color: #2a814d;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            margin: 3px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        #mynetwork {
+            width: 700px;
+            height: 700px;
+            border: 1px solid lightgray;
+            float: left;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
+
+<script type="text/html" id="nodeInfo">
+    <h3><%=type%> <%=name%></h3>
+    <table>
+        <tbody>
+        <% if(typeof resourceType != 'undefined'){ %>
+            <tr>
+                <td>
+                    found in:
+                </td>
+                <td>
+                    <%=resourceType%> <%=resourceName%>
+                </td>
+            </tr>
+        <% } %>
+        <tr>
+            <td>
+                represents
+            </td>
+            <td>
+                <%=numberContainedClasses%> classes
+            </td>
+        </tr>
+        <tr>
+            <td>
+                current reference is
+            </td>
+            <td>
+                <%=id%>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <% if(type!='class'){ %>
+        <button id="expandNode" change-list-mode="EXPANDED">expand</button>
+    <% } %>
+    <% if(type!='jar' && type!='dir'){ %>
+        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse into parent container</button>
+    <% } %>
+</script>
+
 <h1>Dependency graph of project <span id="projectName"></span></h1>
 
 <div id="mynetwork"></div>
 <div id="detailInfo">
-<h2>Graph</h2>
-<h3>Nodes</h3>
-<button onClick="setFilter('resetListMode')">reset node set</button><button onClick="distribute()">distribute</button><br>
-<h3>Filters</h3>
-<button onClick="setFilter('none')">whole graph</button> 
-     <button onClick="setFilter('cycles')">cycles only</button> 
-<br/><button>needed by selection (coming soon)</button> <button>using selection (coming soon)</button>
-<h2>Selected Element</h2>
-<div id="description"></div>
+    <h2>Graph</h2>
+    <h3>Nodes</h3>
+    <button onClick="setFilter('resetListMode')">reset node set</button>
+    <button onClick="distribute()">distribute</button>
+    <br>
+    <h3>Filters</h3>
+    <button onClick="setFilter('none')">whole graph</button>
+    <button onClick="setFilter('cycles')">cycles only</button>
+    <br/>
+    <button>needed by selection (coming soon)</button>
+    <button>using selection (coming soon)</button>
+    <h2>Selected Element</h2>
+    <div id="description"></div>
 </div>
 <div style="width: 100%; float: left">
-<h2>Classpath</h2> 
-<form action="" id="classpath">
-</form>
-<h2>Reference Problems</h2>
-The following information may help you to simplify your software by removing elements.
-<h3>Unreferenced classes</h3>
-<div id="unrefClasses"></div>
-<h3>Unreferenced libraries</h3>
-<div id="unrefJars"></div>
-<h3>Libraries used by few classes</h3>
-<div id="littleUsed"></div>
-<h3>Libraries providing few classes</h3>
-<div id="littleProviding"></div>
+    <h2>Classpath</h2>
+    <form action="" id="classpath">
+    </form>
+    <h2>Reference Problems</h2>
+    The following information may help you to simplify your software by removing elements.
+    <h3>Unreferenced classes</h3>
+    <div id="unrefClasses"></div>
+    <h3>Unreferenced libraries</h3>
+    <div id="unrefJars"></div>
+    <h3>Libraries used by few classes</h3>
+    <div id="littleUsed"></div>
+    <h3>Libraries providing few classes</h3>
+    <div id="littleProviding"></div>
 </div>
+
 <script>
-var network;
-var selectedNode = '';
+    var network;
+    var selectedNode = '';
 
-get("http://localhost:4567/view/name", function(name) {
-    document.getElementById('projectName').innerHTML = name
-});
-get("http://localhost:4567/view", showGraph);
-get("http://localhost:4567/view/classpath", showPath);
-get("http://localhost:4567/view/unrefReport", showReport);
-
-function showPath(value) {
-    var response = JSON.parse(value);
-    var list = "";
-    response.forEach(function(entry) {
-        list = list + "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>';
+    get("http://localhost:4567/view/name", function (name) {
+        document.getElementById('projectName').innerHTML = name
     });
-    document.getElementById('classpath').innerHTML = list;
-}
+    get("http://localhost:4567/view", showGraph);
+    get("http://localhost:4567/view/classpath", showPath);
+    get("http://localhost:4567/view/unrefReport", showReport);
 
-function showReport(value) {
-    var report = JSON.parse(value);
-    var unrefClass = "";
-    report.classes.forEach(function(entry) {
-        unrefClass = unrefClass + entry + '<br>';
-    });
-    document.getElementById('unrefClasses').innerHTML = unrefClass;
-    var unrefJars = "";
-    report.jars.forEach(function(entry) {
-        unrefJars = unrefJars + entry + '<br>';
-    });
-    document.getElementById('unrefJars').innerHTML = unrefJars;
+    function showPath(value) {
+        var response = JSON.parse(value);
+        var list = "";
+        response.forEach(function (entry) {
+            list = list + "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>';
+        });
+        document.getElementById('classpath').innerHTML = list;
+    }
 
-}
+    function showReport(value) {
+        var report = JSON.parse(value);
+        var unrefClass = "";
+        report.classes.forEach(function (entry) {
+            unrefClass = unrefClass + entry + '<br>';
+        });
+        document.getElementById('unrefClasses').innerHTML = unrefClass;
+        var unrefJars = "";
+        report.jars.forEach(function (entry) {
+            unrefJars = unrefJars + entry + '<br>';
+        });
+        document.getElementById('unrefJars').innerHTML = unrefJars;
 
-function get(url, callBack) {
-    var req = new XMLHttpRequest();
-    req.open('GET', url, true);
-    req.send();
-    req.onreadystatechange = function(e) {
-        if (req.readyState == 4) {
-            callBack(req.responseText);
+    }
+
+    function get(url, callBack) {
+        var req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.send();
+        req.onreadystatechange = function (e) {
+            if (req.readyState == 4) {
+                callBack(req.responseText);
+            }
         }
     }
-}
 
-function showGraph(responseText) {
-    var response = JSON.parse(responseText);
-    var nodes = new vis.DataSet(response.nodes);
-    var edges = new vis.DataSet(response.edges);
+    function showGraph(responseText) {
+        var response = JSON.parse(responseText);
+        var nodes = new vis.DataSet(response.nodes);
+        var edges = new vis.DataSet(response.edges);
 
-    var container = document.getElementById('mynetwork');
-    var data = {
-        nodes: nodes,
-        edges: edges
-    };
-    var options = {};
-    network = new vis.Network(container, data, options);
-    selectedNode = '';
-    document.getElementById('description').innerHTML = "Click on node or arc to select it."
-
-    network.on("stabilized", function(params) {
-        network.setOptions({
-            physics: false
-        });
-    });
-
-    network.on("click", function(params) {
+        var container = document.getElementById('mynetwork');
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {};
+        network = new vis.Network(container, data, options);
         selectedNode = '';
-        params.event = "[original event]";
-        if (params.nodes.length == 1) {
-            getNodeInfo(params.nodes[0]);
-        } else if (params.edges.length == 1) {
-            getArcInfo(params.edges[0]);
-        } else document.getElementById('description').innerHTML = "nothing selected";
-    });
-}
+        document.getElementById('description').innerHTML = "Click on node or arc to select it."
 
-function distribute() {
-    network.setOptions({
-        physics: true
-    });
-}
-
-function getNodeInfo(id) {
-    get("http://localhost:4567/view/node/" + id, function(e) {
-        var nodeInfo = JSON.parse(e);
-        var value = '<h3>' + nodeInfo.type + ' ' + nodeInfo.name + '</h3>';
-        if (typeof nodeInfo.resourceType != 'undefined') {
-            value = value + "found in: " + nodeInfo.resourceType + " " + nodeInfo.resourceName + "<br>";
-        }
-        value = value + "current reference is: " + id + "<br>";
-        if (nodeInfo.type != 'class') {
-            value = value + "represents " + nodeInfo.numberContainedClasses + " classes<br>";
-            value = value + "<button onClick=\"changeListMode('EXPANDED')\">expand</button>";
-        }
-        value = value + "<button onClick=\"changeListMode('COLLAPSE_PARENT')\">collapse into parent container</button>";
-
-        selectedNode = id
-        document.getElementById('description').innerHTML = value;
-    });
-}
-
-function changeListMode(mode) {
-    if (selectedNode != '') {
-        get("http://localhost:4567/view/node/" + selectedNode + "/listmode/" + mode, showGraph);
-    }
-}
-
-function setFilter(value) {
-    get("http://localhost:4567/view/filters/" + value, showGraph);
-}
-
-function getArcInfo(id) {
-    get("http://localhost:4567/view/arc/" + id, function(e) {
-        var arcInfo = JSON.parse(e);
-        var description = '<h3>' + arcInfo.from.name + ' depends on ' + arcInfo.to.name +
-            '</h3> Reason: <table>';
-        arcInfo.reason.forEach(function(pair) {
-            description = description + '<tr><td>' + pair.first + '</td><td> depends on </td><td>' + pair.second + '</td></tr>'
+        network.on("stabilized", function (params) {
+            network.setOptions({
+                physics: false
+            });
         });
 
-        document.getElementById('description').innerHTML = description + '</table>';
-    });
-}
+        network.on("click", function (params) {
+            selectedNode = '';
+            params.event = "[original event]";
+            if (params.nodes.length == 1) {
+                getNodeInfo(params.nodes[0]);
+            } else if (params.edges.length == 1) {
+                getArcInfo(params.edges[0]);
+            } else document.getElementById('description').innerHTML = "nothing selected";
+        });
+    }
+
+    function distribute() {
+        network.setOptions({
+            physics: true
+        });
+    }
+
+    function getNodeInfo(id) {
+        const tplInfo = _.template(document.getElementById('nodeInfo').innerHTML);
+
+        get("http://localhost:4567/view/node/" + id, function (e) {
+            var nodeInfo = JSON.parse(e);
+            nodeInfo.id=id;
+            selectedNode = id
+            const description = document.getElementById('description');
+            description.innerHTML = tplInfo(nodeInfo);
+            Array.from(description.querySelectorAll('button')).forEach(button=>{
+                button.addEventListener('click', function(evt){
+                    console.log(evt.target);
+                    const mode = evt.target.getAttribute('change-list-mode');
+                    changeListMode(mode)
+                })
+            })
+
+
+        });
+    }
+
+    function changeListMode(mode) {
+        if (selectedNode != '') {
+            get("http://localhost:4567/view/node/" + selectedNode + "/listmode/" + mode, showGraph);
+        }
+    }
+
+    function setFilter(value) {
+        get("http://localhost:4567/view/filters/" + value, showGraph);
+    }
+
+    function getArcInfo(id) {
+        get("http://localhost:4567/view/arc/" + id, function (e) {
+            var arcInfo = JSON.parse(e);
+            var description = '<h3>' + arcInfo.from.name + ' depends on ' + arcInfo.to.name +
+                '</h3> Reason: <table>';
+            arcInfo.reason.forEach(function (pair) {
+                description = description + '<tr><td>' + pair.first + '</td><td> depends on </td><td>' + pair.second + '</td></tr>'
+            });
+
+            document.getElementById('description').innerHTML = description + '</table>';
+        });
+    }
 </script>
 
 </body>
