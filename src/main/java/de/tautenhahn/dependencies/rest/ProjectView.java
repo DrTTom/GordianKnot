@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
@@ -28,7 +29,7 @@ import spark.ResponseTransformer;
  *
  * @author TT
  */
-public class ProjectView implements PathElements
+public class ProjectView
 {
 
   private final ContainerNode root;
@@ -54,8 +55,10 @@ public class ProjectView implements PathElements
   public ProjectView(String classPath, String name)
   {
     List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
+    Filter filter = new Filter();
+    parsedPath.removeIf(p -> filter.isIgnoredSource(p.toString()));
     pathElements = parsedPath.stream().map(Path::toString).collect(Collectors.toList());
-    ProjectScanner analyzer = new ProjectScanner(new Filter());
+    ProjectScanner analyzer = new ProjectScanner(filter);
     root = analyzer.scan(parsedPath);
     unrefReport = new Unreferenced(root, new Unreferenced.ReportConfig());
     resetListMode();
@@ -65,7 +68,7 @@ public class ProjectView implements PathElements
   /**
    * Resets the list mode to display jars and source packages.
    */
-  public void resetListMode()
+  public final void resetListMode()
   {
     root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
       ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
@@ -148,6 +151,20 @@ public class ProjectView implements PathElements
 
   private DiGraph restrictToCycles(DiGraph input)
   {
+    for ( IndexedNode n : input.getAllNodes() )
+    {
+      String name = n.getNode().getSimpleName();
+      int pos = name.indexOf('$');
+      if (pos > 0)
+      {
+        String outerName = name.substring(0, pos);
+        n.getSuccessors()
+         .stream()
+         .filter(s -> s.getNode().getSimpleName().equals(outerName))
+         .findAny()
+         .ifPresent(s -> input.removeArc(n, s));
+      }
+    }
     return new CycleFinder(input).createGraphFromCycles();
   }
 

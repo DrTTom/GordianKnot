@@ -218,4 +218,9 @@ public abstract class Node
     }
     return parent.getRelativeName(ancestor) + SEPARATOR + simpleName;
   }
+
+  /**
+   * Return the list of all direct children, ignoring the list mode.
+   */
+  public abstract Collection<Node> getAllChildren();
 }

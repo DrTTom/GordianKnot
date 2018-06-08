@@ -117,8 +117,17 @@ public class ClassNode extends Node
     return null;
   }
 
+  /**
+   * Returns the name of the represented class.
+   */
   public String getClassName()
   {
     return className;
+  }
+
+  @Override
+  public List<Node> getAllChildren()
+  {
+    return Collections.emptyList();
   }
 }

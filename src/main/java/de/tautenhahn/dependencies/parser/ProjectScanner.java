@@ -56,7 +56,10 @@ public class ProjectScanner
    */
   public ContainerNode scan(Collection<Path> classPath)
   {
-    classPath.stream().parallel().forEach(this::handleInput);
+    classPath.stream()
+             .parallel()
+             .filter(p -> !filter.isIgnoredSource(p.toString()))
+             .forEach(this::handleInput);
     for ( Entry<ClassNode, Collection<String>> entry : deps.entrySet() )
     {
       entry.getValue()

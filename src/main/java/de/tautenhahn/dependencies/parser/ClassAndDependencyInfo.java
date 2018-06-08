@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class ClassAndDependencyInfo
+public final class ClassAndDependencyInfo
 {
 
   private static final int MAGIC = 0xCAFEBABE;
@@ -59,7 +59,7 @@ public class ClassAndDependencyInfo
 
   private Map<Integer, Integer> classIndex;
 
-  private List<Integer> MethodOrFieldDescriptorIndex;
+  private List<Integer> methodOrFieldDescriptorIndex;
 
   private List<Integer> stringIndex;
 
@@ -97,7 +97,7 @@ public class ClassAndDependencyInfo
       int poolSize = data.readShort();
       strings = new String[poolSize + 1];
       classIndex = new HashMap<>();
-      MethodOrFieldDescriptorIndex = new ArrayList<>();
+      methodOrFieldDescriptorIndex = new ArrayList<>();
       stringIndex = new ArrayList<>();
       int readItems = 0;
 
@@ -159,7 +159,7 @@ public class ClassAndDependencyInfo
         break;
       case CONSTANT_NAMEANDTYPE:
         skip(data, 2); // name
-        MethodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
+        methodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
       case CONSTANT_LONG: // not interesting
       case CONSTANT_DOUBLE: // not interesting
@@ -169,7 +169,7 @@ public class ClassAndDependencyInfo
         stringIndex.add(Integer.valueOf(data.readShort()));
         break;
       case CONSTANT_METHODTYPE:
-        MethodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
+        methodOrFieldDescriptorIndex.add(Integer.valueOf(data.readShort()));
         break;
       case CONSTANT_CLASS:
         classIndex.put(Integer.valueOf(index), Integer.valueOf(data.readShort()));

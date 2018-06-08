@@ -32,9 +32,13 @@ public class NodeInfo
 
   private final String numberContainedClasses;
 
+  private final String numberSiblings;
+
+  private final String numberChildren;
+
   /**
    * Creates immutable instance
-   * 
+   *
    * @param graph
    * @param number
    */
@@ -45,16 +49,30 @@ public class NodeInfo
 
   /**
    * Creates immutable instance
-   * 
+   *
    * @param node
    */
   public NodeInfo(IndexedNode node)
   {
     nodeName = node.getNode().getName();
     numberContainedClasses = Integer.toString(node.getNumberClasses());
+    numberChildren = Integer.toString(node.getNode().getAllChildren().size());
+    numberSiblings = Integer.toString(node.getNode().getParent().getAllChildren().size() - 1);
     listMode = node.getNode().getListMode().toString();
     parseName();
     type = getType(node.getNode());
+  }
+
+
+  public String getNumberSiblings()
+  {
+    return numberSiblings;
+  }
+
+
+  public String getNumberChildren()
+  {
+    return numberChildren;
   }
 
   private void parseName()

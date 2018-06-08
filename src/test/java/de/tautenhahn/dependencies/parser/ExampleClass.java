@@ -25,7 +25,7 @@ public class ExampleClass
   /**
    * A field with generic type.
    */
-  public HashMap<String, Certificate> genericField;
+  public HashMap<String, Certificate> genericField; // NOPMD this is not a functional class
 
 
 

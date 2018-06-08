@@ -10,7 +10,7 @@
     font-family: Arial, Helvetica, sans-serif;
     }
     button {
-    	 background-color: #4CAF50; /* Green */
+    	 background-color: #2a814d;
     	border: none;
     	color: white;
     	padding: 5px 10px;
@@ -40,7 +40,6 @@
 <button onClick="setFilter('none')">whole graph</button> 
      <button onClick="setFilter('cycles')">cycles only</button> 
 <br/><button>needed by selection (coming soon)</button> <button>using selection (coming soon)</button>
-
 <h2>Selected Element</h2>
 <div id="description"></div>
 </div>
@@ -60,34 +59,37 @@ The following information may help you to simplify your software by removing ele
 <div id="littleProviding"></div>
 </div>
 <script>
-get("http://localhost:4567/view/name", function(name) {document.getElementById('projectName').innerHTML = name});
+var network;
+var selectedNode = '';
+
+get("http://localhost:4567/view/name", function(name) {
+    document.getElementById('projectName').innerHTML = name
+});
 get("http://localhost:4567/view", showGraph);
 get("http://localhost:4567/view/classpath", showPath);
 get("http://localhost:4567/view/unrefReport", showReport);
 
-function showPath(value)
-{
-	var response = JSON.parse(value);
-	var list="";
-	response.forEach(function(entry) {
-        list=list+ "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" +entry+'<br>';
+function showPath(value) {
+    var response = JSON.parse(value);
+    var list = "";
+    response.forEach(function(entry) {
+        list = list + "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>';
     });
-	document.getElementById('classpath').innerHTML = list;
+    document.getElementById('classpath').innerHTML = list;
 }
 
-function showReport(value)
-{
-	var report = JSON.parse(value);
-	var unrefClass="";
-	report.classes.forEach(function(entry) {
-		unrefClass=unrefClass+ entry+'<br>';
+function showReport(value) {
+    var report = JSON.parse(value);
+    var unrefClass = "";
+    report.classes.forEach(function(entry) {
+        unrefClass = unrefClass + entry + '<br>';
     });
-	document.getElementById('unrefClasses').innerHTML = unrefClass;
-	var unrefJars="";
-	report.jars.forEach(function(entry) {
-		unrefJars=unrefJars+ entry+'<br>';
+    document.getElementById('unrefClasses').innerHTML = unrefClass;
+    var unrefJars = "";
+    report.jars.forEach(function(entry) {
+        unrefJars = unrefJars + entry + '<br>';
     });
-	document.getElementById('unrefJars').innerHTML = unrefJars;
+    document.getElementById('unrefJars').innerHTML = unrefJars;
 
 }
 
@@ -101,8 +103,6 @@ function get(url, callBack) {
         }
     }
 }
-
-var network;
 
 function showGraph(responseText) {
     var response = JSON.parse(responseText);
@@ -136,14 +136,11 @@ function showGraph(responseText) {
     });
 }
 
-var selectedNode = '';
-
-function distribute()
-{
-        network.setOptions({
-	            physics: true
-	        });
-  }
+function distribute() {
+    network.setOptions({
+        physics: true
+    });
+}
 
 function getNodeInfo(id) {
     get("http://localhost:4567/view/node/" + id, function(e) {

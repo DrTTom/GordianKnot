@@ -94,12 +94,11 @@ public class TestClassAndDependencyInfo
     {
       ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent);
       assertThat("parsed class name", systemUnderTest.getClassName(), is(ExampleClass.class.getName()));
-      System.out.println(systemUnderTest.getDependencies());
       assertThat("dependencies",
                  systemUnderTest.getDependencies(),
                  containsInAnyOrder(Logger.class.getName(),
                                     LoggerFactory.class.getName(),
-                                    HashMap.class.getName(),
+                                    HashMap.class.getName(), // NOPMD: need class name, not type
                                     String.class.getName(),
                                     Supplier.class.getName(),
                                     List.class.getName(),

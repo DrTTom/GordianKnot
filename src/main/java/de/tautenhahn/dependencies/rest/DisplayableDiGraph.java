@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
+import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.Node;
 
 
@@ -31,6 +32,9 @@ public class DisplayableDiGraph
 
     @SuppressWarnings("unused") // read by GSON
     String id;
+
+    @SuppressWarnings("unused") // read by GSON
+    String color = "#c0d9fb";
 
     VisNode(String label, String id)
     {
@@ -85,7 +89,22 @@ public class DisplayableDiGraph
 
   private void addNode(Node n, String id)
   {
-    nodes.add(new VisNode(n.getSimpleName(), id));
+    String label = n.getSimpleName().replaceAll(".*:", "").//
+                    replaceAll("_([a-z]{3})$", ".$1").//
+                    replaceAll("(.{8,18}[a-z])([A-Z])", "$1\n$2").//
+                    replaceAll("(.{8,18}-)(\\w)", "$1\n$2");
+
+    VisNode e = new VisNode(label, id);
+    if (n instanceof ClassNode)
+    {
+      e.color = "#e9f1fb";
+    }
+
+    else if (n.getSimpleName().indexOf(':') > 0)
+    {
+      e.color = "#97c2fc";
+    }
+    nodes.add(e);
   }
 
 }

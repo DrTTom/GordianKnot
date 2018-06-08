@@ -29,6 +29,5 @@ public class TestUnreferenced
     Unreferenced systemUnderTest = new Unreferenced(root, cfg);
     String onlyClassUnsingGson = "Server$JsonTransformer";
     assertThat("report", systemUnderTest.toString(), containsString(onlyClassUnsingGson));
-    System.out.println(systemUnderTest);
   }
 }

@@ -50,7 +50,6 @@ public class Server
     instance.view = new ProjectView(args[0], args.length > 1 ? args[1] : null);
     instance.startSpark();
     out.println("Server started, point your browser to http://localhost:4567/index.html");
-    out.println(System.getProperty("java.class.path"));
   }
 
   void startSpark()
@@ -85,7 +84,7 @@ public class Server
    * @param req
    * @param res
    */
-  private DisplayableDiGraph setListMode(Request req, Response res)
+  private DisplayableDiGraph setListMode(Request req, Response res) // NOPMD must fit interface
   {
     view.setListMode(Integer.parseInt(req.params("id")), req.params("value"));
     return view.getDisplayableGraph();
