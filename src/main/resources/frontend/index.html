@@ -49,7 +49,7 @@
         <% } %>
         <tr>
             <td>
-                represents
+                represents:
             </td>
             <td>
                 <%=numberContainedClasses%> classes
@@ -57,7 +57,7 @@
         </tr>
         <tr>
             <td>
-                current reference is
+                current reference:
             </td>
             <td>
                 <%=id%>
@@ -69,8 +69,16 @@
         <button id="expandNode" change-list-mode="EXPANDED">expand</button>
     <% } %>
     <% if(type!='jar' && type!='dir'){ %>
-        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse into parent container</button>
+        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse (+ <%=numberSiblings%> siblings) into parent container</button>
     <% } %>
+</script>
+
+<script type="text/html" id="classPath">
+    <form action="" id="classpath">
+        <% foreach ??? { %>
+            <input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>'
+        <% } %>
+    </form>
 </script>
 
 <h1>Dependency graph of project <span id="projectName"></span></h1>
@@ -192,12 +200,11 @@
     }
 
     function getNodeInfo(id) {
-        const tplInfo = _.template(document.getElementById('nodeInfo').innerHTML);
-
         get("http://localhost:4567/view/node/" + id, function (e) {
             var nodeInfo = JSON.parse(e);
             nodeInfo.id=id;
             selectedNode = id
+            const tplInfo = _.template(document.getElementById('nodeInfo').innerHTML);
             const description = document.getElementById('description');
             description.innerHTML = tplInfo(nodeInfo);
             Array.from(description.querySelectorAll('button')).forEach(button=>{
@@ -207,8 +214,6 @@
                     changeListMode(mode)
                 })
             })
-
-
         });
     }
 
