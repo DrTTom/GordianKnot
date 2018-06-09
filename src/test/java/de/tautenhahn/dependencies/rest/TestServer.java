@@ -1,18 +1,18 @@
 package de.tautenhahn.dependencies.rest;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.nio.file.Paths;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
-
 
 /**
- * Unit test for the server. Requires that the server is not running in parallel.
+ * Unit test for the server. Does not require any port.
  *
  * @author TT
  */
@@ -20,7 +20,7 @@ public class TestServer
 {
 
   /**
-   * Special sub-class which does not neet a free port.
+   * Special sub-class which does not need a free port.
    */
   static class InactiveServer extends Server
   {
@@ -34,27 +34,18 @@ public class TestServer
 
   /**
    * Just calling the main method.
+   *
+   * @throws IOException
    */
   @Test
-  public void help()
+  public void help() throws IOException
   {
-    Server.main("-H");
-  }
-
-  /**
-   * Simple smoke test until other routes are up.
-   */
-  @Test
-  public void getView()
-  {
-    assertThat("just creating a cycle to report", TestCyclicDependencies.class, notNullValue());
-    Server server = new InactiveServer();
-    server.view = new ProjectView(Paths.get("build", "classes", "java", "test").toAbsolutePath().toString(),
-                                  "dummy");
-    server.view.showOnlyCycles();
-
-    String result = new Server.JsonTransformer().render(server.view.getDisplayableGraph());
-    assertThat("view result", result, containsString("rest"));
+    try (ByteArrayOutputStream bout = new ByteArrayOutputStream(); PrintStream out = new PrintStream(bout))
+    {
+      Server.out = out;
+      Server.main("-H");
+      assertThat("output", new String(bout.toByteArray(), StandardCharsets.UTF_8), containsString("Usage:"));
+    }
   }
 
 }

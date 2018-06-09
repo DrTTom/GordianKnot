@@ -54,7 +54,7 @@ public class TestClasspathUtils
   @Test(expected = ClassNotFoundException.class)
   public void loadClassNegative() throws ClassNotFoundException
   {
-    assumeThat("java version", System.getProperty("java.version"), startsWith("1.10"));
+    assumeThat("java version", System.getProperty("java.version"), startsWith("10."));
     createAlienLoader().loadClass(this.getClass().getName());
   }
 

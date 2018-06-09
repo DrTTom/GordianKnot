@@ -31,6 +31,12 @@ public class Filter
     focus.add(Pattern.compile("dir:.*"));
   }
 
+  /**
+   * Adds a regular expression for fully qualified class names to ignore. Matching classes are not analyzed,
+   * dependencies to those classes are taken for granted.
+   *
+   * @param regex
+   */
   public void addIgnoredClassName(String regex)
   {
     ignoredClassNames.add(Pattern.compile(regex));

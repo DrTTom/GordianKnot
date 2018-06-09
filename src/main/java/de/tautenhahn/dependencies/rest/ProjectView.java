@@ -7,9 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
@@ -21,7 +18,6 @@ import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.reports.Unreferenced;
-import spark.ResponseTransformer;
 
 
 /**
@@ -166,23 +162,6 @@ public class ProjectView
       }
     }
     return new CycleFinder(input).createGraphFromCycles();
-  }
-
-
-  /**
-   * All structured output to front end is JSON.
-   */
-  static class JsonTransformer implements ResponseTransformer
-  {
-
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    @Override
-    public String render(Object model)
-    {
-      return gson.toJson(model);
-    }
-
   }
 
   /**

@@ -39,7 +39,7 @@ public class Server
    */
   public static void main(String... args)
   {
-    args = new String[]{System.getProperty("java.class.path"), "Gordian Knot"};
+    // args = new String[]{System.getProperty("java.class.path"), "Gordian Knot"};
     if (args.length == 0 || args[0].toLowerCase(Locale.ENGLISH).matches("--?h(elp)?"))
     {
       out.println("\"Gordian Knot\" dependency checker version 0.2 alpha"

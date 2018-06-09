@@ -1,11 +1,14 @@
 package de.tautenhahn.dependencies.rest;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 
@@ -41,15 +44,34 @@ public class TestNodeInfo
     checkFirstNode(root, "ear:dummy_1.jar:jarfile", "jar", "jarfile", "ear", "dummy_1");
 
     ear.setListMode(ListMode.COLLAPSED);
-    checkFirstNode(root, "ear:dummy_1", "ear", "dummy_1", null, null);
+    NodeInfo systemUnderTest = checkFirstNode(root, "ear:dummy_1", "ear", "dummy_1", null, null);
+    assertThat("expandable", systemUnderTest.getNumberExpandable(), is(1));
+    assertThat("collapsable", systemUnderTest.getNumberCollapsable(), is(1));
+    assertThat("classes", systemUnderTest.getNumberContainedClasses(), is(1));
+    assertThat("mode", systemUnderTest.getListMode(), is("COLLAPSED"));
+
   }
 
-  private void checkFirstNode(ContainerNode root,
-                              String nodeName,
-                              String type,
-                              String name,
-                              String resourceType,
-                              String resourceName)
+  @Test
+  public void getArc()
+  {
+    ContainerNode root = ContainerNode.createRoot();
+    ClassNode c1 = root.createLeaf("dir:none.de.dummy.Class1");
+    ClassNode c2 = root.createLeaf("dir:none.de.dummy.Class2");
+    c1.addSuccessor(c2);
+    DiGraph ctx = new DiGraph(root);
+    ArcInfo systemUnderTest = new ArcInfo(ctx, "0-1");
+    assertThat("from", systemUnderTest.getFrom().getName(), is("de.dummy.Class1"));
+    assertThat("to", systemUnderTest.getTo().getName(), is("de.dummy.Class2"));
+    assertThat("reason", systemUnderTest.getReason(), not(empty()));
+  }
+
+  private NodeInfo checkFirstNode(ContainerNode root,
+                                  String nodeName,
+                                  String type,
+                                  String name,
+                                  String resourceType,
+                                  String resourceName)
   {
     DiGraph ctx = new DiGraph(root);
     NodeInfo systemUnderTest = new NodeInfo(ctx.getAllNodes().get(0));
@@ -58,5 +80,6 @@ public class TestNodeInfo
     assertThat("name", systemUnderTest.getName(), is(name));
     assertThat("resource type", systemUnderTest.getResourceType(), is(resourceType));
     assertThat("resource name", systemUnderTest.getResourceName(), is(resourceName));
+    return systemUnderTest;
   }
 }

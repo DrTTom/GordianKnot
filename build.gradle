@@ -38,3 +38,7 @@ dependencies {
 
 mainClassName = 'de.tautenhahn.dependencies.rest.Server'
 applicationDefaultJvmArgs = ['-Dorg.slf4j.simpleLogger.logFile=GordianKnotServer.log']
+
+run {
+   args sourceSets.main.runtimeClasspath.asPath
+}

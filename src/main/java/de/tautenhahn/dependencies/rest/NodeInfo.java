@@ -165,4 +165,20 @@ public class NodeInfo
   {
     return numberContainedClasses;
   }
+
+  /**
+   * Returns the number of nodes which will be collapsed when changing the list mode of the parent.
+   */
+  int getNumberCollapsable()
+  {
+    return numberCollapsable;
+  }
+
+  /**
+   * Returns the number of nodes which will appear when hitting the "expand" button.
+   */
+  int getNumberExpandable()
+  {
+    return numberExpandable;
+  }
 }

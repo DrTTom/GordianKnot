@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
@@ -24,7 +25,7 @@ public class DisplayableDiGraph
   /**
    * Data record for a node.
    */
-  private static class VisNode
+  static class VisNode
   {
 
     @SuppressWarnings("unused") // read by GSON
@@ -47,7 +48,7 @@ public class DisplayableDiGraph
   /**
    * Data record for an edge.
    */
-  private static class VisEdge
+  static class VisEdge
   {
 
     String from;
@@ -105,6 +106,12 @@ public class DisplayableDiGraph
       e.color = "#97c2fc";
     }
     nodes.add(e);
+  }
+
+
+  public List<VisNode> getNodes()
+  {
+    return Collections.unmodifiableList(nodes);
   }
 
 }
