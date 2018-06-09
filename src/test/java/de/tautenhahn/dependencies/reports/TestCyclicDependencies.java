@@ -12,7 +12,7 @@ import org.junit.Test;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
-import de.tautenhahn.dependencies.rest.TestServer;
+import de.tautenhahn.dependencies.rest.TestProjectView;
 
 
 /**
@@ -29,7 +29,7 @@ public class TestCyclicDependencies
   @Test
   public void report()
   {
-    assertThat("just creating a cylcle to report", TestServer.class, notNullValue());
+    assertThat("just creating a cylcle to report", TestProjectView.class, notNullValue());
     ProjectScanner scanner = new ProjectScanner(new Filter());
     ContainerNode root = scanner.scan(Collections.singletonList(Paths.get("build",
                                                                           "classes",
@@ -37,7 +37,7 @@ public class TestCyclicDependencies
                                                                           "test")));
     assertThat("report",
                CyclicPackageDependencies.findFor(root).toString(),
-               containsString("TestCyclicDependencies -> TestServer"));
+               containsString("TestCyclicDependencies -> TestProjectView"));
 
   }
 }

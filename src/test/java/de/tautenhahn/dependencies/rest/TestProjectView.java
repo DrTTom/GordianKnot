@@ -42,7 +42,7 @@ public class TestProjectView
     systemUnderTest.showOnlyCycles();
 
     String result = new Server.JsonTransformer().render(systemUnderTest.getDisplayableGraph());
-    assertThat("view result", result, containsString("TestServer"));
+    assertThat("view result", result, containsString("reports"));
     assertThat("view result", result, not(containsString("JSonTransformer")));
 
     systemUnderTest.showAll();

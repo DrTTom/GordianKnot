@@ -2,7 +2,7 @@ package de.tautenhahn.dependencies.parser;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public final class ContainerNode extends Node
 {
 
-  private final Map<String, Node> children = new HashMap<>();
+  private final Map<String, Node> children = new LinkedHashMap<>();
 
   private ContainerNode(Node parent, String name)
   {

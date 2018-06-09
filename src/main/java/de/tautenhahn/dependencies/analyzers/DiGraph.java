@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,9 +40,9 @@ public class DiGraph
 
     private final int numberClasses;
 
-    private final Set<IndexedNode> successors = new HashSet<>();
+    private final Set<IndexedNode> successors = new LinkedHashSet<>();
 
-    private final Set<IndexedNode> predecessors = new HashSet<>();
+    private final Set<IndexedNode> predecessors = new LinkedHashSet<>();
 
     IndexedNode(Node node)
     {
@@ -79,6 +79,14 @@ public class DiGraph
     public Collection<IndexedNode> getSuccessors()
     {
       return Collections.unmodifiableCollection(successors);
+    }
+
+    /**
+     * Returns the predecessors.
+     */
+    public Collection<IndexedNode> getPredecessors()
+    {
+      return Collections.unmodifiableCollection(predecessors);
     }
 
     /**
