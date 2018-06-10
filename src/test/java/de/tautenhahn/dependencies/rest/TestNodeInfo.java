@@ -24,6 +24,7 @@ public class TestNodeInfo
   /**
    * Sorry for complicated setup, access level of API elements is designed for application, not for this test.
    */
+  @SuppressWarnings("boxing")
   @Test
   public void parseNames()
   {
@@ -52,6 +53,9 @@ public class TestNodeInfo
 
   }
 
+  /**
+   * Gets an arc information.
+   */
   @Test
   public void getArc()
   {

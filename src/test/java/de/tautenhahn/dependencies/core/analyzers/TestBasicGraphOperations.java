@@ -26,6 +26,11 @@ public class TestBasicGraphOperations
 
   private DiGraph graph;
 
+  private IndexedNode a;
+
+  /**
+   * Creates some graph to play with.
+   */
   @Before
   public void createGraph()
   {
@@ -42,6 +47,7 @@ public class TestBasicGraphOperations
     ((ClassNode)root.find("d")).addSuccessor((ClassNode)root.find("a"));
 
     graph = new DiGraph(root);
+    a = graph.getAllNodes().stream().filter(n -> n.getNode().getName().equals("a")).findFirst().orElse(null);
   }
 
   /**
@@ -60,20 +66,30 @@ public class TestBasicGraphOperations
   @Test
   public void breadthFirstSearch()
   {
-    IndexedNode a = graph.getAllNodes()
-                         .stream()
-                         .filter(n -> n.getNode().getName().equals("a"))
-                         .findFirst()
-                         .orElse(null);
-    assertThat("dbf sequence",
+    assertThat("bfs sequence",
                BasicGraphOperations.breadthFirstSearch(graph, a, true)
                                    .map(n -> n.getNode().getName())
                                    .collect(Collectors.toList()),
                contains("a", "b", "d", "c"));
-    assertThat("dbf backwards sequence",
+    assertThat("bfs backwards sequence",
                BasicGraphOperations.breadthFirstSearch(graph, a, false)
                                    .map(n -> n.getNode().getName())
                                    .collect(Collectors.toList()),
                contains("a", "d", "c", "b"));
   }
+
+  /**
+   * Performs a depth first search and checks the correct sequence.
+   */
+  @Test
+  public void depthFirstSearch()
+  {
+    assertThat("dfs sequence",
+               BasicGraphOperations.depthFirstSearch(graph, a)
+                                   .map(n -> n.getNode().getName())
+                                   .collect(Collectors.toList()),
+               contains("a", "b", "c", "d"));
+
+  }
+
 }

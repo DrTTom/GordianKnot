@@ -19,7 +19,7 @@ import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 public final class BasicGraphOperations
 {
 
-  public BasicGraphOperations()
+  private BasicGraphOperations()
   {
     // no instances needed
   }
@@ -71,6 +71,44 @@ public final class BasicGraphOperations
                                 false);
   }
 
+  /**
+   * Returns nodes in depth-first order. If you do not care about the order, feel free to use the stream in
+   * parallel.
+   */
+  public static Stream<IndexedNode> depthFirstSearch(DiGraph graph, IndexedNode start)
+  {
+    return new DfsWrapper(graph).search(start);
+  }
+
+  /**
+   * Just avoiding the same references several times on the stack.
+   *
+   * @author jean
+   */
+  private static class DfsWrapper
+  {
+
+    private final boolean[] found;
+
+    DfsWrapper(DiGraph graph)
+    {
+      found = new boolean[graph.getAllNodes().size()];
+    }
+
+    Stream<IndexedNode> search(IndexedNode start)
+    {
+      found[start.getIndex()] = true;
+      return Stream.concat(Stream.of(start),
+                           start.getSuccessors()
+                                .stream()
+                                .filter(n -> !found[n.getIndex()])
+                                .flatMap(this::search));
+    }
+  }
+
+  /**
+   * Need a special iterator because we have to stream a collection which changes as the stream is read.
+   */
   private static class BfsIterator implements Iterator<IndexedNode>
   {
 
@@ -104,7 +142,6 @@ public final class BasicGraphOperations
                                                            found[n.getIndex()] = true;
                                                            foundNodes.add(n);
                                                          });
-      System.out.println(s.getNode());
       return s;
     }
   }

@@ -69,6 +69,11 @@ public class Server
     installFilterRoute("cycles", view::showOnlyCycles);
     installFilterRoute("none", view::showAll);
     installFilterRoute("resetListMode", view::resetListMode);
+    get("view/filters/impliedBy/:id/:successors",
+        (req, res) -> view.restrictToImpliedBy(Integer.parseInt(req.params("id")),
+                                               Boolean.parseBoolean(req.params("successors"))),
+        transformer);
+
   }
 
   private void installFilterRoute(String filter, Runnable modification) // NOPMD no threads here!

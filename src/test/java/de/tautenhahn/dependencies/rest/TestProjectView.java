@@ -57,9 +57,9 @@ public class TestProjectView
     view.getDisplayableGraph()
         .getNodes()
         .stream()
-        .filter(n -> "rest".equals(n.label))
+        .filter(n -> label.equals(n.label))
         .map(n -> n.id)
         .findAny()
-        .ifPresent(id -> view.setListMode(Integer.parseInt(id), "EXPANDED"));
+        .ifPresent(id -> view.setListMode(Integer.parseInt(id), mode));
   }
 }

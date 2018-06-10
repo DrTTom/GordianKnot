@@ -87,8 +87,8 @@
     <button onClick="setFilter('none')">whole graph</button>
     <button onClick="setFilter('cycles')">cycles only</button>
     <br/>
-    <button>needed by selection (coming soon)</button>
-    <button>using selection (coming soon)</button>
+    <button onClick="impliedOnly(true)">required by selected node</button>
+    <button onClick="impliedOnly(false)">requiring selected node</button>
     <h2>Selected Element</h2>
     <div id="description"></div>
 </div>
@@ -219,6 +219,11 @@
 
     function setFilter(value) {
         get("http://localhost:4567/view/filters/" + value, showGraph);
+    }
+
+    function impliedOnly(value)
+    {
+        get("http://localhost:4567/view/filters/impliedBy/"+selectedNode+"/" + value, showGraph);
     }
 
     function getArcInfo(id) {

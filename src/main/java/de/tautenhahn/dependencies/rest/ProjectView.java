@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
@@ -208,5 +209,23 @@ public class ProjectView
   public Unreferenced getUnreferencedReport()
   {
     return unrefReport;
+  }
+
+  /**
+   * Restrict current graph to predecessors/successors of some specified node. Non-Persistent operation,
+   * vanishes with next graph change. TODO: keep operation as long as ???
+   *
+   * @param nodeIndex
+   * @param successors
+   * @return
+   */
+  public DisplayableDiGraph restrictToImpliedBy(int nodeIndex, boolean successors)
+  {
+    IndexedNode start = currentGraph.getAllNodes().get(nodeIndex);
+    currentGraph = new DiGraph(BasicGraphOperations.breadthFirstSearch(currentGraph, start, successors)
+                                                   .map(IndexedNode::getNode));
+
+    currentlyShown = new DisplayableDiGraph(currentGraph);
+    return currentlyShown;
   }
 }

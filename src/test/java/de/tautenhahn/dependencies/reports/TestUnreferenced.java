@@ -27,9 +27,15 @@ public class TestUnreferenced
     filter.addIgnoredClassName(".*\\.Alien");
     ContainerNode root = new ProjectScanner(filter).scan(ClassPathUtils.getClassPath());
     Unreferenced.ReportConfig cfg = new Unreferenced.ReportConfig();
+    cfg.addNeededElements("org\\.eclipse\\.jdt\\.internal.*");
     cfg.setLoader(Thread.currentThread().getContextClassLoader());
     Unreferenced systemUnderTest = new Unreferenced(root, cfg);
     String onlyClassUnsingGson = "Server$JsonTransformer";
     assertThat("report", systemUnderTest.toString(), containsString(onlyClassUnsingGson));
+    // TODO:
+    // System.out.println(systemUnderTest.getUnreferencedClasses());
+
+    // assertThat("unref classes", systemUnderTest.getUnreferencedClasses(), empty());
+    // assertThat("unref jars", systemUnderTest.getUnreferencedJars(), empty());
   }
 }
