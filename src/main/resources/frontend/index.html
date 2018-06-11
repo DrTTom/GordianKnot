@@ -153,7 +153,7 @@
             }
         }
     }
-
+	var zoomEnabled=true;
     function showGraph(responseText) {
         var response = JSON.parse(responseText);
         var nodes = new vis.DataSet(response.nodes);
@@ -164,17 +164,24 @@
             nodes: nodes,
             edges: edges
         };
-        var options = {};
+        var options = { 
+        		physics: false
+        };
         network = new vis.Network(container, data, options);
         selectedNode = '';
         document.getElementById('description').innerHTML = "Click on node or arc to select it."
-
+        zoomEnabled=false;
+        distribute();
         network.on("stabilized", function (params) {
             network.setOptions({
                 physics: false
             });
+            zoomEnabled=true;
         });
 
+        network.on("initRedraw" , function (params) {
+            if (!zoomEnabled) {network.fit();}
+        });
         network.on("click", function (params) {
             selectedNode = '';
             params.event = "[original event]";
