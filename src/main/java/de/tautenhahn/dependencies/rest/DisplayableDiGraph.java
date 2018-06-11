@@ -35,7 +35,7 @@ public class DisplayableDiGraph
     String id;
 
     @SuppressWarnings("unused") // read by GSON
-    String color = "#c0d9fb";
+    String group = "package";
 
     VisNode(String label, String id)
     {
@@ -98,12 +98,12 @@ public class DisplayableDiGraph
     VisNode e = new VisNode(label, id);
     if (n instanceof ClassNode)
     {
-      e.color = "#e9f1fb";
+      e.group = "class";
     }
 
     else if (n.getSimpleName().indexOf(':') > 0)
     {
-      e.color = "#97c2fc";
+      e.group = n.getSimpleName().substring(0, n.getSimpleName().indexOf(':'));
     }
     nodes.add(e);
   }

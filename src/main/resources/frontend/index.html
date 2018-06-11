@@ -12,7 +12,7 @@
         }
 
         button {
-            background-color: #2a814d;
+            background-color: #74894f;
             border: none;
             color: white;
             padding: 5px 10px;
@@ -164,8 +164,25 @@
             nodes: nodes,
             edges: edges
         };
+        var gray = '#555555'
         var options = { 
-        		physics: false
+        		physics: false,
+        		interaction: {hover: true},
+        		 groups: {
+        			 'jar': {
+     	            	color: {background:'#e7a5ab',border:gray, hover:{background:'#ebb5ba',border:'black'}, highlight:{background:'#ebb5ba',border:'black'}},        	               
+     	            },
+     	           'dir': {
+   	            	color: {background:'#afd6e7',border:gray, hover:{background:'#dbecf4',border:'black'}, highlight:{background:'#dbecf4',border:'black'}},        	               
+   	            },
+        	            'package': {
+        	            	color: {background:'#aec489',border:gray, hover:{background:'#d2debe',border:'black'}, highlight:{background:'#d2debe',border:'black'}},
+        	            },
+        	            'class': {
+        	            	color: {background:'#ffed9e',border:gray, hover:{background:'#fff5ca',border:'black'}, highlight:{background:'#fff5ca',border:'black'}}
+        	            }
+        	            
+        	        }
         };
         network = new vis.Network(container, data, options);
         selectedNode = '';
