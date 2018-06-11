@@ -4,11 +4,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
-import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
@@ -31,7 +28,7 @@ public class ProjectView
 
   private final ContainerNode root;
 
-  private final List<Function<DiGraph, DiGraph>> operations = new ArrayList<>();
+  private final List<ViewFilter> filters = new ArrayList<>();
 
   private DiGraph currentGraph;
 
@@ -138,31 +135,21 @@ public class ProjectView
   private void computeGraph()
   {
     DiGraph graph = new DiGraph(root);
-    for ( Function<DiGraph, DiGraph> fn : operations )
+    List<ViewFilter> toRemove = new ArrayList<>();
+    for ( ViewFilter fn : filters )
     {
-      graph = fn.apply(graph);
-    }
-    currentGraph = graph;
-    currentlyShown = new DisplayableDiGraph(graph);
-  }
-
-  private DiGraph restrictToCycles(DiGraph input)
-  {
-    for ( IndexedNode n : input.getAllNodes() )
-    {
-      String name = n.getNode().getSimpleName();
-      int pos = name.indexOf('$');
-      if (pos > 0)
+      if (fn.isApplicable(graph))
       {
-        String outerName = name.substring(0, pos);
-        n.getSuccessors()
-         .stream()
-         .filter(s -> s.getNode().getSimpleName().equals(outerName))
-         .findAny()
-         .ifPresent(s -> input.removeArc(n, s));
+        graph = fn.apply(graph);
+      }
+      else
+      {
+        toRemove.add(fn);
       }
     }
-    return new CycleFinder(input).createGraphFromCycles();
+    filters.removeAll(toRemove);
+    currentGraph = graph;
+    currentlyShown = new DisplayableDiGraph(graph);
   }
 
   /**
@@ -170,7 +157,7 @@ public class ProjectView
    */
   public void showOnlyCycles()
   {
-    operations.add(this::restrictToCycles);
+    filters.add(new CyclesOnly());
     computeGraph();
   }
 
@@ -179,8 +166,8 @@ public class ProjectView
    */
   public void showAll()
   {
-    boolean change = !operations.isEmpty();
-    operations.clear();
+    boolean change = !filters.isEmpty();
+    filters.clear();
     if (change)
     {
       computeGraph();
@@ -213,19 +200,19 @@ public class ProjectView
 
   /**
    * Restrict current graph to predecessors/successors of some specified node. Non-Persistent operation,
-   * vanishes with next graph change. TODO: keep operation as long as ???
+   * vanishes with next graph change.
    *
    * @param nodeIndex
    * @param successors
-   * @return
    */
   public DisplayableDiGraph restrictToImpliedBy(int nodeIndex, boolean successors)
   {
     IndexedNode start = currentGraph.getAllNodes().get(nodeIndex);
-    currentGraph = new DiGraph(BasicGraphOperations.breadthFirstSearch(currentGraph, start, successors)
-                                                   .map(IndexedNode::getNode));
-
-    currentlyShown = new DisplayableDiGraph(currentGraph);
+    String startName = start.getNode().getName();
+    ImpliedByNode filter = successors ? ImpliedByNode.requiredBy(startName)
+      : ImpliedByNode.dependingOn(startName);
+    filters.add(filter);
+    computeGraph();
     return currentlyShown;
   }
 }
