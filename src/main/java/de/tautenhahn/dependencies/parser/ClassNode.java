@@ -87,9 +87,12 @@ public class ClassNode extends Node
     return predLeafs;
   }
 
-  List<Node> getSucLeafs()
+  /**
+   * Returns the direct successors, ignoring any collapsed containers.
+   */
+  public List<Node> getSucLeafs()
   {
-    return sucLeafs;
+    return Collections.unmodifiableList(sucLeafs);
   }
 
   @Override

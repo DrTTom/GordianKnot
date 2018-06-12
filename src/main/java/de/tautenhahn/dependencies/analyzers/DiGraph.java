@@ -97,6 +97,11 @@ public class DiGraph
       return numberClasses;
     }
 
+    @Override
+    public String toString()
+    {
+      return index + ". " + node;
+    }
   }
 
   /**

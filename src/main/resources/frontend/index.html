@@ -100,9 +100,8 @@
 <div id="detailInfo">
     <h2>Graph</h2>
     <h3>Nodes</h3>
-    <button onClick="setFilter('resetListMode')">reset node set</button>
-    <button onClick="distribute()">distribute</button>
-    <br>
+    <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution <br>    
+    <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
     <h3>Filters</h3>
     <button onClick="setFilter('none')">whole graph</button>
     <button onClick="setFilter('cycles')">cycles only</button>
@@ -157,6 +156,15 @@
         }
     }
 	var zoomEnabled=true;
+	
+	function stopMovingNodes(params) {
+        network.setOptions({
+            physics: false
+        });
+        console.log("disabled physics");
+        zoomEnabled=true;
+    }
+	
     function showGraph(responseText) {
         var response = JSON.parse(responseText);
         var nodes = new vis.DataSet(response.nodes);
@@ -192,12 +200,7 @@
         document.getElementById('description').innerHTML = "Click on node or arc to select it."
         zoomEnabled=false;
         distribute();
-        network.on("stabilized", function (params) {
-            network.setOptions({
-                physics: false
-            });
-            zoomEnabled=true;
-        });
+        network.on("stabilized", stopMovingNodes);
 
         network.on("initRedraw" , function (params) {
             if (!zoomEnabled) {network.fit();}

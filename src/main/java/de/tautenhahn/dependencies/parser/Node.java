@@ -223,4 +223,21 @@ public abstract class Node
    * Return the list of all direct children, ignoring the list mode.
    */
   public abstract Collection<Node> getAllChildren();
+
+  /**
+   * Returns true if this node is a container containing the other node
+   */
+  public boolean isAnchestor(Node other)
+  {
+    Node container = other;
+    while (container != null)
+    {
+      if (container == this)
+      {
+        return true;
+      }
+      container = container.getParent();
+    }
+    return false;
+  }
 }
