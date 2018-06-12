@@ -66,12 +66,32 @@
     <% } %>
 </script>
 
-<script type="text/html" id="classPath">
-    <form action="" id="classpath">
-        <% foreach ??? { %>
-            <input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>'
-        <% } %>
-    </form>
+<script type="text/html" id="refReportTmpl">
+    <h2>References Report</h2>
+    <h3>Unreferenced classes</h3>    
+    <% if(classes.length==0) { %>
+    There are no apparently unused classes.
+    <% } else { %>
+    The following classes appear to be unused, consider to removing them from your project:
+    <p>    
+    <% for(var i = 0; i < classes.length; ++i) {%>
+      <%=classes[i] %></br> 
+    <% } %>
+	</p> 
+    <% } %>
+    <h3>Unreferenced libraries</h3>
+    <% if(jars.length==0) { %>
+    Your class path looks correct.
+    <% } else { %>
+    Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:
+    <p>    
+    <% for(var i = 0; i < jars.length; ++i) {%>
+      <%=jars[i] %></br> 
+    <% } %>
+	</p> 
+    <% } %>
+    <h3>Libraries used by few classes</h3>
+    <h3>Libraries providing few classes</h3>
 </script>
 
 <h1>Dependency graph of project <span id="projectName"></span></h1>
@@ -93,19 +113,10 @@
     <div id="description"></div>
 </div>
 <div style="width: 100%; float: left">
+<div id="refReport"></div>
     <h2>Classpath</h2>
     <form action="" id="classpath">
-    </form>
-    <h2>Reference Problems</h2>
-    The following information may help you to simplify your software by removing elements.
-    <h3>Unreferenced classes</h3>
-    <div id="unrefClasses"></div>
-    <h3>Unreferenced libraries</h3>
-    <div id="unrefJars"></div>
-    <h3>Libraries used by few classes</h3>
-    <div id="littleUsed"></div>
-    <h3>Libraries providing few classes</h3>
-    <div id="littleProviding"></div>
+    </form>    
 </div>
 
 <script>
@@ -130,17 +141,9 @@
 
     function showReport(value) {
         var report = JSON.parse(value);
-        var unrefClass = "";
-        report.classes.forEach(function (entry) {
-            unrefClass = unrefClass + entry + '<br>';
-        });
-        document.getElementById('unrefClasses').innerHTML = unrefClass;
-        var unrefJars = "";
-        report.jars.forEach(function (entry) {
-            unrefJars = unrefJars + entry + '<br>';
-        });
-        document.getElementById('unrefJars').innerHTML = unrefJars;
-
+        const tplInfo = _.template(document.getElementById('refReportTmpl').innerHTML);
+        const reportDiv = document.getElementById('refReport');
+        reportDiv.innerHTML = tplInfo(report);
     }
 
     function get(url, callBack) {
