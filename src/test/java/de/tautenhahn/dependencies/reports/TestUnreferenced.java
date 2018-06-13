@@ -5,9 +5,9 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
+import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 
 
@@ -25,7 +25,7 @@ public class TestUnreferenced
   {
     Filter filter = new Filter();
     filter.addIgnoredClassName(".*\\.Alien");
-    ContainerNode root = new ProjectScanner(filter).scan(ClassPathUtils.getClassPath());
+    ContainerNode root = new ProjectScanner(filter).scan(ParsedClassPath.getCurrentClassPath());
     Unreferenced.ReportConfig cfg = new Unreferenced.ReportConfig();
     cfg.addNeededElements("org\\.eclipse\\.jdt\\.internal.*");
     cfg.setLoader(Thread.currentThread().getContextClassLoader());

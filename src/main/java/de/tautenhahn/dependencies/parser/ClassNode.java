@@ -20,7 +20,7 @@ public class ClassNode extends Node
 
   private final List<Node> sucLeafs = new ArrayList<>();
 
-  private Collection<String> missingDependencies;
+  private Collection<String> missingDependencies = new ArrayList<>();
 
   private final String className;
 

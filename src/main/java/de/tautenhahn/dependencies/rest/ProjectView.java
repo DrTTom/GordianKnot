@@ -14,6 +14,7 @@ import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
+import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.reports.Unreferenced;
 
@@ -53,7 +54,7 @@ public class ProjectView
     parsedPath.removeIf(p -> filter.isIgnoredSource(p.toString()));
     pathElements = parsedPath.stream().map(Path::toString).collect(Collectors.toList());
     ProjectScanner analyzer = new ProjectScanner(filter);
-    root = analyzer.scan(parsedPath);
+    root = analyzer.scan(new ParsedClassPath(classPath));
     unrefReport = new Unreferenced(root, new Unreferenced.ReportConfig());
     resetListMode();
     projectName = name;
@@ -68,6 +69,17 @@ public class ProjectView
       ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
     computeGraph();
   }
+
+  /**
+   * Collapses all nodes except the virtual root. May be useful with large multi-projects.
+   */
+  public final void collapseAll()
+  {
+    root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
+      ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
+    computeGraph();
+  }
+
 
   /**
    * Changes the list mode of a specified node or its parent.

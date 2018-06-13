@@ -1,5 +1,6 @@
 package de.tautenhahn.dependencies.rest;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -8,6 +9,7 @@ import org.junit.Test;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
@@ -29,12 +31,16 @@ public class TestCyclesOnly
     test.addSuccessor(helper);
     suite.addSuccessor(test);
     root.find("de.tautenhahn").setListMode(ListMode.LEAFS_COLLAPSED);
-    root.find("de.tautenhahn.impl").setListMode(ListMode.LEAFS_COLLAPSED);
+    Node testPackage = root.find("de.tautenhahn.impl");
+    testPackage.setListMode(ListMode.LEAFS_COLLAPSED);
     DiGraph graph = new DiGraph(root);
+    System.out.println(suite.getSuccessors());
+    assertThat("successors of suite", suite.getSuccessors(), hasItem(testPackage));
 
     CyclesOnly systemUnderTest = new CyclesOnly();
-    // systemUnderTest.removeNoncriticalArcs(graph);
-    graph.getAllNodes().forEach(n -> System.out.println(n + " " + n.getSuccessors()));
+    systemUnderTest.removeNoncriticalArcs(graph);
+    // TODO:
+    // assertThat("successors of suite after removal", suite.getSuccessors(), not(hasItem(testPackage)));
   }
 
 }

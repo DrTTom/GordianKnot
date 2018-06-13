@@ -1,14 +1,10 @@
 package de.tautenhahn.dependencies.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.tautenhahn.dependencies.analyzers.ClassInterpreter;
 import de.tautenhahn.dependencies.analyzers.CycleFinder;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
-import de.tautenhahn.dependencies.parser.Node;
-import de.tautenhahn.dependencies.parser.Pair;
 
 
 /**
@@ -52,40 +48,10 @@ public class CyclesOnly implements ViewFilter
     for ( IndexedNode n : input.getAllNodes() )
     {
       removeArcToOuterClass(input, n);
-      removeArcsCreatedByTestSuites(input, n);
     }
-  }
-
-  private void removeArcsCreatedByTestSuites(DiGraph input, IndexedNode node)
-  {
-    List<IndexedNode> ignorableSuccessors = new ArrayList<>();
-    for ( IndexedNode succ : node.getSuccessors() )
-    {
-      List<Pair<Node, Node>> dep = node.getNode().getDependencyReason(succ.getNode());
-      if (dep.stream()
-             .allMatch(p -> isTestSuite(p.getFirst()) && (isTest(p.getSecond()) || isTestSuite(p.getSecond()))
-                            && p.getFirst().getParent().isAnchestor(p.getSecond().getParent())))
-      {
-        ignorableSuccessors.add(succ);
-      }
-    }
-    ignorableSuccessors.forEach(succ -> input.removeArc(node, succ));
-  }
-
-  private boolean isTestSuite(Node n)
-  {
-    return ((ClassNode)n).getSucLeafs()
-                         .stream()
-                         .map(s -> ((ClassNode)s).getClassName())
-                         .anyMatch("org.junit.runner.RunWith"::equals);
-  }
-
-  private boolean isTest(Node n)
-  {
-    return ((ClassNode)n).getSucLeafs()
-                         .stream()
-                         .map(s -> ((ClassNode)s).getClassName())
-                         .anyMatch("org.junit.Test"::equals);
+    ClassInterpreter interpreter = new ClassInterpreter();
+    interpreter.removeFactoryDependencies(input);
+    interpreter.removeTestSuiteDependencies(input);
   }
 
   private void removeArcToOuterClass(DiGraph input, IndexedNode node)

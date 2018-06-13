@@ -4,10 +4,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -30,8 +27,9 @@ public class TestProjectScanner
   public void analyzeMe()
   {
     ProjectScanner systemUnderTest = new ProjectScanner(new Filter());
-    List<Path> classPath = Arrays.asList(Paths.get("build", "classes", "java", "main"),
-                                         Paths.get("build", "classes", "java", "test"));
+    ParsedClassPath classPath = new ParsedClassPath(Paths.get("build", "classes", "java", "main").toString()
+                                                    + ":" + Paths.get("build", "classes", "java", "test")
+                                                                 .toString());
     ContainerNode root = systemUnderTest.scan(classPath);
 
     Node testNode = root.find("dir:test." + TestProjectScanner.class.getName());
@@ -57,8 +55,8 @@ public class TestProjectScanner
   {
     long startTime = System.currentTimeMillis();
     ProjectScanner systemUnderTest = new ProjectScanner(new Filter());
-    List<Path> classPath = ClassPathUtils.getClassPath();
-    ContainerNode root = systemUnderTest.scan(classPath);
+
+    ContainerNode root = systemUnderTest.scan(ParsedClassPath.getCurrentClassPath());
     assertThat("duration", System.currentTimeMillis() - startTime, lessThan(5000L));
 
     String junitJar = "jar:junit-4_12_jar.";

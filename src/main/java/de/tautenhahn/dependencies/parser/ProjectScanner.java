@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -31,6 +30,8 @@ public class ProjectScanner
   private final Map<String, ClassNode> classFirstSeenAt = new Hashtable<>();
 
   private final Map<ClassNode, Collection<String>> deps = new Hashtable<>();
+
+  private ParsedClassPath classPath;
 
   private final ContainerNode root = ContainerNode.createRoot();
 
@@ -54,9 +55,11 @@ public class ProjectScanner
    * @param classPath paths to jar files or build directories.
    * @return root node of the created graph.
    */
-  public ContainerNode scan(Collection<Path> classPath)
+  public ContainerNode scan(ParsedClassPath classPath)
   {
-    classPath.stream()
+    this.classPath = classPath;
+    classPath.getEntries()
+             .stream()
              .parallel()
              .filter(p -> !filter.isIgnoredSource(p.toString()))
              .forEach(this::handleInput);
@@ -65,12 +68,25 @@ public class ProjectScanner
       entry.getValue()
            .stream()
            .map(n -> n.replace('/', '.'))
-           .map(classFirstSeenAt::get)
-           // TODO set the other deps into missing collection
-           .filter(Objects::nonNull)
-           .forEach(n -> entry.getKey().addSuccessor(n));
+           .forEach(n -> registerDependency(entry.getKey(), n));
     }
     return root;
+  }
+
+  private void registerDependency(ClassNode node, String dependsOnClass)
+  {
+    ClassNode succ = classFirstSeenAt.get(dependsOnClass);
+    if (succ == null)
+    {
+      if (!filter.isIgnoredClass(dependsOnClass))
+      {
+        node.getMissingDependencies().add(dependsOnClass);
+      }
+    }
+    else
+    {
+      node.addSuccessor(succ);
+    }
   }
 
   private void handleInput(Path path)
@@ -79,14 +95,13 @@ public class ProjectScanner
     {
       if (isFile(path, ".jar"))
       {
-        ContainerNode jarNode = root.createInnerChild("jar:"
-                                                      + path.getFileName().toString().replace(".", "_"));
+        ContainerNode jarNode = root.createInnerChild("jar:" + classPath.getName(path).replace(".", "_"));
         try (ZipInputStream zip = new ZipInputStream(new FileInputStream(path.toFile())))
         {
           ZipEntry entry = zip.getNextEntry();
           while (entry != null)
           {
-            if (entry.getName().endsWith(".class") && !entry.getName().endsWith("module-info.class"))
+            if (isClassResourceName(entry.getName()))
             {
               String className = entry.getName().replace(".class", "").replace('/', '.');
               ClassNode node = jarNode.createLeaf(className);
@@ -103,7 +118,7 @@ public class ProjectScanner
       else if (Files.isDirectory(path))
       {
         Files.walk(path)
-             .filter(p -> isFile(p, ".class") && !path.getFileName().toString().equals("module-info.class"))
+             .filter(p -> isFile(p, ".class") && isClassResourceName(p.getFileName().toString()))
              .forEach(p -> handleClassFile(p, path));
       }
     }
@@ -111,6 +126,11 @@ public class ProjectScanner
     {
       LOG.error("cannot read {}", path, e);
     }
+  }
+
+  private boolean isClassResourceName(String name)
+  {
+    return name.endsWith(".class") && !"module-info.class".equals(name) && !"package-info.class".equals(name);
   }
 
   /**
@@ -145,7 +165,7 @@ public class ProjectScanner
     {
       return;
     }
-    String source = resource.getFileName().toString().replace('.', '_');
+    String source = classPath.getName(resource).replace('.', '_');
     String nodeName = "dir:" + source + "." + className;
     if (filter.isIgnoredSource(nodeName))
     {
