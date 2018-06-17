@@ -1,6 +1,5 @@
 package de.tautenhahn.dependencies.rest;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import java.util.stream.Collectors;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
-import de.tautenhahn.dependencies.parser.ClassPathUtils;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.Node;
@@ -17,6 +15,7 @@ import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.reports.Unreferenced;
+import de.tautenhahn.dependencies.rest.presentation.DisplayableClasspathEntry;
 
 
 /**
@@ -37,7 +36,8 @@ public class ProjectView
 
   private final String projectName;
 
-  private final List<String> pathElements;
+
+  private final ParsedClassPath classPath;
 
   private final Unreferenced unrefReport;
 
@@ -49,12 +49,11 @@ public class ProjectView
    */
   public ProjectView(String classPath, String name)
   {
-    List<Path> parsedPath = ClassPathUtils.parseClassPath(classPath);
+    this.classPath = new ParsedClassPath(classPath);
     Filter filter = new Filter();
-    parsedPath.removeIf(p -> filter.isIgnoredSource(p.toString()));
-    pathElements = parsedPath.stream().map(Path::toString).collect(Collectors.toList());
+    // TODO: parsedPath.removeIf(p -> filter.isIgnoredSource(p.toString()));
     ProjectScanner analyzer = new ProjectScanner(filter);
-    root = analyzer.scan(new ParsedClassPath(classPath));
+    root = analyzer.scan(this.classPath);
     unrefReport = new Unreferenced(root, new Unreferenced.ReportConfig());
     resetListMode();
     projectName = name;
@@ -197,9 +196,14 @@ public class ProjectView
   /**
    * Returns List of class path elements as absolute path.
    */
-  public List<String> getPathElements()
+  public List<DisplayableClasspathEntry> getClassPath()
   {
-    return pathElements;
+    Filter filter = new Filter(); // TODO: configure the filter!
+    return classPath.getEntries()
+                    .stream()
+                    .filter(p -> !filter.isIgnoredSource(p.toString()))
+                    .map(p -> new DisplayableClasspathEntry(p, classPath))
+                    .collect(Collectors.toList());
   }
 
   /**

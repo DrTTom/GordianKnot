@@ -13,26 +13,26 @@ import java.util.Map;
 public class UniqueNameTree
 {
 
+  private final NameNode root = new NameNode("", null);
+
   /**
    * Need a tree structure.
    */
   private static class NameNode
   {
 
-    NameNode(String name, Path remaining)
-    {
-      this.name = name;
-      this.remaining = remaining;
-    }
-
     String name;
 
     Path remaining;
 
     Map<String, NameNode> children = new HashMap<>();
-  }
 
-  private final NameNode root = new NameNode("", null);
+    NameNode(String name, Path remaining)
+    {
+      this.name = name;
+      this.remaining = remaining;
+    }
+  }
 
   /**
    * @param path path from root excluding the parts already in my tree
@@ -44,9 +44,7 @@ public class UniqueNameTree
     {
       return; // already got that path
     }
-    String thisLevel = path.getFileName().toString();
-    Path remaining = path.getParent();
-    if (ctx.children.isEmpty() && ctx != root)
+    if (ctx.children.isEmpty() && ctx != root) // NOPMD this should compare the reference, not the value!
     {
       String oldName = ctx.remaining.getFileName().toString();
       Path oldRemaining = ctx.remaining.getParent();
@@ -55,6 +53,8 @@ public class UniqueNameTree
       return;
     }
 
+    String thisLevel = path.getFileName().toString();
+    Path remaining = path.getParent();
     NameNode child = ctx.children.get(thisLevel);
     if (child == null)
     {
@@ -67,7 +67,7 @@ public class UniqueNameTree
 
   /**
    * Adds a new path.
-   * 
+   *
    * @param path
    */
   public void add(Path path)

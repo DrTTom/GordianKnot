@@ -38,6 +38,12 @@
             float: left;
             margin-right: 10px;
         }
+        
+       tr:nth-child(even) {background-color: #f2f2f2;} 
+       th, td {
+    padding: 5px;
+    text-align: left;
+}
     </style>
 </head>
 <body>
@@ -91,7 +97,30 @@
 	</p> 
     <% } %>
     <h3>Libraries used by few classes</h3>
+    <% if(rarelyUsedLibs.size==0) { %>
+    All referenced libraries seem to bee needed by your software.
+    <% } else { %>
+    The following libraries are used by only few classes:
+<table><tr><th>library</th><th>used by</th></tr>
+<% for(var key in rarelyUsedLibs) {%>
+<tr><td><%=key %></td><td><%= rarelyUsedLibs[key]%></td></tr>
+ <% } %>
+</table>
+<% } %>
     <h3>Libraries providing few classes</h3>
+There are no referenced libraries where less that 3 classes are used.
+</script>
+
+<script type="text/html" id="classpathTmpl"> 
+<table>
+    <tr><th>active</th><th>name</th><th>full path</th></tr>
+    <% for(var i = 0; i < entries.length; ++i) {%>
+     <tr><td><input type="checkbox" disabled <%=entries[i].active ? "checked": ""%>/></td>
+         <td><%=entries[i].label%> </td>
+         <td><%=entries[i].fullPath%> </td>
+     </tr>
+    <% } %>
+   </table> 
 </script>
 
 <h1>Dependency graph of project <span id="projectName"></span></h1>
@@ -104,7 +133,7 @@
     <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
     <h3>Filters</h3>
     <button onClick="setFilter('none')">whole graph</button>
-    <button onClick="setFilter('cycles')">cycles only</button>
+    <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
     <br/>
     <button onClick="impliedOnly(true)">required by selected node</button>
     <button onClick="impliedOnly(false)">requiring selected node</button>
@@ -131,11 +160,9 @@
 
     function showPath(value) {
         var response = JSON.parse(value);
-        var list = "";
-        response.forEach(function (entry) {
-            list = list + "<input type='checkbox' enabled='false' checked='checked' disabled='true'/>" + entry + '<br>';
-        });
-        document.getElementById('classpath').innerHTML = list;
+        const tplInfo = _.template(document.getElementById('classpathTmpl').innerHTML);
+        const reportDiv = document.getElementById('classpath');
+        reportDiv.innerHTML=tplInfo({entries: response})
     }
 
     function showReport(value) {

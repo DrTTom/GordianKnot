@@ -59,7 +59,7 @@ public class Server
     JsonTransformer transformer = new JsonTransformer();
     get("view", (req, res) -> view.getDisplayableGraph(), transformer);
     get("view/name", (req, res) -> view.getProjectName());
-    get("view/classpath", (req, res) -> view.getPathElements(), transformer);
+    get("view/classpath", (req, res) -> view.getClassPath(), transformer);
     get("view/unrefReport", (req, res) -> view.getUnreferencedReport(), transformer);
     get("view/node/:id", (req, res) -> view.getNodeInfo(req.params("id")), transformer);
     get("view/arc/:id", (req, res) -> view.getArcInfo(req.params("id")), transformer);

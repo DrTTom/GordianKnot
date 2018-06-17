@@ -29,7 +29,7 @@ public class ParsedClassPath
 
   private final List<Path> sourceFolders = new ArrayList<>();
 
-  private final List<Path> archives = new ArrayList<>();;
+  private final List<Path> archives = new ArrayList<>();
 
   private final List<Path> entries = new ArrayList<>();
 

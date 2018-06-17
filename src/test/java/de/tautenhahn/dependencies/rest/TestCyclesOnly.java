@@ -13,9 +13,17 @@ import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
+/**
+ * TODO: use new classinterpreter
+ * 
+ * @author TT
+ */
 public class TestCyclesOnly
 {
 
+  /**
+   * 
+   */
   @Test
   public void ignoreTestSuites()
   {
@@ -34,7 +42,6 @@ public class TestCyclesOnly
     Node testPackage = root.find("de.tautenhahn.impl");
     testPackage.setListMode(ListMode.LEAFS_COLLAPSED);
     DiGraph graph = new DiGraph(root);
-    System.out.println(suite.getSuccessors());
     assertThat("successors of suite", suite.getSuccessors(), hasItem(testPackage));
 
     CyclesOnly systemUnderTest = new CyclesOnly();
