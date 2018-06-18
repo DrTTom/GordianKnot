@@ -20,7 +20,7 @@ public abstract class CyclicDependencies
   /**
    * For programmatic access. Special types will be introduced when needed.
    */
-  public List<Map<Pair<String, String>, List<Pair<String, String>>>> cycles = new ArrayList<>();
+  List<Map<Pair<String, String>, List<Pair<String, String>>>> cycles = new ArrayList<>();
 
   @Override
   public String toString()

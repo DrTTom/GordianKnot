@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.analyzers;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -59,7 +60,7 @@ public final class BasicGraphOperations
    * implementations from the net but contrary to those it is correct. Furthermore, it creates less streams
    * and collections. Note that you cannot make the stream parallel without loosing the strict breadth-first
    * sequence. Use the cheaper depth-first search if you do not care about the sequence.
-   * 
+   *
    * @param graph
    * @param start
    * @param forward
@@ -135,7 +136,7 @@ public final class BasicGraphOperations
     @Override
     public IndexedNode next()
     {
-      IndexedNode s = foundNodes.poll();
+      IndexedNode s = Objects.requireNonNull(foundNodes.poll(), "queue is empty");
       (forward ? s.getSuccessors() : s.getPredecessors()).stream()
                                                          .filter(n -> !found[n.getIndex()])
                                                          .forEach(n -> {

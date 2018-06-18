@@ -1,10 +1,7 @@
 package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 
@@ -44,11 +41,10 @@ public class CycleFinder
    */
   public DiGraph createGraphFromCycles()
   {
-    Collection<DiGraph> parts = strongComponents.stream()
-                                                .filter(l -> l.size() > 1)
-                                                .map(DiGraph::new)
-                                                .collect(Collectors.toList());
-    return new DiGraph(parts.toArray(new DiGraph[0]));
+    return new DiGraph(strongComponents.stream()
+                                       .filter(l -> l.size() > 1)
+                                       .map(DiGraph::new)
+                                       .toArray(DiGraph[]::new));
   }
 
   /**
@@ -70,7 +66,7 @@ public class CycleFinder
         tarjan(node);
       }
     }
-    Collections.sort(strongComponents, (a, b) -> b.size() - a.size());
+    strongComponents.sort((a, b) -> b.size() - a.size());
   }
 
   private void tarjan(IndexedNode inode)

@@ -29,10 +29,10 @@ public class DisplayableDiGraph
   {
 
     @SuppressWarnings("unused") // read by GSON
-    String label;
+   final String label;
 
     @SuppressWarnings("unused") // read by GSON
-    String id;
+    final String id;
 
     @SuppressWarnings("unused") // read by GSON
     String group = "package";
@@ -112,6 +112,11 @@ public class DisplayableDiGraph
   public List<VisNode> getNodes()
   {
     return Collections.unmodifiableList(nodes);
+  }
+
+  public List<VisEdge> getEdges()
+  {
+    return Collections.unmodifiableList(edges);
   }
 
 }

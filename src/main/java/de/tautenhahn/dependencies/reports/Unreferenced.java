@@ -43,7 +43,7 @@ public class Unreferenced
 
     ClassLoader loader;
 
-    List<String> knownEntryClasses = new ArrayList<>();
+    final List<String> knownEntryClasses = new ArrayList<>();
 
     boolean reportUnrefClasses = true;
 
@@ -88,7 +88,7 @@ public class Unreferenced
           {
             if (Arrays.stream(m.getAnnotations())
                       .map(a -> a.annotationType().getName())
-                      .anyMatch(n -> markers.contains(n)))
+                      .anyMatch(markers::contains))
             {
               return true;
             }
@@ -157,7 +157,7 @@ public class Unreferenced
         return;
       }
     }
-    littleSupplyingLibs.put(j.toString(), new ArrayList(supplied));
+    littleSupplyingLibs.put(j.toString(), new ArrayList<>(supplied));
   }
 
   private static boolean isJar(Node n)

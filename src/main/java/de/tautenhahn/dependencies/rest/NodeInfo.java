@@ -52,7 +52,7 @@ public class NodeInfo
    *
    * @param node
    */
-  public NodeInfo(IndexedNode node)
+  NodeInfo(IndexedNode node)
   {
     nodeName = node.getNode().getName();
     numberContainedClasses = node.getNumberClasses();
@@ -82,7 +82,10 @@ public class NodeInfo
       if (m.group(1) != null)
       {
         Matcher m2 = Pattern.compile("([^\\.]+\\.)*(\\w+):([^\\.]+)\\.$").matcher(m.group(1));
-        m2.find();
+        if (!m2.find())
+        {
+          throw new IllegalArgumentException("not a valid node name");
+        }
         resourceType = m2.group(2);
         resourceName = m2.group(3);
       }

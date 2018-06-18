@@ -11,11 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -101,9 +99,6 @@ public class ParsedClassPath
    */
   public ClassLoader createClassLoader()
   {
-    Collection<URL> urls = Stream.concat(sourceFolders.stream(), archives.stream())
-                                 .map(this::toUrl)
-                                 .collect(Collectors.toList());
     // start work-around for JAVA 8:
     ClassLoader parent = null;
     try
@@ -117,7 +112,10 @@ public class ParsedClassPath
       parent = Thread.currentThread().getContextClassLoader();
     }
     // end work-around
-    return new URLClassLoader(urls.toArray(new URL[0]), parent);
+    return new URLClassLoader(Stream.concat(sourceFolders.stream(), archives.stream())
+                                    .map(this::toUrl)
+                                    .toArray(URL[]::new),
+                              parent);
   }
 
   private URL toUrl(Path entry)

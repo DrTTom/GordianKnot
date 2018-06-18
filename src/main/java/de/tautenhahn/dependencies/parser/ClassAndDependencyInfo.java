@@ -67,7 +67,7 @@ public final class ClassAndDependencyInfo
 
   private String name;
 
-  private static Pattern pattern = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+  private static final Pattern PATTERN = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
 
   private String className;
 
@@ -197,7 +197,7 @@ public final class ClassAndDependencyInfo
 
   static void addClassNames(String methodDecriptor, Collection<String> classNames)
   {
-    Matcher m = pattern.matcher(methodDecriptor);
+    Matcher m = PATTERN.matcher(methodDecriptor);
     while (m.find())
     {
       classNames.add(m.group(1).replace('/', '.'));

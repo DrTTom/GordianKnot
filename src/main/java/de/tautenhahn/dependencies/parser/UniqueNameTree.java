@@ -21,7 +21,7 @@ public class UniqueNameTree
   private static class NameNode
   {
 
-    String name;
+    final String name;
 
     Path remaining;
 

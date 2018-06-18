@@ -30,7 +30,7 @@ public abstract class Node
     /** direct leaves collapsed, all other children listed separately */
     LEAFS_COLLAPSED,
     /** all children listed separately */
-    EXPANDED;
+    EXPANDED
   }
 
   /**
@@ -162,7 +162,7 @@ public abstract class Node
   {
     Pair<String, String> parts = splitPath(path);
     Optional<Node> result = Optional.ofNullable(getChildByName(parts.getFirst()));
-    return result.map(n -> Optional.ofNullable(parts.getSecond()).map(s -> n.find(s)).orElse(n)).orElse(null);
+    return result.map(n -> Optional.ofNullable(parts.getSecond()).map(n::find).orElse(n)).orElse(null);
   }
 
   /**
@@ -170,7 +170,7 @@ public abstract class Node
    *
    * @param path
    */
-  protected Pair<String, String> splitPath(String path)
+  Pair<String, String> splitPath(String path)
   {
     int pos = path.indexOf(SEPARATOR);
     return pos > 0 ? new Pair<>(path.substring(0, pos), path.substring(pos + 1)) : new Pair<>(path, null);

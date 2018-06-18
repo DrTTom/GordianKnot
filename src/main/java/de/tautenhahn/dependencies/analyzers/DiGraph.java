@@ -53,6 +53,7 @@ public class DiGraph
 
     IndexedNode(IndexedNode original)
     {
+      index = original.index;
       node = original.node;
       numberClasses = original.numberClasses;
     }
@@ -120,7 +121,7 @@ public class DiGraph
   @SuppressWarnings("synthetic-access")
   public DiGraph(Stream<Node> originalNodes)
   {
-    nodes = originalNodes.map(IndexedNode::new).collect(Collectors.toCollection(() -> new ArrayList<>()));
+    nodes = originalNodes.map(IndexedNode::new).collect(Collectors.toCollection(ArrayList::new));
     Map<Node, IndexedNode> indexes = new HashMap<>();
     for ( int i = 0 ; i < nodes.size() ; i++ )
     {
