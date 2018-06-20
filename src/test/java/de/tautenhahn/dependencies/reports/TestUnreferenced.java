@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.slf4j.simple.SimpleLoggerConfiguration;
 
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
@@ -16,6 +17,12 @@ import de.tautenhahn.dependencies.parser.ProjectScanner;
  */
 public class TestUnreferenced
 {
+
+  /**
+   * Application needs slf4j-simple at runtime but source code does not. Referencing one class from that jar
+   * to get a "contributes too few classes" warning.
+   */
+  public SimpleLoggerConfiguration justADummy;
 
   /**
    * Creates a report about current project.

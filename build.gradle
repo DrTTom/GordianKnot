@@ -28,7 +28,7 @@ check.dependsOn jacocoTestReport
 dependencies {
    compile 'com.sparkjava:spark-core:2.7.2'
    compile 'com.google.code.gson:gson:2.8.5'
-   runtime 'org.slf4j:slf4j-simple:1.8.0-beta2' // there is a security warning for all earlier versions
+   testCompile 'org.slf4j:slf4j-simple:1.8.0-beta2' // there is a security warning for all earlier versions
    testCompile ("junit:junit:4.12")
    {
       exclude module: "hamcrest-core"
@@ -40,5 +40,5 @@ mainClassName = 'de.tautenhahn.dependencies.rest.Server'
 applicationDefaultJvmArgs = ['-Dorg.slf4j.simpleLogger.logFile=GordianKnotServer.log']
 
 run {
-   args sourceSets.main.runtimeClasspath.asPath
+   args sourceSets.test.runtimeClasspath.asPath
 }

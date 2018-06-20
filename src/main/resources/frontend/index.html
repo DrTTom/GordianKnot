@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Dependency Graph</title>
     <script src="vis.min.js"></script>
+    <script src="knot.js"></script>
     <link href="vis.min.css" rel="stylesheet" type="text/css"/>
     <script src="lodash.all.min.js"></script>
     <style>
@@ -47,7 +48,12 @@
     </style>
 </head>
 <body>
-
+<script>
+function partial(tmplName, value) {
+    const tplInfo = _.template(document.getElementById(tmplName).innerHTML);
+    return tplInfo(value);
+}
+</script>
 <script type="text/html" id="nodeInfo">
     <h3><%=type%> <%=name%></h3>
     <% if(typeof resourceType != 'undefined'){ %>
@@ -74,41 +80,54 @@
 
 <script type="text/html" id="refReportTmpl">
     <h2>References Report</h2>
-    <h3>Unreferenced classes</h3>    
-    <% if(classes.length==0) { %>
-    There are no apparently unused classes.
-    <% } else { %>
-    The following classes appear to be unused, consider to removing them from your project:
-    <p>    
-    <% for(var i = 0; i < classes.length; ++i) {%>
-      <%=classes[i] %><br>
-    <% } %>
-	</p> 
-    <% } %>
+    <h3>Unreferenced classes</h3>
+    <%= partial("unrefElementsTmpl", { elements: classes, 
+                     okMessage: "There are no apparently unused classes.", 
+                     explanation: "The following classes appear to be unused, consider to removing them from your project:"
+                   }) %>
     <h3>Unreferenced libraries</h3>
-    <% if(jars.length==0) { %>
-    Your class path looks correct.
+    <%= partial("unrefElementsTmpl", { elements: jars, 
+                     okMessage: "Your class path looks correct.", 
+                     explanation: "Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:"
+                   }) %>
+    <h3>Libraries used by few classes</h3>
+    <%= partial("littleUsedTmpl", { map: rarelyUsedLibs,
+                     okMessage: "All referenced libraries seem to be really needed by your software.",
+                     explanation: "The following libraries are used by only few classes:",
+                     classesTitle: "using classes"
+                   }) %>
+    <h3>Libraries providing few classes</h3>
+    <%= partial("littleUsedTmpl", { map: littleSupplyingLibs,
+                     okMessage: "All referenced libraries seem to contribute a fair amount of code.",
+                     explanation: "Your software seems to use only few classes from the following libraries. Consider to replace that functionality.",
+                     classesTitle: "used classes"
+                   }) %>
+</script>
+
+<script type="text/html" id="unrefElementsTmpl">
+<% if(elements.length==0) { %>
+    <%= okMessage %>
     <% } else { %>
-    Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:
+    <%= explanation %>
     <p>    
-    <% for(var i = 0; i < jars.length; ++i) {%>
-      <%=jars[i] %><br>
+    <% for(var i = 0; i < elements.length; ++i) {%>
+      <%=elements[i] %><br>
     <% } %>
 	</p> 
     <% } %>
-    <h3>Libraries used by few classes</h3>
-    <% if(rarelyUsedLibs.size==0) { %>
-    All referenced libraries seem to bee needed by your software.
+</script> 
+
+<script type="text/html" id="littleUsedTmpl">
+    <% if(Object.keys(map).length==0) { %>
+    <%= okMessage %>
     <% } else { %>
-    The following libraries are used by only few classes:
-<table><tr><th>library</th><th>used by</th></tr>
-<% for(var key in rarelyUsedLibs) {%>
-<tr><td><%=key %></td><td><%= rarelyUsedLibs[key]%></td></tr>
+    <%= explanation %>
+<table><tr><th>library</th><th><%= classesTitle %></th></tr>
+<% for(var key in map) {%>
+<tr><td><%=key %></td><td><%= map[key]%></td></tr>
  <% } %>
 </table>
-<% } %>
-    <h3>Libraries providing few classes</h3>
-There are no referenced libraries where less that 3 classes are used.
+ <% } %>
 </script>
 
 <script type="text/html" id="classpathTmpl"> 
@@ -146,156 +165,5 @@ There are no referenced libraries where less that 3 classes are used.
     <form action="" id="classpath">
     </form>    
 </div>
-
-<script>
-    var network;
-    var selectedNode = '';
-
-    get("http://localhost:4567/view/name", function (name) {
-        document.getElementById('projectName').innerHTML = name
-    });
-    get("http://localhost:4567/view", showGraph);
-    get("http://localhost:4567/view/classpath", showPath);
-    get("http://localhost:4567/view/unrefReport", showReport);
-
-    function showPath(value) {
-        var response = JSON.parse(value);
-        const tplInfo = _.template(document.getElementById('classpathTmpl').innerHTML);
-        const reportDiv = document.getElementById('classpath');
-        reportDiv.innerHTML=tplInfo({entries: response})
-    }
-
-    function showReport(value) {
-        var report = JSON.parse(value);
-        const tplInfo = _.template(document.getElementById('refReportTmpl').innerHTML);
-        const reportDiv = document.getElementById('refReport');
-        reportDiv.innerHTML = tplInfo(report);
-    }
-
-    function get(url, callBack) {
-        var req = new XMLHttpRequest();
-        req.open('GET', url, true);
-        req.send();
-        req.onreadystatechange = function (e) {
-            if (req.readyState == 4) {
-                callBack(req.responseText);
-            }
-        }
-    }
-	var zoomEnabled=true;
-	
-	function stopMovingNodes(params) {
-        network.setOptions({
-            physics: false
-        });
-        console.log("disabled physics");
-        zoomEnabled=true;
-    }
-	
-    function showGraph(responseText) {
-        var response = JSON.parse(responseText);
-        var nodes = new vis.DataSet(response.nodes);
-        var edges = new vis.DataSet(response.edges);
-
-        var container = document.getElementById('mynetwork');
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
-        var gray = '#555555';
-        var options = { 
-        		physics: false,
-        		interaction: {hover: true},
-        		 groups: {
-        			 'jar': {
-     	            	color: {background:'#e7a5ab',border:gray, hover:{background:'#ebb5ba',border:'black'}, highlight:{background:'#ebb5ba',border:'black'}}
-     	            },
-     	           'dir': {
-   	            	color: {background:'#afd6e7',border:gray, hover:{background:'#dbecf4',border:'black'}, highlight:{background:'#dbecf4',border:'black'}}
-                   },
-        	            'package': {
-        	            	color: {background:'#aec489',border:gray, hover:{background:'#d2debe',border:'black'}, highlight:{background:'#d2debe',border:'black'}}
-                        },
-        	            'class': {
-        	            	color: {background:'#ffed9e',border:gray, hover:{background:'#fff5ca',border:'black'}, highlight:{background:'#fff5ca',border:'black'}}
-        	            }
-        	            
-        	        }
-        };
-        network = new vis.Network(container, data, options);
-        selectedNode = '';
-        document.getElementById('description').innerHTML = "Click on node or arc to select it.";
-        zoomEnabled=false;
-        distribute();
-        network.on("stabilized", stopMovingNodes);
-
-        network.on("initRedraw" , function (params) {
-            if (!zoomEnabled) {network.fit();}
-        });
-        network.on("click", function (params) {
-            selectedNode = '';
-            params.event = "[original event]";
-            if (params.nodes.length == 1) {
-                getNodeInfo(params.nodes[0]);
-            } else if (params.edges.length == 1) {
-                getArcInfo(params.edges[0]);
-            } else document.getElementById('description').innerHTML = "nothing selected";
-        });
-    }
-
-    function distribute() {
-        network.setOptions({
-            physics: true
-        });
-    }
-
-    function getNodeInfo(id) {
-        get("http://localhost:4567/view/node/" + id, function (e) {
-            var nodeInfo = JSON.parse(e);
-            nodeInfo.id=id;
-            
-            selectedNode = id;
-            const tplInfo = _.template(document.getElementById('nodeInfo').innerHTML);
-            const description = document.getElementById('description');
-            description.innerHTML = tplInfo(nodeInfo);
-            Array.from(description.querySelectorAll('button')).forEach(button=>{
-                button.addEventListener('click', function(evt){
-                    console.log(evt.target);
-                    const mode = evt.target.getAttribute('change-list-mode');
-                    changeListMode(mode)
-                })
-            })
-        });
-    }
-
-    function changeListMode(mode) {
-        if (selectedNode != '') {
-            get("http://localhost:4567/view/node/" + selectedNode + "/listmode/" + mode, showGraph);
-        }
-    }
-
-    function setFilter(value) {
-        get("http://localhost:4567/view/filters/" + value, showGraph);
-    }
-
-    function impliedOnly(value)
-    {
-        get("http://localhost:4567/view/filters/impliedBy/"+selectedNode+"/" + value, showGraph);
-    }
-
-    function getArcInfo(id) {
-        get("http://localhost:4567/view/arc/" + id, function (e) {
-            var arcInfo = JSON.parse(e);
-            var description = '<h3>' + arcInfo.from.name + ' depends on ' + arcInfo.to.name +
-                '</h3> Reason: <table>';
-            arcInfo.reason.forEach(function (pair) {
-                description = description + '<tr><td>' + pair.first + '</td><td> depends on </td><td>' + pair.second + '</td></tr>'
-            });
-
-            document.getElementById('description').innerHTML = description + '</table>';
-        });
-    }
-</script>
-
 </body>
 </html>
