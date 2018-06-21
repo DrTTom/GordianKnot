@@ -1,169 +1,159 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <title>Dependency Graph</title>
-    <script src="vis.min.js"></script>
-    <script src="knot.js"></script>
-    <link href="vis.min.css" rel="stylesheet" type="text/css"/>
-    <script src="lodash.all.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        button {
-            background-color: #74894f;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            margin-top: 5px;
-            margin-right: 5px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .row {        
-        display: flex;
-        }
-     .left {
-          flex: 40%;
-		}
-       .right {
-    	      flex: 60%;
-}
-        #mynetwork {
-            width: 700px;
-            height: 700px;
-            border: 1px solid lightgray;
-            float: left;
-            margin-right: 10px;
-        }
-        
-       tr:nth-child(even) {background-color: #f2f2f2;} 
-       th, td {
-    padding: 5px;
-    text-align: left;
-}
-    </style>
+   <meta charset="utf-8">
+   <title>Dependency Graph</title>
+   <script src="vis.min.js"></script>
+   <script src="knot.js"></script>
+   <link href="vis.min.css" rel="stylesheet" type="text/css" />
+   <link href="knot.css" rel="stylesheet" type="text/css" />
+   <script src="lodash.all.min.js"></script>
 </head>
-<body>
-<script>
-function partial(tmplName, value) {
-    const tplInfo = _.template(document.getElementById(tmplName).innerHTML);
-    return tplInfo(value);
-}
-</script>
-<script type="text/html" id="nodeInfo">
-    <h3><%=type%> <%=name%></h3>
-    <% if(typeof resourceType != 'undefined'){ %>
-    <div class="row">
-        <div class="left">found in:</div>
-        <div class="right"><%=resourceType%> <%=resourceName%></div>
-    </div>
-    <% } %>
-    <div class="row">
-        <div class="left">total number classes:</div>
-        <div class="right"><%=numberContainedClasses%></div>
-    </div>
-    <div class="row">
-        <div class="left">current reference:</div>
-        <div class="right"><%=id%></div>
-    </div>
-    <% if(type!='class'){ %>
-        <button id="expandNode" change-list-mode="EXPANDED">expand <%=numberExpandable %> nodes</button>
-    <% } %>
-    <% if(type=='class' || type=='package' || type =='package tree'){ %>
-        <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">collapse <%=numberCollapsable %> nodes into parent container</button>
-    <% } %>
-</script>
 
-<script type="text/html" id="refReportTmpl">
-    <h2>References Report</h2>
-    <h3>Unreferenced classes</h3>
-    <%= partial("unrefElementsTmpl", { elements: classes, 
+<body>
+   <script>
+      function partial(tmplName, value) {
+         const tplInfo = _.template(document.getElementById(tmplName).innerHTML);
+         return tplInfo(value);
+      }
+   </script>
+   <script type="text/html" id="nodeInfo">
+      <h3> <%= type %> <%= name %>
+      </h3>
+      <% if(typeof resourceType != 'undefined'){ %>
+         <div class="row">
+            <div class="left">found in:</div>
+            <div class="right"><%= resourceType %> <%= resourceName %></div>
+         </div>
+      <% } %>
+         <div class="row">
+            <div class="left">total number classes:</div>
+            <div class="right"><%= numberContainedClasses %></div>
+         </div>
+         <div class="row">
+            <div class="left">current reference:</div>
+            <div class="right"><%= id %></div>
+         </div>
+      <% if(type!='class'){ %>
+         <button id="expandNode" change-list-mode="EXPANDED">expand <%=numberExpandable %> nodes</button>
+      <% } %>
+      <% if(type=='class' || type=='package' || type =='package tree'){ %>
+         <button id="collapseParentNode" change-list-mode="COLLAPSE_PARENT">
+                 collapse <%=numberCollapsable %> nodes into parent container</button>
+      <% } %>
+   </script>
+    <script type="text/html" id="arcInfo">
+       <h3> <%= from.name %> depends on <br><%= to.name %> </h3> 
+       Reason (using relative names):
+       <table>
+          <tr><th>referencing class</th><th>referenced class</th></tr>
+          <% for(var i = 0; i < reason.length; ++i) {%>
+             <tr><td> <%= reason[i].first %> </td><td> <%= reason[i].second %></td></tr>
+          <% } %>
+       </table>
+   </script>
+   <script type="text/html" id="refReportTmpl">
+      <h2>References Report</h2>
+      <h3>Unreferenced classes</h3>
+      <%= partial("unrefElementsTmpl", { elements: classes, 
                      okMessage: "There are no apparently unused classes.", 
                      explanation: "The following classes appear to be unused, consider to removing them from your project:"
-                   }) %>
-    <h3>Unreferenced libraries</h3>
-    <%= partial("unrefElementsTmpl", { elements: jars, 
+                }) %>
+      <h3>Unreferenced libraries</h3>
+      <%= partial("unrefElementsTmpl", { elements: jars, 
                      okMessage: "Your class path looks correct.", 
                      explanation: "Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:"
-                   }) %>
-    <h3>Libraries used by few classes</h3>
-    <%= partial("littleUsedTmpl", { map: rarelyUsedLibs,
+                }) %>
+      <h3>Libraries used by few classes</h3>
+      <%= partial("littleUsedTmpl", { map: rarelyUsedLibs,
                      okMessage: "All referenced libraries seem to be really needed by your software.",
                      explanation: "The following libraries are used by only few classes:",
                      classesTitle: "using classes"
-                   }) %>
-    <h3>Libraries providing few classes</h3>
-    <%= partial("littleUsedTmpl", { map: littleSupplyingLibs,
+                }) %>
+      <h3>Libraries providing few classes</h3>
+      <%= partial("littleUsedTmpl", { map: littleSupplyingLibs,
                      okMessage: "All referenced libraries seem to contribute a fair amount of code.",
                      explanation: "Your software seems to use only few classes from the following libraries. Consider to replace that functionality.",
                      classesTitle: "used classes"
-                   }) %>
-</script>
+                }) %>
+   </script>
 
-<script type="text/html" id="unrefElementsTmpl">
-<% if(elements.length==0) { %>
-    <%= okMessage %>
-    <% } else { %>
-    <%= explanation %>
-    <p>    
-    <% for(var i = 0; i < elements.length; ++i) {%>
-      <%=elements[i] %><br>
-    <% } %>
-	</p> 
-    <% } %>
-</script> 
+   <script type="text/html" id="unrefElementsTmpl">
+      <% if(elements.length==0) { %>
+         <%= okMessage %>
+      <% } else { %>
+         <%= explanation %>
+         <p>
+         <% for(var i = 0; i < elements.length; ++i) {%>
+            <%=elements[i] %><br>
+         <% } %>
+         </p>
+      <% } %>
+   </script>
 
-<script type="text/html" id="littleUsedTmpl">
-    <% if(Object.keys(map).length==0) { %>
-    <%= okMessage %>
-    <% } else { %>
-    <%= explanation %>
-<table><tr><th>library</th><th><%= classesTitle %></th></tr>
-<% for(var key in map) {%>
-<tr><td><%=key %></td><td><%= map[key]%></td></tr>
- <% } %>
-</table>
- <% } %>
-</script>
+   <script type="text/html" id="littleUsedTmpl">
+      <% if(Object.keys(map).length==0) { %>
+         <%= okMessage %>
+      <% } else { %>
+         <%= explanation %>
+         <table>
+            <tr>
+               <th>library</th>
+               <th><%= classesTitle %></th>
+            </tr>
+            <% for(var key in map) {%>
+               <tr>
+                  <td><%= key %></td>
+                  <td><%= map[key] %></td>
+               </tr>
+            <% } %>
+         </table>
+      <% } %>
+   </script>
 
-<script type="text/html" id="classpathTmpl"> 
-<table>
-    <tr><th>active</th><th>name</th><th>full path</th></tr>
-    <% for(var i = 0; i < entries.length; ++i) {%>
-     <tr><td><input type="checkbox" disabled <%=entries[i].active ? "checked": ""%>/></td>
-         <td><%=entries[i].label%> </td>
-         <td><%=entries[i].fullPath%> </td>
-     </tr>
-    <% } %>
-   </table> 
-</script>
+   <script type="text/html" id="classpathTmpl">
+      <table>
+         <tr>
+            <th>active</th>
+            <th>name</th>
+            <th>full path</th>
+         </tr>
+         <% for(var i = 0; i < entries.length; ++i) {%>
+            <tr>
+               <td><input type="checkbox" disabled <%=entries[i].active ? "checked": ""%>/></td>
+               <td><%= entries[i].label %></td>
+               <td><%=entries[i].fullPath%></td>
+            </tr>
+         <% } %>
+      </table>
+   </script>
 
-<h1>Dependency graph of project <span id="projectName"></span></h1>
+   <h1>Dependency graph of project <span id="projectName"></span></h1>
 
-<div id="mynetwork"></div>
-<div id="detailInfo">
-    <h2>Graph</h2>
-    <h3>Nodes</h3>
-    <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution <br>    
-    <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
-    <h3>Filters</h3>
-    <button onClick="setFilter('none')">whole graph</button>
-    <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
-    <br/>
-    <button onClick="impliedOnly(true)">required by selected node</button>
-    <button onClick="impliedOnly(false)">requiring selected node</button>
-    <h2>Selected Element</h2>
-    <div id="description"></div>
-</div>
-<div style="width: 100%; float: left">
-<div id="refReport"></div>
-    <h2>Classpath</h2>
-    <form action="" id="classpath">
-    </form>    
-</div>
+   <div id="mynetwork"></div>
+
+   <div id="detailInfo">
+      <h2>Graph</h2>
+      <h3>Nodes</h3>
+      <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution
+      <br>
+      <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
+      <h3>Filters</h3>
+      <button onClick="setFilter('none')">whole graph</button>
+      <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
+      <br/>
+      <button onClick="impliedOnly(true)">required by selected node</button>
+      <button onClick="impliedOnly(false)">requiring selected node</button>
+
+      <h2>Selected Element</h2>
+      <div id="description"></div>
+   </div>
+   <div style="width: 100%; float: left">
+      <div id="refReport"></div>
+      <h2>Classpath</h2>
+      <form id="classpath"></form>
+   </div>
 </body>
+
 </html>
