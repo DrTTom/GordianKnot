@@ -28,19 +28,40 @@ public class DisplayableDiGraph
   static class VisNode
   {
 
-    @SuppressWarnings("unused") // read by GSON
-   final String label;
+    final String label;
 
-    @SuppressWarnings("unused") // read by GSON
     final String id;
 
-    @SuppressWarnings("unused") // read by GSON
     String group = "package";
 
     VisNode(String label, String id)
     {
       this.label = label;
       this.id = id;
+    }
+
+    /**
+     * @return the group
+     */
+    public String getGroup()
+    {
+      return group;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel()
+    {
+      return label;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId()
+    {
+      return id;
     }
 
   }
@@ -55,10 +76,8 @@ public class DisplayableDiGraph
 
     String to;
 
-    @SuppressWarnings("unused") // read by GSON
     String arrows = "middle";
 
-    @SuppressWarnings("unused") // read by GSON
     String id;
 
     VisEdge(String i, String j)
@@ -68,6 +87,38 @@ public class DisplayableDiGraph
       id = from + "-" + to;
     }
 
+
+    /**
+     * @return the from
+     */
+    public String getFrom()
+    {
+      return from;
+    }
+
+    /**
+     * @return the to
+     */
+    public String getTo()
+    {
+      return to;
+    }
+
+    /**
+     * @return the arrows
+     */
+    public String getArrows()
+    {
+      return arrows;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId()
+    {
+      return id;
+    }
   }
 
   /**

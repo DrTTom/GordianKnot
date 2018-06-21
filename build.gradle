@@ -1,18 +1,19 @@
-apply plugin: 'application'
-apply plugin: 'pmd'
-// apply plugin: 'findbugs' // does not work with Java 10
-apply plugin: 'jacoco'
-apply plugin: "com.github.ben-manes.versions"
-
 buildscript {
    repositories {
       jcenter()
    }
-   dependencies {
-      classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
-   }
 }
 
+plugins {
+  id 'com.github.spotbugs' version '1.6.2'
+  id 'com.github.ben-manes.versions' version '0.20.0'
+}
+
+apply plugin: 'application'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.spotbugs'
+apply plugin: 'com.github.ben-manes.versions'
 
 pmd {
     toolVersion = '6.4.0'

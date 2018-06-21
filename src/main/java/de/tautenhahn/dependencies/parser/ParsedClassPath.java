@@ -9,6 +9,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -99,23 +101,26 @@ public class ParsedClassPath
    */
   public ClassLoader createClassLoader()
   {
-    // start work-around for JAVA 8:
-    ClassLoader parent = null;
+    URL[] resources = Stream.concat(sourceFolders.stream(), archives.stream())
+                            .map(this::toUrl)
+                            .toArray(URL[]::new);
+    PrivilegedAction<ClassLoader> create = () -> new URLClassLoader(resources, getParent());
+    return AccessController.doPrivileged(create);
+  }
+
+  /** Work-around for java 8 not having a platform class loader */
+  private ClassLoader getParent()
+  {
     try
     {
       Method getter = ClassLoader.class.getMethod("getPlatformClassLoader");
-      parent = (ClassLoader)getter.invoke(ClassLoader.class);
+      return (ClassLoader)getter.invoke(ClassLoader.class);
     }
     catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
       | InvocationTargetException e)
     {
-      parent = Thread.currentThread().getContextClassLoader();
+      return Thread.currentThread().getContextClassLoader();
     }
-    // end work-around
-    return new URLClassLoader(Stream.concat(sourceFolders.stream(), archives.stream())
-                                    .map(this::toUrl)
-                                    .toArray(URL[]::new),
-                              parent);
   }
 
   private URL toUrl(Path entry)

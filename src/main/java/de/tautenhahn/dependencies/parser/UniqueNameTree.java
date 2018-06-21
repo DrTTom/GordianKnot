@@ -3,6 +3,7 @@ package de.tautenhahn.dependencies.parser;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -46,14 +47,18 @@ public class UniqueNameTree
     }
     if (ctx.children.isEmpty() && ctx != root) // NOPMD this should compare the reference, not the value!
     {
-      String oldName = ctx.remaining.getFileName().toString();
+      String oldName = Optional.ofNullable(ctx)
+                               .map(c -> c.remaining)
+                               .map(Path::getFileName)
+                               .map(Object::toString)
+                               .orElseThrow(() -> new IllegalStateException("remaining attribute must not be null"));
       Path oldRemaining = ctx.remaining.getParent();
       ctx.children.put(oldName, new NameNode(oldName + "/" + ctx.name, oldRemaining));
       add(path, ctx);
       return;
     }
 
-    String thisLevel = path.getFileName().toString();
+    String thisLevel = String.valueOf(path.getFileName());
     Path remaining = path.getParent();
     NameNode child = ctx.children.get(thisLevel);
     if (child == null)

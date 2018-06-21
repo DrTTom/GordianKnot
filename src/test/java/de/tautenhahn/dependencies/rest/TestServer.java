@@ -32,6 +32,13 @@ public class TestServer
     }
   }
 
+  // TODO "withFakedConsole(lambda)"
+  private static void fakeConsole(PrintStream stream)
+  {
+    Server.out = stream;
+  }
+
+
   /**
    * Just calling the main method.
    *
@@ -40,9 +47,10 @@ public class TestServer
   @Test
   public void help() throws IOException
   {
-    try (ByteArrayOutputStream bout = new ByteArrayOutputStream(); PrintStream out = new PrintStream(bout))
+    try (ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      PrintStream out = new PrintStream(bout, true, "UTF-8"))
     {
-      Server.out = out;
+      fakeConsole(out);
       Server.main("-H");
       assertThat("output", new String(bout.toByteArray(), StandardCharsets.UTF_8), containsString("Usage:"));
     }

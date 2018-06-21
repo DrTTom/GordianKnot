@@ -9,19 +9,18 @@ import static org.junit.Assume.assumeThat;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.parser.ClassPathUtils;
+import de.tautenhahn.dependencies.parser.ParsedClassPath;
 
 
 /**
- * Unit test for {@link ClassPathUtils}. May require Java 10. TODO: provide older Alien.class!
+ * Unit test for {@link ParsedClassPath}. Requires Java 10 if independent class loader shall be checked.
  *
  * @author TT
  */
-public class TestClasspathUtils
+public class TestParsedClassPath
 {
 
   /**
@@ -30,7 +29,7 @@ public class TestClasspathUtils
   @Test
   public void getClassPath()
   {
-    assertThat("current class path", ClassPathUtils.getClassPath(), not(empty()));
+    assertThat("current class path", ParsedClassPath.getCurrentClassPath().getEntries(), not(empty()));
   }
 
   /**
@@ -61,7 +60,7 @@ public class TestClasspathUtils
   private ClassLoader createAlienLoader()
   {
     Path otherClasses = Paths.get("src", "test", "resources", "alienClasses").toAbsolutePath();
-    return ClassPathUtils.createClassLoader(Collections.singletonList(otherClasses));
+    return new ParsedClassPath(otherClasses.toString()).createClassLoader();
   }
 
 

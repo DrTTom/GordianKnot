@@ -65,7 +65,7 @@ public class TestClassAndDependencyInfo
     start = System.currentTimeMillis();
     try (InputStream classContent = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
     {
-      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent);
+      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent, clazz.getName());
       long myDuration = System.currentTimeMillis() - start;
       Collection<String> fromMe = systemUnderTest.getDependencies();
       Set<String> notListedByMe = new HashSet<>(fromJDeps);
@@ -92,7 +92,8 @@ public class TestClassAndDependencyInfo
     try (InputStream classContent = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName()
                                                                            + ".class"))
     {
-      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent);
+      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent,
+                                                                            ExampleClass.class.getName());
       assertThat("parsed class name", systemUnderTest.getClassName(), is(ExampleClass.class.getName()));
       assertThat("dependencies",
                  systemUnderTest.getDependencies(),

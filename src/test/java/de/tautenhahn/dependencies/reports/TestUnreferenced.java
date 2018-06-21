@@ -19,12 +19,6 @@ public class TestUnreferenced
 {
 
   /**
-   * Application needs slf4j-simple at runtime but source code does not. Referencing one class from that jar
-   * to get a "contributes too few classes" warning.
-   */
-  public SimpleLoggerConfiguration justADummy;
-
-  /**
    * Creates a report about current project.
    */
   @Test
@@ -44,5 +38,14 @@ public class TestUnreferenced
 
     // assertThat("unref classes", systemUnderTest.getUnreferencedClasses(), empty());
     // assertThat("unref jars", systemUnderTest.getUnreferencedJars(), empty());
+  }
+
+  /**
+   * Application needs slf4j-simple at runtime but source code does not. Referencing one class from that jar
+   * to get a "contributes too few classes" warning.
+   */
+  public SimpleLoggerConfiguration getJustADummy()
+  {
+    return null;
   }
 }

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -108,7 +109,7 @@ public class ProjectScanner
               classFirstSeenAt.put(className, node);
               try (InputStream entryContent = new NonClosingStream(zip))
               {
-                deps.put(node, ClassAndDependencyInfo.parse(entryContent).getDependencies());
+                deps.put(node, ClassAndDependencyInfo.parse(entryContent, className).getDependencies());
               }
             }
             entry = zip.getNextEntry();
@@ -155,7 +156,8 @@ public class ProjectScanner
 
   private boolean isFile(Path path, String suffix)
   {
-    return path.getFileName().toString().endsWith(suffix) && Files.isRegularFile(path);
+    return Optional.ofNullable(path).map(Path::getFileName).map(Object::toString).orElse("").endsWith(suffix)
+           && Files.isRegularFile(path);
   }
 
   private void handleClassFile(Path clazz, Path resource)
@@ -175,7 +177,7 @@ public class ProjectScanner
     classFirstSeenAt.put(className, node);
     try (InputStream in = new FileInputStream(clazz.toFile()))
     { // TODO: allow filter to switch off parsing the dependencies of supporting nodes.
-      ClassAndDependencyInfo parser = ClassAndDependencyInfo.parse(in);
+      ClassAndDependencyInfo parser = ClassAndDependencyInfo.parse(in, className);
       deps.put(node, parser.getDependencies());
     }
     catch (IOException e)

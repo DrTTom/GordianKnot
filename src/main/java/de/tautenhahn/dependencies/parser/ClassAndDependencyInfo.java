@@ -65,7 +65,7 @@ public final class ClassAndDependencyInfo
 
   private byte[] buf = new byte[1024];
 
-  private String name;
+  private final String expectedClassName;
 
   private static final Pattern PATTERN = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
 
@@ -77,15 +77,17 @@ public final class ClassAndDependencyInfo
    * Parse class content and return new instance.
    *
    * @param ins class content
+   * @param name expected class name
    * @throws IOException
    */
-  public static ClassAndDependencyInfo parse(InputStream ins) throws IOException
+  public static ClassAndDependencyInfo parse(InputStream ins, String name) throws IOException
   {
-    return new ClassAndDependencyInfo(ins);
+    return new ClassAndDependencyInfo(ins, name);
   }
 
-  private ClassAndDependencyInfo(InputStream ins) throws IOException
+  private ClassAndDependencyInfo(InputStream ins, String name) throws IOException
   {
+    this.expectedClassName = name;
     try (DataInputStream data = new DataInputStream(ins))
     {
       if (data.readInt() != MAGIC)
@@ -107,6 +109,10 @@ public final class ClassAndDependencyInfo
       }
       skip(data, 2); // access flags;
       className = strings[classIndex.get(Integer.valueOf(data.readShort())).intValue()].replace('/', '.');
+      if (!className.equals(expectedClassName))
+      {
+        throw new IllegalArgumentException("Class " + className + " found but expected " + expectedClassName);
+      }
     }
     registerReferencedStrings();
   }
@@ -178,8 +184,8 @@ public final class ClassAndDependencyInfo
         skip(data, 3);
         break;
       default:
-        throw new IllegalArgumentException(name + " is not a class, constant pool contains illegal tag "
-                                           + tag);
+        throw new IllegalArgumentException(expectedClassName
+                                           + " is not a class, constant pool contains illegal tag " + tag);
     }
     return 1;
   }
