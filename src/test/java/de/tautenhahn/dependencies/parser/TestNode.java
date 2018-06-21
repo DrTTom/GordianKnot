@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -64,6 +65,7 @@ public class TestNode
     ClassNode dummy = (ClassNode)node.find("Dummy");
     assertThat("name of leaf", dummy.getName(), equalTo(PKG_1 + ".Dummy"));
     assertThat("class name", dummy.getClassName(), equalTo("de.tautenhahn.example.Dummy"));
+    assertThat("child", dummy.getChildByName("egal"), nullValue());
   }
 
 

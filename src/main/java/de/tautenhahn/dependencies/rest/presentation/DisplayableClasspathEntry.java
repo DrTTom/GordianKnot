@@ -17,8 +17,6 @@ public class DisplayableClasspathEntry
 
   private final String label;
 
-  private String nodeId;
-
   private final String fullPath;
 
   /**
@@ -52,7 +50,6 @@ public class DisplayableClasspathEntry
     this.active = active;
   }
 
-
   /**
    * Returns the label of the resource node.
    */
@@ -60,24 +57,6 @@ public class DisplayableClasspathEntry
   {
     return label;
   }
-
-  /**
-   * @return the nodeId
-   */
-  public String getNodeId()
-  {
-    return nodeId;
-  }
-
-
-  /**
-   * @param nodeId the nodeId to set
-   */
-  public void setNodeId(String nodeId)
-  {
-    this.nodeId = nodeId;
-  }
-
 
   /**
    * Returns the path as found inside class path.

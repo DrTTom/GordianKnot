@@ -82,9 +82,8 @@ public final class ContainerNode extends Node
   }
 
   /**
-   * Returns the children on the container structure.
+   * Returns the direct children, independently of list mode.
    */
-  @Override
   public Collection<Node> getChildren()
   {
     return Collections.unmodifiableCollection(children.values());
@@ -185,9 +184,4 @@ public final class ContainerNode extends Node
     return children.get(simpleName);
   }
 
-  @Override
-  public Collection<Node> getAllChildren()
-  {
-    return Collections.unmodifiableCollection(children.values());
-  }
 }

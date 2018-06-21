@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.reports;
+package de.tautenhahn.dependencies.parser;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.parser.ParsedClassPath;
-
 
 /**
  * Unit test for {@link ParsedClassPath}. Requires Java 10 if independent class loader shall be checked.
@@ -24,12 +22,16 @@ public class TestParsedClassPath
 {
 
   /**
-   * Obtain the current class path setting - useful if tests are included in a project.
+   * Obtain the current class path setting - useful if tests are included in a project. Note that class path
+   * in IDE may differ from the one in gradle.
    */
   @Test
   public void getClassPath()
   {
-    assertThat("current class path", ParsedClassPath.getCurrentClassPath().getEntries(), not(empty()));
+    ParsedClassPath systemUnderTest = ParsedClassPath.getCurrentClassPath();
+    assertThat("current class path", systemUnderTest.getEntries(), not(empty()));
+    assertThat("referenced jar files", systemUnderTest.getArchives(), not(empty()));
+    assertThat("referenced directories", systemUnderTest.getSourceFolders(), not(empty()));
   }
 
   /**

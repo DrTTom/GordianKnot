@@ -74,8 +74,7 @@ public class ProjectView
    */
   public final void collapseAll()
   {
-    root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
-      ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
+    root.walkCompleteSubTree().forEach(n -> n.setListMode(ListMode.COLLAPSED));
     computeGraph();
   }
 
@@ -230,5 +229,13 @@ public class ProjectView
     filters.add(filter);
     computeGraph();
     return currentlyShown;
+  }
+
+  /**
+   * Returns the name of all active filters.
+   */
+  public List<String> listActiveFilters()
+  {
+    return filters.stream().map(ViewFilter::getName).collect(Collectors.toList());
   }
 }

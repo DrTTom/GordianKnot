@@ -111,6 +111,21 @@ public class TestClassAndDependencyInfo
   }
 
   /**
+   * Asserts that an exception is thrown if class has not the expected name.
+   *
+   * @throws IOException
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void wrongClassName() throws IOException
+  {
+    try (
+      InputStream ins = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName() + ".class"))
+    {
+      ClassAndDependencyInfo.parse(ins, "de.tautenhahn.DifferentFile");
+    }
+  }
+
+  /**
    * Assert that class names are taken from method descriptors.
    */
   @Test

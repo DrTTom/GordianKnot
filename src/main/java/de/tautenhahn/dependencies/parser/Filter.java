@@ -29,6 +29,7 @@ public class Filter
     ignoredClassNames.add(Pattern.compile("java\\..*"));
     ignoredSources.add(Pattern.compile(".*/jre/lib/.*"));
     ignoredSources.add(Pattern.compile(".*/build/resources/.*"));
+    ignoredSources.add(Pattern.compile(".*/eclipse/configuration/.*/\\.cp"));
     focus.add(Pattern.compile("dir:.*"));
   }
 

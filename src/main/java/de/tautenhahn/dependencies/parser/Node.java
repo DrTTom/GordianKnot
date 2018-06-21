@@ -1,6 +1,5 @@
 package de.tautenhahn.dependencies.parser;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,11 +83,6 @@ public abstract class Node
   {
     return parent;
   }
-
-  /**
-   * Returns the direct children on the container structure, empty in case of collapsed nodes.
-   */
-  public abstract Collection<Node> getChildren();
 
   abstract Node getChildByName(String simpleChildName);
 
@@ -218,11 +212,6 @@ public abstract class Node
     }
     return parent.getRelativeName(ancestor) + SEPARATOR + simpleName;
   }
-
-  /**
-   * Return the list of all direct children, ignoring the list mode.
-   */
-  public abstract Collection<Node> getAllChildren();
 
   /**
    * Returns true if this node is a container containing the other node

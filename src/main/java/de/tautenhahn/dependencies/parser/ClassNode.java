@@ -20,7 +20,7 @@ public class ClassNode extends Node
 
   private final List<Node> sucLeafs = new ArrayList<>();
 
-  private Collection<String> missingDependencies = new ArrayList<>();
+  private final Collection<String> missingDependencies = new ArrayList<>();
 
   private final String className;
 
@@ -34,12 +34,6 @@ public class ClassNode extends Node
   {
     super(parent, name);
     className = getName().replaceAll("[^\\.]+:[^\\.]+\\.", "");
-  }
-
-  @Override
-  public List<Node> getChildren()
-  {
-    return Collections.emptyList();
   }
 
   @Override
@@ -109,11 +103,6 @@ public class ClassNode extends Node
     return missingDependencies;
   }
 
-  void setMissingDependencies(Collection<String> missingDependencies)
-  {
-    this.missingDependencies = missingDependencies;
-  }
-
   @Override
   Node getChildByName(String simpleName)
   {
@@ -128,9 +117,4 @@ public class ClassNode extends Node
     return className;
   }
 
-  @Override
-  public List<Node> getAllChildren()
-  {
-    return Collections.emptyList();
-  }
 }
