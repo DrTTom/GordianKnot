@@ -11,11 +11,18 @@ get(urlPrefix+"view", showGraph);
 get(urlPrefix+"view/classpath", showPath);
 get(urlPrefix+"view/unrefReport", showReport);
 
-
 function setNewContent(templateId, data, targetId) {
-   const tplInfo = _.template(document.getElementById(templateId).innerHTML);
+   insertContent(resolve(templateId, data), targetId);
+}
+
+function insertContent(content, targetId) {
    const target = document.getElementById(targetId);
-   target.innerHTML = tplInfo(data);
+   target.innerHTML =content;
+}
+
+function resolve(tmplName, value) {
+   const tplInfo = _.template(document.getElementById(tmplName).innerHTML);
+   return tplInfo(value);
 }
 
 function get(url, callBack) {
@@ -88,8 +95,7 @@ function showGraph(responseText) {
    };
    network = new vis.Network(container, data, options);
    selectedNode = "";
-   document.getElementById("description").innerHTML =
- "Click on node or arc to select it.";
+   insertContent("Click on node or arc to select it.", "description");
    zoomEnabled = false;
    distribute();
    network.on("stabilized", stopMovingNodes);
@@ -107,8 +113,7 @@ function showGraph(responseText) {
       } else if (params.edges.length == 1) {
          getArcInfo(params.edges[0]);
       } else {
-         document.getElementById("description").innerHTML =
- "nothing selected";
+         insertContent("nothing selected", "description");
       }
    });
 }
@@ -157,3 +162,23 @@ function getArcInfo(id) {
       setNewContent("arcInfo", arcInfo, "description");
    });
 }
+
+function openPage(pageName, elmnt) {
+   var tabcontent = document.getElementsByClassName("tabcontent");
+   for (var i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+   }
+
+   var tablinks = document.getElementsByClassName("tablink");
+   for (var i = 0; i < tablinks.length; i++) {
+      tablinks[i].style.backgroundColor = "";
+      tablinks[i].style.color = "";
+   }
+
+   document.getElementById(pageName).style.display = "block";
+   elmnt.style.backgroundColor="white";
+   elmnt.style.color="black";
+   elmnt.blur();
+}
+
+window.onload=function() {openPage("graph", document.getElementById("defaultOpen"))};

@@ -12,12 +12,6 @@
 </head>
 
 <body>
-   <script>
-      function partial(tmplName, value) {
-         const tplInfo = _.template(document.getElementById(tmplName).innerHTML);
-         return tplInfo(value);
-      }
-   </script>
    <script type="text/html" id="nodeInfo">
       <h3> <%= type %> <%= name %>
       </h3>
@@ -56,23 +50,23 @@
    <script type="text/html" id="refReportTmpl">
       <h2>References Report</h2>
       <h3>Unreferenced classes</h3>
-      <%= partial("unrefElementsTmpl", { elements: classes, 
+      <%= resolve("unrefElementsTmpl", { elements: classes, 
                      okMessage: "There are no apparently unused classes.", 
                      explanation: "The following classes appear to be unused, consider to removing them from your project:"
                 }) %>
       <h3>Unreferenced libraries</h3>
-      <%= partial("unrefElementsTmpl", { elements: jars, 
+      <%= resolve("unrefElementsTmpl", { elements: jars, 
                      okMessage: "Your class path looks correct.", 
                      explanation: "Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:"
                 }) %>
       <h3>Libraries used by few classes</h3>
-      <%= partial("littleUsedTmpl", { map: rarelyUsedLibs,
+      <%= resolve("littleUsedTmpl", { map: rarelyUsedLibs,
                      okMessage: "All referenced libraries seem to be really needed by your software.",
                      explanation: "The following libraries are used by only few classes:",
                      classesTitle: "using classes"
                 }) %>
       <h3>Libraries providing few classes</h3>
-      <%= partial("littleUsedTmpl", { map: littleSupplyingLibs,
+      <%= resolve("littleUsedTmpl", { map: littleSupplyingLibs,
                      okMessage: "All referenced libraries seem to contribute a fair amount of code.",
                      explanation: "Your software seems to use only few classes from the following libraries. Consider to replace that functionality.",
                      classesTitle: "used classes"
@@ -129,28 +123,34 @@
       </table>
    </script>
 
-   <h1>Dependency graph of project <span id="projectName"></span></h1>
+   <h1>Dependencies of project <span id="projectName"></span></h1>
+   <button class="tablink" onclick="openPage('graph', this)" id="defaultOpen">Graph</button>
+   <button class="tablink" onclick="openPage('report', this)">Report</button>
+   <button class="tablink" onclick="openPage('classpath', this)">Class path</button>
+   
+   <div id="graph" class="tabcontent">
+      <div id="mynetwork"></div>
+      <div id="detailInfo">
+         <h2>Graph</h2>
+         <h3>Nodes</h3>
+         <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution
+         <br>
+         <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
+         <h3>Filters</h3>
+         <button onClick="setFilter('none')">whole graph</button>
+         <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
+         <br/>
+         <button onClick="impliedOnly(true)">required by selected node</button>
+         <button onClick="impliedOnly(false)">requiring selected node</button>
 
-   <div id="mynetwork"></div>
-
-   <div id="detailInfo">
-      <h2>Graph</h2>
-      <h3>Nodes</h3>
-      <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution
-      <br>
-      <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
-      <h3>Filters</h3>
-      <button onClick="setFilter('none')">whole graph</button>
-      <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
-      <br/>
-      <button onClick="impliedOnly(true)">required by selected node</button>
-      <button onClick="impliedOnly(false)">requiring selected node</button>
-
-      <h2>Selected Element</h2>
-      <div id="description"></div>
+         <h2>Selected Element</h2>
+         <div id="description"></div>
+      </div>
    </div>
-   <div style="width: 100%; float: left">
+   <div id="report" class="tabcontent">
       <div id="refReport"></div>
+   </div>
+   <div id="classpath" class="tabcontent">
       <h2>Classpath</h2>
       <form id="classpath"></form>
    </div>

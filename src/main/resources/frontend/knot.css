@@ -1,4 +1,4 @@
-body {
+body, html {
      font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -12,6 +12,24 @@ button {
      text-align: center;
      text-decoration: none;
      display: inline-block;
+}
+
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px 10px;  
+  width: 25%;
+}
+
+.tabcontent {
+  display: none;
+  padding: 40px 00px;
+  height: 100%;
+  background-color: white;
 }
 
 .row {
