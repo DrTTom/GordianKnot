@@ -49,9 +49,9 @@ Coming soon
 
 # Coming features
 
-- clicking on elements in reference report selects the respective nodes, if possible. (call network.selectNode(["1"])
+- clicking on elements in reference report selects the respective nodes (call back-end to provide necessary folding status)
 - class path elements can be un-selected
-- little used jars report , readable names in reports
+- readable names in reports
 - show active filters
 - keep selection on expand/collapse
 - diverse help texts and tool tips

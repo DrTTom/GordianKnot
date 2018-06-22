@@ -15,21 +15,33 @@ button {
 }
 
 .tablink {
-  background-color: #555;
+  background-color: #888888;
   color: white;
   float: left;
-  border: none;
   outline: none;
   cursor: pointer;
-  padding: 5px 10px;  
   width: 25%;
 }
 
-.tabcontent {
-  display: none;
-  padding: 40px 00px;
-  height: 100%;
+.activetablink {
   background-color: white;
+  color: black;
+  font-weight: bold;
+  float: left;
+  outline: none;
+  width: 25%;
+  border-style: solid;
+  border-width: 2px 2px 0px 2px;
+}
+
+.tabcontent {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  width: 97%;
+  padding: 10px 5px;
+  background-color: white;
+  margin-top: 15px;
 }
 
 .row {
@@ -50,10 +62,14 @@ button {
      margin-right: 10px;
 }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2;
+tr:nth-child(odd) {
+    background-color: #f4f4f4;
 }
 th, td {
      padding: 5px;
      text-align: left;
 }
+th {
+	background-color: #e2e2e2;
+}
+

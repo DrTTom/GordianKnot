@@ -166,18 +166,18 @@ function getArcInfo(id) {
 function openPage(pageName, elmnt) {
    var tabcontent = document.getElementsByClassName("tabcontent");
    for (var i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
+	   tabcontent[i].style.opacity = 0;
+	   tabcontent[i].style.zIndex=-1;
    }
 
-   var tablinks = document.getElementsByClassName("tablink");
+   var tablinks = document.getElementsByClassName("activetablink");
    for (var i = 0; i < tablinks.length; i++) {
-      tablinks[i].style.backgroundColor = "";
-      tablinks[i].style.color = "";
+      tablinks[i].className="tablink";
    }
 
-   document.getElementById(pageName).style.display = "block";
-   elmnt.style.backgroundColor="white";
-   elmnt.style.color="black";
+   document.getElementById(pageName).style.opacity=100;
+   document.getElementById(pageName).style.zIndex=1;
+   elmnt.className="activetablink";
    elmnt.blur();
 }
 
