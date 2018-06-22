@@ -39,37 +39,36 @@
    </script>
     <script type="text/html" id="arcInfo">
        <h3> <%= from.name %> depends on <br><%= to.name %> </h3> 
-       Reason (using relative names):
+       Dependency is caused by (using relative names):
        <table>
-          <tr><th>referencing class</th><th>referenced class</th></tr>
+          <tr><th>Referencing class</th><th>Referenced class</th></tr>
           <% for(var i = 0; i < reason.length; ++i) {%>
              <tr><td> <%= reason[i].first %> </td><td> <%= reason[i].second %></td></tr>
           <% } %>
        </table>
    </script>
    <script type="text/html" id="refReportTmpl">
-      <h2>References Report</h2>
-      <h3>Unreferenced classes</h3>
+      <h2>Unreferenced classes</h2>
       <%= resolve("unrefElementsTmpl", { elements: classes, 
                      okMessage: "There are no apparently unused classes.", 
-                     explanation: "The following classes appear to be unused, consider to removing them from your project:"
+                     explanation: "The following classes appear to be unused, consider to remove them from your project:"
                 }) %>
-      <h3>Unreferenced libraries</h3>
+      <h2>Unreferenced libraries</h2>
       <%= resolve("unrefElementsTmpl", { elements: jars, 
                      okMessage: "Your class path looks correct.", 
                      explanation: "Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:"
                 }) %>
-      <h3>Libraries used by few classes</h3>
-      <%= resolve("littleUsedTmpl", { map: rarelyUsedLibs,
-                     okMessage: "All referenced libraries seem to be really needed by your software.",
-                     explanation: "The following libraries are used by only few classes:",
-                     classesTitle: "using classes"
-                }) %>
-      <h3>Libraries providing few classes</h3>
+      <h2>Libraries providing few classes</h2>
       <%= resolve("littleUsedTmpl", { map: littleSupplyingLibs,
                      okMessage: "All referenced libraries seem to contribute a fair amount of code.",
                      explanation: "Your software seems to use only few classes from the following libraries. Consider to replace that functionality.",
                      classesTitle: "used classes"
+                }) %>
+      <h2>Libraries used by few classes</h2>
+      <%= resolve("littleUsedTmpl", { map: rarelyUsedLibs,
+                     okMessage: "All referenced libraries seem to be really needed by your software.",
+                     explanation: "The following libraries are used by only few classes. Find out whether these libraries are really needed:",
+                     classesTitle: "using classes"
                 }) %>
    </script>
 
@@ -126,7 +125,7 @@
    <h1>Dependencies of project <span id="projectName"></span></h1>
    <button class="tablink" onclick="openPage('graph', this)" id="defaultOpen">Graph</button>
    <button class="tablink" onclick="openPage('report', this)">Report</button>
-   <button class="tablink" onclick="openPage('classpath', this)">Class path</button>
+   <button class="tablink" onclick="openPage('classpath', this)">Class path</button></br>
    
    <div id="graph" class="tabcontent">
       <div id="mynetwork"></div>
@@ -137,7 +136,7 @@
          <br>
          <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
          <h3>Filters</h3>
-         <button onClick="setFilter('none')">whole graph</button>
+         <button onClick="setFilter('none')" title="Clear all active filters">whole graph</button>
          <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
          <br/>
          <button onClick="impliedOnly(true)">required by selected node</button>
