@@ -19,6 +19,7 @@ GordianKnot is able to detect
 Once finished, it will also report
 - missing classes
 - problems with packaging your classes into archives
+- security problems due to unclean interfaces between components
 - and more to come
 
 To develop a software which is understandable and safe, keep an eye on its inner dependencies.
@@ -26,21 +27,27 @@ Do not wait until the entanglement becomes famous!
 
 # Usage as Application
 
-Get the class path of your software. Easiest and safest way is to print it out directly from your code.
+Get the class path of your software. You can always print it out directly from inside your application.
 Log the following expression or print it out:
 
 ```java
 System.getEnv("java.class.path")
 ```
-If you are using gradle, you could call `println sourceSets.main.runtimeClasspath.asPath`to get the path.
+If you are using gradle, you could call `println sourceSets.main.runtimeClasspath.asPath` to get the path. 
+
+With maven call something like `mvn dependency:build-classpath -Dmdep.outputFile=cp.txt`.
 
 Once you got the class path, call
-```
-GordianKnot &lt;classpath&gt [project-name]
-```
-where `classpath` is the class path of your software (output of above expression) and `project-name` is the name of your project.
 
-See web site for output.
+```
+GordianKnot <classpath> [project-name]
+```
+where `classpath` is the class path of your software (output of above expression) and `project-name` 
+is the name of your project.
+To avoid very long command line parameters, specify as `classpath` the name of a text file (ending with ".txt") containing
+the class path. In that case, `project-name` defaults to the name of that file.
+
+This starts a local web server and displays a link to the output page.
 
 # Usage as Tests
 

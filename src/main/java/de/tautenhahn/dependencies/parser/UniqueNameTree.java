@@ -1,6 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +96,7 @@ public class UniqueNameTree
   {
     if (node.children.isEmpty())
     {
-      Path path = node.remaining.resolve(node.name);
+      Path path = Optional.ofNullable(node.remaining).orElseGet(() -> Paths.get("")).resolve(node.name);
       result.put(path, name);
     }
     else
