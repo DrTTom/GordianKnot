@@ -37,4 +37,16 @@ public class TestUniqueNameTree
     assertThat("unique dir name", names.get(projectAMain), is("projectA_main"));
   }
 
+  /**
+   * Asserts that in case of only one entry its name is not deleted.
+   */
+  @Test
+  public void uniqueEntry()
+  {
+    UniqueNameTree systemUnderTest = new UniqueNameTree();
+    Path projectAMain = Paths.get("irgendwo", "projectA", "build", "main");
+    systemUnderTest.add(projectAMain);
+    Map<Path, String> names = systemUnderTest.createNames();
+    assertThat("unique dir name", names.get(projectAMain), is("main"));
+  }
 }
