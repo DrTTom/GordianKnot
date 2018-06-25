@@ -70,7 +70,8 @@ In case a test fails, verbose information abut the reason will be written into t
 
 - clicking on elements in reference report selects the respective nodes (call back-end to provide necessary folding status)
 - class path elements can be un-selected
-- readable names in reports
-- show active filters
 - keep selection on expand/collapse
 - diverse help texts and tool tips
+- some colored traffic lights on the reports page
+- standard license
+- separate test lib with pom available in some repository

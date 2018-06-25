@@ -140,10 +140,6 @@ public class CyclicDependencies
 
   private String getName(IndexedNode node)
   {
-    return node.getNode()
-               .getName()
-               .replaceAll(".*:[^.]*\\.", "")
-               .replaceAll("[jwer]ar:", "")
-               .replaceAll("_([jwer]ar)", ".$1");
+    return node.getNode().getDisplayName();
   }
 }

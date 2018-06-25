@@ -32,7 +32,7 @@ public class CyclesOnly implements ViewFilter
   @Override
   public String getName()
   {
-    return "non-trivial components of strong connectivity";
+    return "cycles only";
   }
 
   /**
@@ -72,5 +72,17 @@ public class CyclesOnly implements ViewFilter
           .findAny()
           .ifPresent(s -> input.removeArc(node, s));
     }
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return 0;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    return (obj != null && getClass() == obj.getClass());
   }
 }

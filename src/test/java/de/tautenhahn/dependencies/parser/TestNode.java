@@ -58,6 +58,7 @@ public class TestNode
   public void useNames()
   {
     Node node = root.find(PKG_1);
+    assertThat("display name", node.getDisplayName(), is("de.tautenhahn.example"));
     assertThat("inner node", node, instanceOf(ContainerNode.class));
     assertThat("simple name", node.getSimpleName(), equalTo("example"));
     assertThat("name", node.getName(), equalTo(PKG_1));

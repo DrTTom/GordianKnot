@@ -1,6 +1,8 @@
 package de.tautenhahn.dependencies.rest;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +30,7 @@ public class ProjectView
 
   private final ContainerNode root;
 
-  private final List<ViewFilter> filters = new ArrayList<>();
+  private final Collection<ViewFilter> filters = new LinkedHashSet<>();
 
   private DiGraph currentGraph;
 
@@ -176,10 +178,9 @@ public class ProjectView
    */
   public void showAll()
   {
-    boolean change = !filters.isEmpty();
-    filters.clear();
-    if (change)
+    if (!filters.isEmpty())
     {
+      filters.clear();
       computeGraph();
     }
   }

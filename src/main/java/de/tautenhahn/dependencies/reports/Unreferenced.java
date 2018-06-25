@@ -157,7 +157,7 @@ public class Unreferenced
         return;
       }
     }
-    littleSupplyingLibs.put(j.toString(), new ArrayList<>(supplied));
+    littleSupplyingLibs.put(j.getDisplayName(), new ArrayList<>(supplied));
   }
 
   private static boolean isJar(Node n)
@@ -173,7 +173,8 @@ public class Unreferenced
     {
       return;
     }
-    rarelyUsedLibs.put(j.toString(), predecessors.stream().map(Node::getName).collect(Collectors.toList()));
+    rarelyUsedLibs.put(j.getDisplayName(),
+                       predecessors.stream().map(Node::getDisplayName).collect(Collectors.toList()));
   }
 
   private static List<String> collectNodesWith(ContainerNode root,
@@ -183,7 +184,7 @@ public class Unreferenced
     return root.walkSubTree()
                .filter(ofType)
                .filter(n -> pred.test(n.getPredecessors()))
-               .map(Node::getName)
+               .map(Node::getDisplayName)
                .collect(Collectors.toList());
   }
 
