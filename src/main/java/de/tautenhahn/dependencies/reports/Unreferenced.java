@@ -27,9 +27,9 @@ import de.tautenhahn.dependencies.parser.Pair;
 public class Unreferenced
 {
 
-  private List<String> classes;
+  private final List<String> classes;
 
-  private List<String> jars;
+  private final List<String> jars;
 
   private Map<String, List<String>> rarelyUsedLibs;
 
@@ -44,10 +44,6 @@ public class Unreferenced
     ClassLoader loader;
 
     final List<String> knownEntryClasses = new ArrayList<>();
-
-    boolean reportUnrefClasses = true;
-
-    boolean reportUnrefJars = true;
 
     int rareUsageLimit = 2;
 
@@ -112,21 +108,14 @@ public class Unreferenced
   {
     root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
       ? ListMode.COLLAPSED : ListMode.EXPANDED));
-    if (cfg.reportUnrefClasses)
-    {
-      classes = root.walkSubTree()
-                    .filter(n -> n instanceof ClassNode)
-                    .map(n -> (ClassNode)n)
-                    .filter(n -> n.getPredecessors().isEmpty())
-                    .map(ClassNode::getClassName)
-                    .filter(name -> !cfg.isKnownAsNeeded(name))
-                    .collect(Collectors.toList());
-    }
-
-    if (cfg.reportUnrefJars)
-    {
-      jars = collectNodesWith(root, Unreferenced::isJar, List::isEmpty);
-    }
+    classes = root.walkSubTree()
+                  .filter(n -> n instanceof ClassNode)
+                  .map(n -> (ClassNode)n)
+                  .filter(n -> n.getPredecessors().isEmpty())
+                  .map(ClassNode::getClassName)
+                  .filter(name -> !cfg.isKnownAsNeeded(name))
+                  .collect(Collectors.toList());
+    jars = collectNodesWith(root, Unreferenced::isJar, List::isEmpty);
     if (cfg.rareUsageLimit > 0)
     {
       rarelyUsedLibs = new HashMap<>();

@@ -67,9 +67,10 @@ public class Filter
 
 
   /**
-   * Returns true if name denotes a class which should undergo all the analyzing procedures.
+   * Returns true if name denotes an element which should undergo all the analyzing procedures, namely
+   * something with source code in the analyzed project.
    *
-   * @param name
+   * @param name name of the node
    */
   public boolean isInFocus(String name)
   {
