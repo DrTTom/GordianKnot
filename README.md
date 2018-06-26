@@ -51,14 +51,27 @@ This starts a local web server and displays a link to the output page.
 
 # Usage as Tests
 
-Coming soon
+Include the following dependency into the test class path of your project:
 
+```
+Coming soon
+```
+The following tests classes are provided:
+
+```
+de.tautenhahn.dependencies.commontests.TestCycles
+more to come
+```
+See API documentation of these classes to find out whether some adaption of the tests is needed for your project and how to achieve that. Add the tests to your project, usually by adding them to some test suite.
+
+In case a test fails, verbose information abut the reason will be written into the log file.
 
 # Coming features
 
 - clicking on elements in reference report selects the respective nodes (call back-end to provide necessary folding status)
 - class path elements can be un-selected
-- readable names in reports
-- show active filters
 - keep selection on expand/collapse
 - diverse help texts and tool tips
+- some colored traffic lights on the reports page
+- standard license
+- separate test lib with pom available in some repository

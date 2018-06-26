@@ -1,75 +1,75 @@
 body, html {
-     font-family: Arial, Helvetica, sans-serif;
+   font-family: Arial, Helvetica, sans-serif;
 }
 
 button {
-     background-color: #74894f;
-     border: none;
-     color: white;
-     padding: 5px 10px;
-     margin-top: 5px;
-     margin-right: 5px;
-     text-align: center;
-     text-decoration: none;
-     display: inline-block;
+   background-color: #74894f;
+   border: none;
+   color: white;
+   padding: 5px 10px;
+   margin-top: 5px;
+   margin-right: 5px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
 }
 
 .tablink {
-  background-color: #888888;
-  color: white;
-  float: left;
-  outline: none;
-  cursor: pointer;
-  width: 25%;
+   background-color: #888888;
+   color: white;
+   float: left;
+   outline: none;
+   cursor: pointer;
+   width: 25%;
 }
 
 .activetablink {
-  background-color: white;
-  color: black;
-  font-weight: bold;
-  float: left;
-  outline: none;
-  width: 25%;
-  border-style: solid;
-  border-width: 2px 2px 0px 2px;
+   background-color: white;
+   color: black;
+   font-weight: bold;
+   float: left;
+   outline: none;
+   width: 25%;
+   border-style: solid;
+   border-width: 2px 2px 0px 2px;
 }
 
 .tabcontent {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-  width: 97%;
-  padding: 10px 5px;
-  background-color: white;
-  margin-top: 15px;
+   position: absolute;
+   z-index: -1;
+   opacity: 0;
+   width: 98%;
+   padding: 10px 5px;
+   margin-top: 15px;
 }
 
-.row {
-     display: flex;
+.twocolumnLeftWide {
+   display: grid;
+   grid-template-columns: 710px auto;
 }
-.left {
-     flex: 40%;
-}
-.right {
-     flex: 60%;
+
+.twocolumn {
+   display: grid;
+   grid-template-columns: 10em auto;
 }
 
 #mynetwork {
-     width: 700px;
-     height: 700px;
-     border: 1px solid lightgray;
-     float: left;
-     margin-right: 10px;
+   width: 700px;
+   height: 700px;
+   border: 1px solid lightgray;
+   float: left;
+   display: block;
+   margin-right: 10px;
 }
 
 tr:nth-child(odd) {
-    background-color: #f4f4f4;
+   background-color: #f4f4f4;
 }
 th, td {
-     padding: 5px;
-     text-align: left;
+   padding: 5px;
+   text-align: left;
 }
 th {
-	background-color: #e2e2e2;
+   background-color: #e2e2e2;
 }
 

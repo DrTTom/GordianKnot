@@ -91,6 +91,7 @@ public class Server
     get("view/unrefReport", (req, res) -> view.getUnreferencedReport(), transformer);
     get("view/node/:id", (req, res) -> view.getNodeInfo(req.params("id")), transformer);
     get("view/arc/:id", (req, res) -> view.getArcInfo(req.params("id")), transformer);
+    get("view/activeFilters", (req, res) -> view.listActiveFilters(), transformer);
     get("view/node/:id/listmode/:value", this::setListMode, transformer); // TODO change to put when
                                                                           // everything works!
 

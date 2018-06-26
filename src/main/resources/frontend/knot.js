@@ -116,6 +116,7 @@ function showGraph(responseText) {
          insertContent("nothing selected", "description");
       }
    });
+   updateFilterList();
 }
 
 function distribute() {
@@ -153,7 +154,14 @@ function setFilter(value) {
 
 function impliedOnly(value) {
    get(urlPrefix+"view/filters/impliedBy/" + selectedNode + "/" + value,
-       showGraph);
+      showGraph);
+}
+
+function updateFilterList() {
+   get(urlPrefix+"view/activeFilters", function (list) {
+      var parsedList = JSON.parse(list);
+      setNewContent("filterTmpl", { entries: parsedList} , "filters");
+   });
 }
 
 function getArcInfo(id) {
@@ -182,3 +190,4 @@ function openPage(pageName, elmnt) {
 }
 
 window.onload=function() {openPage("graph", document.getElementById("defaultOpen"))};
+

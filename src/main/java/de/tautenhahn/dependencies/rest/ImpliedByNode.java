@@ -1,5 +1,6 @@
 package de.tautenhahn.dependencies.rest;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
@@ -17,11 +18,14 @@ public final class ImpliedByNode implements ViewFilter
 
   private final String nodeName;
 
+  private String nodeDisplayName;
+
   private final boolean useSuccessors;
 
   private ImpliedByNode(String nodeName, boolean useSuccessors)
   {
     this.nodeName = nodeName;
+    nodeDisplayName = nodeName;
     this.useSuccessors = useSuccessors;
   }
 
@@ -50,6 +54,7 @@ public final class ImpliedByNode implements ViewFilter
   {
     IndexedNode start = findNodeByName(input).orElseThrow(() -> new IllegalArgumentException("missing node "
                                                                                              + nodeName));
+    nodeDisplayName = start.getNode().getDisplayName();
     return new DiGraph(BasicGraphOperations.breadthFirstSearch(input, start, useSuccessors)
                                            .map(IndexedNode::getNode));
   }
@@ -66,9 +71,30 @@ public final class ImpliedByNode implements ViewFilter
   }
 
   @Override
+  public int hashCode()
+  {
+    return ((nodeName == null) ? 0 : nodeName.hashCode()) + (useSuccessors ? 1 : 2);
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass())
+    {
+      return false;
+    }
+    ImpliedByNode other = (ImpliedByNode)obj;
+    return Objects.equals(nodeName, other.nodeName) && useSuccessors == other.useSuccessors;
+  }
+
+  @Override
   public String getName()
   {
-    return useSuccessors ? "required by " : "depending on " + nodeName;
+    return (useSuccessors ? "required by " : "depending on ") + nodeDisplayName;
   }
 
 }

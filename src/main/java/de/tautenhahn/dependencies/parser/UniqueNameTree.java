@@ -97,7 +97,7 @@ public class UniqueNameTree
     if (node.children.isEmpty())
     {
       Path path = Optional.ofNullable(node.remaining).orElseGet(() -> Paths.get("")).resolve(node.name);
-      result.put(path, name);
+      result.put(path, name.isEmpty() ? node.name.replace("/", "") : name);
     }
     else
     {

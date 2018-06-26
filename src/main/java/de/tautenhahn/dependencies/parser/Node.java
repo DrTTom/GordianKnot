@@ -229,4 +229,19 @@ public abstract class Node
     }
     return false;
   }
+
+  /**
+   * Returns a name for current node which is indented to be human-readable rather than unique within the
+   * whole parsed project. More precisely, return:
+   * <ul>
+   * <li>short name of a directory</li>
+   * <li>fully qualified class name for a class or package (omitting where it was found)</li>
+   * <li>the simple file name of a jar</li>
+   * </ul>
+   */
+  public String getDisplayName()
+  {
+    return getName().replaceAll(".*:[^.]*\\.", "").replaceAll("[jwer]ar:", "").replaceAll("_([jwer]ar)",
+                                                                                          ".$1");
+  }
 }

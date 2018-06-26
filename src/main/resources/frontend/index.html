@@ -16,18 +16,14 @@
       <h3> <%= type %> <%= name %>
       </h3>
       <% if(typeof resourceType != 'undefined'){ %>
-         <div class="row">
-            <div class="left">found in:</div>
-            <div class="right"><%= resourceType %> <%= resourceName %></div>
-         </div>
+         <div class="twocolumn">
+            <div>found in:</div>
+            <div><%= resourceType %> <%= resourceName %></div>
       <% } %>
-         <div class="row">
-            <div class="left">total number classes:</div>
-            <div class="right"><%= numberContainedClasses %></div>
-         </div>
-         <div class="row">
-            <div class="left">current reference:</div>
-            <div class="right"><%= id %></div>
+            <div>total number classes:</div>
+            <div><%= numberContainedClasses %></div>
+            <div>current reference:</div>
+            <div><%= id %></div>
          </div>
       <% if(type!='class'){ %>
          <button id="expandNode" change-list-mode="EXPANDED">expand <%=numberExpandable %> nodes</button>
@@ -122,12 +118,24 @@
       </table>
    </script>
 
+   <script type="text/html" id="filterTmpl">
+      <% if( entries.length > 0) { %>
+         Currently active:
+         <ul>
+            <% for(var i = 0; i < entries.length; ++i) {%>
+               <li> <%= entries[i] %></li>
+            <% } %>
+        </ul>
+      <% } %>
+   </script>
+
    <h1>Dependencies of project <span id="projectName"></span></h1>
    <button class="tablink" onclick="openPage('graph', this)" id="defaultOpen">Graph</button>
    <button class="tablink" onclick="openPage('report', this)">Report</button>
-   <button class="tablink" onclick="openPage('classpath', this)">Class path</button></br>
-   
+   <button class="tablink" onclick="openPage('classpath', this)">Class path</button><br/>
+
    <div id="graph" class="tabcontent">
+      <div class=twocolumnLeftWide>
       <div id="mynetwork"></div>
       <div id="detailInfo">
          <h2>Graph</h2>
@@ -136,6 +144,7 @@
          <br>
          <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
          <h3>Filters</h3>
+         <div id="filters"></div>
          <button onClick="setFilter('none')" title="Clear all active filters">whole graph</button>
          <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
          <br/>
@@ -144,6 +153,7 @@
 
          <h2>Selected Element</h2>
          <div id="description"></div>
+      </div>
       </div>
    </div>
    <div id="report" class="tabcontent">
