@@ -56,7 +56,7 @@ public class ProjectView
     // TODO: parsedPath.removeIf(p -> filter.isIgnoredSource(p.toString()));
     ProjectScanner analyzer = new ProjectScanner(filter);
     root = analyzer.scan(this.classPath);
-    unrefReport = new Unreferenced(root, new Unreferenced.ReportConfig());
+    unrefReport = Unreferenced.forProject(root, filter, this.classPath).create();
     resetListMode();
     projectName = name;
   }

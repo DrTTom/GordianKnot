@@ -1,6 +1,8 @@
 package de.tautenhahn.dependencies.reports;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -26,18 +28,13 @@ public class TestUnreferenced
   {
     Filter filter = new Filter();
     filter.addIgnoredClassName(".*\\.Alien");
-    ContainerNode root = new ProjectScanner(filter).scan(ParsedClassPath.getCurrentClassPath());
-    Unreferenced.ReportConfig cfg = new Unreferenced.ReportConfig();
-    cfg.addNeededElements("org\\.eclipse\\.jdt\\.internal.*");
-    cfg.setLoader(Thread.currentThread().getContextClassLoader());
-    Unreferenced systemUnderTest = new Unreferenced(root, cfg);
+    ParsedClassPath classPath = ParsedClassPath.getCurrentClassPath();
+    ContainerNode root = new ProjectScanner(filter).scan(classPath);
+    Unreferenced systemUnderTest = Unreferenced.forProject(root, filter, classPath).withLimits(2, 2).create();
     String onlyClassUnsingGson = "Server$JsonTransformer";
     assertThat("report", systemUnderTest.toString(), containsString(onlyClassUnsingGson));
-    // TODO:
-    // System.out.println(systemUnderTest.getUnreferencedClasses());
-
-    // assertThat("unref classes", systemUnderTest.getUnreferencedClasses(), empty());
-    // assertThat("unref jars", systemUnderTest.getUnreferencedJars(), empty());
+    assertThat("gson lib", systemUnderTest.getRarelyUsedJars().get(0).getNodeName(), startsWith("jar:"));
+    assertThat("unref classes", systemUnderTest.getUnreferencedClasses(), empty());
   }
 
   /**

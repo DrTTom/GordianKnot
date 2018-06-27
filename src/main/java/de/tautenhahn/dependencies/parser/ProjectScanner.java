@@ -53,12 +53,12 @@ public class ProjectScanner
    * Runs the dependency analysis for all classes in the class path with match some include. All other classes
    * are considered only as needed by included classes but not analyzed themselves.
    *
-   * @param classPath paths to jar files or build directories.
+   * @param pathToScan paths to jar files or build directories.
    * @return root node of the created graph.
    */
-  public ContainerNode scan(ParsedClassPath classPath)
+  public ContainerNode scan(ParsedClassPath pathToScan)
   {
-    this.classPath = classPath;
+    classPath = pathToScan;
     classPath.getEntries()
              .stream()
              .parallel()

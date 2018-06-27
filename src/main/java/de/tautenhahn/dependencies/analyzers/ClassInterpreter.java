@@ -1,5 +1,7 @@
 package de.tautenhahn.dependencies.analyzers;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -28,6 +30,8 @@ import de.tautenhahn.dependencies.parser.Pair;
  */
 public class ClassInterpreter
 {
+
+  private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
   /**
    * Removes arcs exclusively cause by a test suite referencing stuff in sub-packages.
@@ -84,19 +88,58 @@ public class ClassInterpreter
     return result;
   }
 
-  private boolean isTestSuite(ClassNode n)
+  /**
+   * Returns true if given node represents a JUnit test suite.
+   *
+   * @param n
+   */
+  public boolean isTestSuite(ClassNode n)
   {
-    return n.getSucLeafs()
-            .stream()
-            .map(s -> ((ClassNode)s).getClassName())
-            .anyMatch("org.junit.runner.RunWith"::equals);
+    return referencesClass(n, "org.junit.runner.RunWith");
   }
 
-  private boolean isTest(Node n)
+  /**
+   * Returns true if given node represents JUnit test.
+   *
+   * @param n
+   */
+  public boolean isTest(ClassNode n)
   {
-    return ((ClassNode)n).getSucLeafs()
-                         .stream()
-                         .map(s -> ((ClassNode)s).getClassName())
-                         .anyMatch("org.junit.Test"::equals);
+    return referencesClass(n, "org.junit.Test");
+  }
+
+  private boolean referencesClass(ClassNode n, String name)
+  {
+    return n.getSucLeafs().stream().map(s -> ((ClassNode)s).getClassName()).anyMatch(name::equals);
+  }
+
+  /**
+   * Returns true if given node represents a class which can be loaded as main class.
+   *
+   * @param n
+   */
+  public boolean isRecognizedAsMainClass(ClassNode n)
+  {
+    try
+    {
+      Class<?> clazz = classLoader.loadClass(n.getClassName());
+      Method m = clazz.getDeclaredMethod("main", String[].class);
+      return (m.getModifiers() & Modifier.PUBLIC) > 0 && (m.getModifiers() & Modifier.STATIC) > 0;
+    }
+    catch (ClassNotFoundException | NoSuchMethodException | SecurityException e)
+    {
+      return false;
+    }
+
+  }
+
+  /**
+   * Specifies a special class loader to use when interpreting classes.
+   *
+   * @param classLoader
+   */
+  public void setClassLoader(ClassLoader classLoader)
+  {
+    this.classLoader = classLoader;
   }
 }

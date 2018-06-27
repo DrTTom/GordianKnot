@@ -26,13 +26,13 @@ import de.tautenhahn.dependencies.rest.presentation.DisplayableClasspathEntry;
 public class TestProjectView
 {
 
-  public static final String CLASSPATH = Paths.get("build", "classes", "java", "test")
-                                              .toAbsolutePath()
-                                              .toString()
-                                         + ":"
-                                         + Paths.get("build", "classes", "java", "main")
-                                                .toAbsolutePath()
-                                                .toString();
+  private static final String CLASSPATH = Paths.get("build", "classes", "java", "test")
+                                               .toAbsolutePath()
+                                               .toString()
+                                          + ":"
+                                          + Paths.get("build", "classes", "java", "main")
+                                                 .toAbsolutePath()
+                                                 .toString();
 
   /**
    * Asserts view elements can be obtained.
@@ -78,6 +78,7 @@ public class TestProjectView
     systemUnderTest.restrictToImpliedBy(numberMain, true);
     nodes = systemUnderTest.getDisplayableGraph().getNodes();
     assertThat("elements needed by main", nodes, hasSize(1));
+    systemUnderTest.showOnlyCycles();
   }
 
 

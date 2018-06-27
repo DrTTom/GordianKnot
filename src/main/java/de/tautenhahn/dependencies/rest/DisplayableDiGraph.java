@@ -159,12 +159,17 @@ public class DisplayableDiGraph
     nodes.add(e);
   }
 
-
+  /**
+   * Returns the list of nodes.
+   */
   public List<VisNode> getNodes()
   {
     return Collections.unmodifiableList(nodes);
   }
 
+  /**
+   * Returns the list of edges.
+   */
   public List<VisEdge> getEdges()
   {
     return Collections.unmodifiableList(edges);

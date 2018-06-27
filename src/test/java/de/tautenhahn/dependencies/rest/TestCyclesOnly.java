@@ -1,12 +1,16 @@
 package de.tautenhahn.dependencies.rest;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
+import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Node;
@@ -15,14 +19,14 @@ import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 /**
  * TODO: use new classinterpreter
- * 
+ *
  * @author TT
  */
 public class TestCyclesOnly
 {
 
   /**
-   * 
+   * Asserts that a package dependency from a test suite into a sub package is disregarded.
    */
   @Test
   public void ignoreTestSuites()
@@ -43,11 +47,28 @@ public class TestCyclesOnly
     testPackage.setListMode(ListMode.LEAFS_COLLAPSED);
     DiGraph graph = new DiGraph(root);
     assertThat("successors of suite", suite.getSuccessors(), hasItem(testPackage));
+    IndexedNode basePackage = graph.getAllNodes()
+                                   .stream()
+                                   .filter(n -> "tautenhahn".equals(n.getNode().getSimpleName()))
+                                   .findAny()
+                                   .orElse(null);
+    assertThat("successors of base package", basePackage.getSuccessors(), hasSize(2));
 
     CyclesOnly systemUnderTest = new CyclesOnly();
     systemUnderTest.removeNoncriticalArcs(graph);
-    // TODO:
-    // assertThat("successors of suite after removal", suite.getSuccessors(), not(hasItem(testPackage)));
+    assertThat("successors of base package after removal", basePackage.getSuccessors(), hasSize(1));
+  }
+
+  /**
+   * Check that all instances are equal.
+   */
+  @Test
+  public void allInstancesEqual()
+  {
+    assertThat("new instance", new CyclesOnly(), equalTo(new CyclesOnly()));
+    assertThat("other class",
+               ImpliedByNode.dependingOn("org.junit.runner.RunWith"),
+               not(equalTo(new CyclesOnly())));
   }
 
 }
