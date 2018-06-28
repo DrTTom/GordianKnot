@@ -34,11 +34,23 @@ function get(url, callBack) {
          callBack(req.responseText);
       }
    };
+   req.addEventListener("error", function () { alert("Server not responding."); } );
 }
 
 function showPath(value) {
    var response = JSON.parse(value);
    setNewContent("classpathTmpl", {entries: response}, "classpath");
+}
+
+function selectNodesByName(nodeName) {
+   get(urlPrefix+"view/nodesByName/"+nodeName, function (value) {
+      var ids = JSON.parse(value);
+      network.selectNodes(ids);
+      if (ids.length == 1) {
+         getNodeInfo(ids[0]);
+      }
+      openPage("graph", document.getElementById("defaultOpen"));
+   });
 }
 
 function showReport(value) {

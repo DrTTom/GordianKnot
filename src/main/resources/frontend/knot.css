@@ -53,6 +53,12 @@ button {
    grid-template-columns: 10em auto;
 }
 
+.link {
+   color: darkblue;
+   text-decoration: underline;
+   cursor: pointer;
+}
+
 #mynetwork {
    width: 700px;
    height: 700px;

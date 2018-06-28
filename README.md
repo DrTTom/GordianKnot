@@ -68,7 +68,6 @@ In case a test fails, verbose information abut the reason will be written into t
 
 # Coming features
 
-- clicking on elements in reference report selects the respective nodes (call back-end to provide necessary folding status)
 - class path elements can be un-selected
 - keep selection on expand/collapse
 - diverse help texts and tool tips
