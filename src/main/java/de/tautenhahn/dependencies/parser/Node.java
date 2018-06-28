@@ -171,21 +171,23 @@ public abstract class Node
   }
 
   /**
-   * Returns the biggest collapsed node containing given node or node itself if no ancestor is collapsed.
+   * Regarding the list mode, returns the node this node is currently represented by. That will be the biggest
+   * collapsed container containing this node or this node itself if all ancestors are expanded.
    */
-  protected Node replaceByCollapsedAnchestor(Node n)
+  public Node getListedContainer()
   {
-    Node result = n;
-    Node ancestor = n.getParent();
-    boolean isFirst = true;
+    Node result = this;
+    Node ancestor = getParent();
+    boolean acceptLeafsCollapsed = result instanceof ClassNode;
     while (ancestor != null)
     {
-      if (ancestor.listMode == ListMode.COLLAPSED || isFirst && ancestor.listMode == ListMode.LEAFS_COLLAPSED)
+      if (ancestor.listMode == ListMode.COLLAPSED
+          || acceptLeafsCollapsed && ancestor.listMode == ListMode.LEAFS_COLLAPSED)
       {
         result = ancestor;
       }
       ancestor = ancestor.getParent();
-      isFirst = false;
+      acceptLeafsCollapsed = false;
     }
     return result;
   }

@@ -1,6 +1,9 @@
 package de.tautenhahn.dependencies.rest;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -10,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -81,6 +85,38 @@ public class TestProjectView
     systemUnderTest.showOnlyCycles();
   }
 
+  /**
+   * Tests whether the visible nodes for an element are found in cases element itself is visible, parent is
+   * collapsed or only children are visible.
+   */
+  @Test
+  public void findRepresentingNodes()
+  {
+    ProjectView systemUnderTest = new ProjectView(CLASSPATH, "GordianKnot");
+    String myNodeName = "dir:test." + getClass().getName();
+    String packageNodeName = myNodeName.substring(0, myNodeName.lastIndexOf('.'));
+
+    assertThat("labels representing this package",
+               getLabels(systemUnderTest, packageNodeName),
+               contains("rest"));
+    assertThat("labels representing this class", getLabels(systemUnderTest, myNodeName), contains("rest"));
+    List<String> labels = getLabels(systemUnderTest, "dir:test");
+    assertThat("labels representing test directory", labels, hasItem("rest"));
+    assertThat("labels representing test directory",
+               labels,
+               containsInAnyOrder("rest", "reports", "analyzers", "parser", "commontests"));
+  }
+
+  private List<String> getLabels(ProjectView systemUnderTest, String nodeName)
+  {
+    List<String> ids = systemUnderTest.getNodeIDs(nodeName);
+    return systemUnderTest.getDisplayableGraph()
+                                          .getNodes()
+                                          .stream()
+                                          .filter(n -> ids.contains(n.getId()))
+                                          .map(VisNode::getLabel)
+                                          .collect(Collectors.toList());
+  }
 
   private void changeListMode(ProjectView view, String label, String mode)
   {

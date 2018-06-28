@@ -102,7 +102,7 @@ public final class ContainerNode extends Node
   {
     return getContainedLeafs().flatMap(l -> lister.apply(l).stream())
                               .distinct()
-                              .map(this::replaceByCollapsedAnchestor)
+                              .map(Node::getListedContainer)
                               .distinct()
                               .filter(n -> n != this)
                               .collect(Collectors.toList());

@@ -88,7 +88,9 @@ public class TestNode
     assertThat("subtree expanded", systemUnderTest.walkSubTree().collect(Collectors.toList()), hasSize(3));
     assertFalse("extended has own content", systemUnderTest.hasOwnContent());
     systemUnderTest.setListMode(ListMode.LEAFS_COLLAPSED);
-    assertThat("successors of non-collapsed node", systemUnderTest.getSuccessors(), contains(other));
+    assertThat("successors of package with collapsed classes",
+               systemUnderTest.getSuccessors(),
+               contains(other));
     assertThat("subtree leafs collapsed",
                systemUnderTest.walkSubTree().collect(Collectors.toList()),
                hasSize(2));

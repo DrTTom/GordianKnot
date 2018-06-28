@@ -39,13 +39,13 @@ public class ClassNode extends Node
   @Override
   public List<Node> getPredecessors()
   {
-    return predLeafs.stream().map(this::replaceByCollapsedAnchestor).distinct().collect(Collectors.toList());
+    return predLeafs.stream().map(Node::getListedContainer).distinct().collect(Collectors.toList());
   }
 
   @Override
   public List<Node> getSuccessors()
   {
-    return sucLeafs.stream().map(this::replaceByCollapsedAnchestor).distinct().collect(Collectors.toList());
+    return sucLeafs.stream().map(Node::getListedContainer).distinct().collect(Collectors.toList());
   }
 
   /**

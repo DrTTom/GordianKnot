@@ -2,10 +2,14 @@ package de.tautenhahn.dependencies.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
@@ -238,5 +242,38 @@ public class ProjectView
   public List<String> listActiveFilters()
   {
     return filters.stream().map(ViewFilter::getName).collect(Collectors.toList());
+  }
+
+  /**
+   * Returns the IDs of all nodes representing the element specified by node name in current graph. This may
+   * be the node itself, its children or some collapsed ancestor.
+   *
+   * @param nodeName
+   * @return empty list if node is not represented.
+   */
+  public List<String> getNodeIDs(String nodeName)
+  {
+    Node listed = Optional.ofNullable(root.find(nodeName)).map(Node::getListedContainer).orElse(null);
+    if (listed == null)
+    {
+      return Collections.emptyList();
+    }
+    Map<Node, String> shownIds = currentGraph.getAllNodes()
+                                             .stream()
+                                             .collect(Collectors.toMap(IndexedNode::getNode,
+                                                                       n -> Integer.toString(n.getIndex())));
+
+    return replaceByNodesHavingContent(listed).map(shownIds::get)
+                                              .filter(Objects::nonNull)
+                                              .collect(Collectors.toList());
+  }
+
+  private Stream<Node> replaceByNodesHavingContent(Node node)
+  {
+    if (node.hasOwnContent())
+    {
+      return Stream.of(node);
+    }
+    return ((ContainerNode)node).getChildren().stream().flatMap(this::replaceByNodesHavingContent);
   }
 }
