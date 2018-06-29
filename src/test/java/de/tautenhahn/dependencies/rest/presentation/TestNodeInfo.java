@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.rest;
+package de.tautenhahn.dependencies.rest.presentation;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;

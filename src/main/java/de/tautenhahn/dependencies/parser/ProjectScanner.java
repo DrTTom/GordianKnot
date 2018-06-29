@@ -92,6 +92,7 @@ public class ProjectScanner
 
   private void handleInput(Path path)
   {
+    LOG.debug("scanning {}", path);
     try
     {
       if (isFile(path, ".jar"))
@@ -102,16 +103,7 @@ public class ProjectScanner
           ZipEntry entry = zip.getNextEntry();
           while (entry != null)
           {
-            if (isClassResourceName(entry.getName()))
-            {
-              String className = entry.getName().replace(".class", "").replace('/', '.');
-              ClassNode node = jarNode.createLeaf(className);
-              classFirstSeenAt.put(className, node);
-              try (InputStream entryContent = new NonClosingStream(zip))
-              {
-                deps.put(node, ClassAndDependencyInfo.parse(entryContent, className).getDependencies());
-              }
-            }
+            handleZipEntry(jarNode, zip, entry);
             entry = zip.getNextEntry();
           }
         }
@@ -126,6 +118,24 @@ public class ProjectScanner
     catch (IOException e)
     {
       LOG.error("cannot read {}", path, e);
+    }
+  }
+
+  private void handleZipEntry(ContainerNode jarNode, ZipInputStream zip, ZipEntry entry) throws IOException
+  {
+    if (isClassResourceName(entry.getName()))
+    {
+      String className = entry.getName().replace(".class", "").replace('/', '.');
+      if (filter.isIgnoredClass(className))
+      {
+        return;
+      }
+      ClassNode node = jarNode.createLeaf(className);
+      classFirstSeenAt.put(className, node);
+      try (InputStream entryContent = new NonClosingStream(zip))
+      {
+        deps.put(node, ClassAndDependencyInfo.parse(entryContent, className).getDependencies());
+      }
     }
   }
 

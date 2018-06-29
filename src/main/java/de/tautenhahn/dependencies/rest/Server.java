@@ -12,12 +12,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.tautenhahn.dependencies.parser.Pair;
+import de.tautenhahn.dependencies.rest.presentation.DisplayableDiGraph;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -117,12 +119,12 @@ public class Server
 
   /**
    * @param req
-   * @param res
+   * @param res to fit the interface, unused on purpose
    */
-  private DisplayableDiGraph setListMode(Request req, Response res) // NOPMD must fit interface
+  private Pair<DisplayableDiGraph, List<String>> setListMode(Request req, Response res) // NOPMD
   {
-    view.setListMode(Integer.parseInt(req.params("id")), req.params("value"));
-    return view.getDisplayableGraph();
+    String nodeName = view.setListMode(Integer.parseInt(req.params("id")), req.params("value"));
+    return new Pair<>(view.getDisplayableGraph(), view.getNodeIDs(nodeName));
   }
 
   /**

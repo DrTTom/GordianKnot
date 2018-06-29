@@ -3,6 +3,7 @@ package de.tautenhahn.dependencies.rest;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -54,7 +56,7 @@ public class TestServer
 
   /**
    * Asserts that the project name can be specified by input file.
-   * 
+   *
    * @throws IOException
    */
   @Test
@@ -75,6 +77,9 @@ public class TestServer
       {
         assertThat("name", r.readLine(), is("DummyProject"));
       }
+      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      conn.setRequestMethod("OPTIONS");
+      assertThat("header", conn.getHeaderField("Allow"), nullValue());
     }
     finally
     {

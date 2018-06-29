@@ -32,21 +32,21 @@ public final class ImpliedByNode implements ViewFilter
   /**
    * Returns instance which filters only named node and those which rely on it.
    *
-   * @param name
+   * @param nodeName
    */
-  public static ImpliedByNode dependingOn(String name)
+  public static ImpliedByNode dependingOn(String nodeName)
   {
-    return new ImpliedByNode(name, false);
+    return new ImpliedByNode(nodeName, false);
   }
 
   /**
    * Returns instance which filters only named node and those needed by named node.
    *
-   * @param name
+   * @param nodeName
    */
-  public static ImpliedByNode requiredBy(String name)
+  public static ImpliedByNode requiredBy(String nodeName)
   {
-    return new ImpliedByNode(name, true);
+    return new ImpliedByNode(nodeName, true);
   }
 
   @Override

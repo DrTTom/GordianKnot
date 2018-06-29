@@ -54,7 +54,7 @@ public class ParsedClassPath
    */
   public ParsedClassPath(String classpath)
   {
-    Arrays.stream(classpath.split(File.pathSeparator)).map(Paths::get).forEach(this::registerEntry);
+    Arrays.stream(classpath.split(File.pathSeparator, -1)).map(Paths::get).forEach(this::registerEntry);
     setupNames();
   }
 

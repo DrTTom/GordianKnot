@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.rest;
+package de.tautenhahn.dependencies.rest.presentation;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ArcInfo
    */
   public ArcInfo(DiGraph graph, String arcId)
   {
-    String[] nodeNumbers = arcId.split("-");
+    String[] nodeNumbers = arcId.split("-", -1);
     int fromNumber = Integer.parseInt(nodeNumbers[0]);
     int toNumber = Integer.parseInt(nodeNumbers[1]);
     from = new NodeInfo(graph, fromNumber);

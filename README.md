@@ -69,7 +69,6 @@ In case a test fails, verbose information abut the reason will be written into t
 # Coming features
 
 - class path elements can be un-selected
-- keep selection on expand/collapse
 - diverse help texts and tool tips
 - some colored traffic lights on the reports page
 - standard license

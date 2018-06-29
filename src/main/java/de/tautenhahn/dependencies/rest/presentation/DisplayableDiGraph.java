@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.rest;
+package de.tautenhahn.dependencies.rest.presentation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class DisplayableDiGraph
   /**
    * Data record for a node.
    */
-  static class VisNode
+  public static class VisNode
   {
 
     final String label;
@@ -174,5 +174,4 @@ public class DisplayableDiGraph
   {
     return Collections.unmodifiableList(edges);
   }
-
 }

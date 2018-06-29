@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.rest;
+package de.tautenhahn.dependencies.rest.presentation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

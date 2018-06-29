@@ -27,6 +27,8 @@ public class Filter
   public Filter()
   {
     ignoredClassNames.add(Pattern.compile("java\\..*"));
+    ignoredClassNames.add(Pattern.compile(".*module-info"));
+    ignoredClassNames.add(Pattern.compile("META-INF\\..*"));
     ignoredSources.add(Pattern.compile(".*/jre/lib/.*"));
     ignoredSources.add(Pattern.compile(".*/build/resources/.*"));
     ignoredSources.add(Pattern.compile(".*/configuration/org.eclipse.*/\\.cp"));
@@ -56,7 +58,7 @@ public class Filter
 
   /**
    * Returns true if name is the class name of an ignored class. Dependency to such classes are ignored as
-   * well.
+   * well and taken for granted.
    *
    * @param name
    */
@@ -64,7 +66,6 @@ public class Filter
   {
     return ignoredClassNames.stream().anyMatch(p -> p.matcher(name).matches());
   }
-
 
   /**
    * Returns true if name denotes an element which should undergo all the analyzing procedures, namely
@@ -75,18 +76,5 @@ public class Filter
   public boolean isInFocus(String name)
   {
     return focus.stream().anyMatch(p -> p.matcher(name).matches());
-  }
-
-  /**
-   * Returns true if name denotes a supporting class. These classes may be parsed to check the correct entries
-   * of the class path but will be excluded from every other analysis. More precisely, if some required class
-   * depends on this class, it is required to be present in the class path too. That is all we ever expect
-   * from a supporting class.
-   *
-   * @param name
-   */
-  public boolean isSupporting(String name)
-  {
-    return !isIgnoredSource(name) && !isInFocus(name);
   }
 }

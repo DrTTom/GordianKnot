@@ -1,7 +1,7 @@
 package de.tautenhahn.dependencies.analyzers;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Spliterators;
@@ -113,7 +113,7 @@ public final class BasicGraphOperations
   private static class BfsIterator implements Iterator<IndexedNode>
   {
 
-    private final Queue<IndexedNode> foundNodes = new LinkedList<>();
+    private final Queue<IndexedNode> foundNodes = new ArrayDeque<>();
 
     private final boolean[] found;
 

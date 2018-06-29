@@ -2,6 +2,8 @@ package de.tautenhahn.dependencies.reports;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
@@ -35,6 +37,8 @@ public class TestUnreferenced
     assertThat("report", systemUnderTest.toString(), containsString(onlyClassUnsingGson));
     assertThat("gson lib", systemUnderTest.getRarelyUsedJars().get(0).getNodeName(), startsWith("jar:"));
     assertThat("unref classes", systemUnderTest.getUnreferencedClasses(), empty());
+    assertThat("unref jars", systemUnderTest.getUnreferencedJars(), not(nullValue()));
+    assertThat("small contrib jars", systemUnderTest.getLittleUsedJars(), not(empty()));
   }
 
   /**

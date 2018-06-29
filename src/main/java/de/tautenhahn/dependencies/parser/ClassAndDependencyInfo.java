@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -24,6 +27,8 @@ import java.util.regex.Pattern;
  */
 public final class ClassAndDependencyInfo
 {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ClassAndDependencyInfo.class);
 
   private static final int MAGIC = 0xCAFEBABE;
 
@@ -82,6 +87,7 @@ public final class ClassAndDependencyInfo
    */
   public static ClassAndDependencyInfo parse(InputStream ins, String name) throws IOException
   {
+    LOG.debug("parsing {}", name);
     return new ClassAndDependencyInfo(ins, name);
   }
 
@@ -195,7 +201,7 @@ public final class ClassAndDependencyInfo
     int skipped = 0;
     while (skipped < num)
     {
-      skipped += ins.skip(num - skipped);
+      skipped += (int)ins.skip(num - skipped);
     }
   }
 

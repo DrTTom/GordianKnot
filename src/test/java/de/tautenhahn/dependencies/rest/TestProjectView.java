@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.reports.TestCyclicDependencies;
-import de.tautenhahn.dependencies.rest.DisplayableDiGraph.VisNode;
 import de.tautenhahn.dependencies.rest.presentation.DisplayableClasspathEntry;
+import de.tautenhahn.dependencies.rest.presentation.DisplayableDiGraph.VisNode;
 
 
 /**
@@ -50,6 +50,7 @@ public class TestProjectView
     List<DisplayableClasspathEntry> shownPath = systemUnderTest.getClassPath();
     assertThat("class path element", shownPath.get(0).getFullPath(), containsString("build/classes"));
     assertTrue("class path element active", shownPath.get(0).isActive());
+    shownPath.get(0).setActive(false);
     assertThat("label", shownPath.get(0).getLabel(), not(is(shownPath.get(1).getLabel())));
     assertThat("report", systemUnderTest.getUnreferencedReport(), notNullValue());
     assertThat("name", systemUnderTest.getProjectName(), is("GordianKnot"));
@@ -78,11 +79,15 @@ public class TestProjectView
     systemUnderTest.collapseAll();
     List<VisNode> nodes = systemUnderTest.getDisplayableGraph().getNodes();
     assertThat("resource nodes", nodes, hasSize(2));
-    int numberMain = "main".equals(nodes.get(0).label) ? 0 : 1;
+    int numberMain = "main".equals(nodes.get(0).getLabel()) ? 0 : 1;
     systemUnderTest.restrictToImpliedBy(numberMain, true);
     nodes = systemUnderTest.getDisplayableGraph().getNodes();
     assertThat("elements needed by main", nodes, hasSize(1));
+    assertThat("different filters",
+               ImpliedByNode.dependingOn("dir:test"),
+               not(is(ImpliedByNode.requiredBy("dir:test"))));
     systemUnderTest.showOnlyCycles();
+
   }
 
   /**
@@ -111,11 +116,11 @@ public class TestProjectView
   {
     List<String> ids = systemUnderTest.getNodeIDs(nodeName);
     return systemUnderTest.getDisplayableGraph()
-                                          .getNodes()
-                                          .stream()
-                                          .filter(n -> ids.contains(n.getId()))
-                                          .map(VisNode::getLabel)
-                                          .collect(Collectors.toList());
+                          .getNodes()
+                          .stream()
+                          .filter(n -> ids.contains(n.getId()))
+                          .map(VisNode::getLabel)
+                          .collect(Collectors.toList());
   }
 
   private void changeListMode(ProjectView view, String label, String mode)
@@ -123,8 +128,8 @@ public class TestProjectView
     view.getDisplayableGraph()
         .getNodes()
         .stream()
-        .filter(n -> label.equals(n.label))
-        .map(n -> n.id)
+        .filter(n -> label.equals(n.getLabel()))
+        .map(n -> n.getId())
         .findAny()
         .ifPresent(id -> view.setListMode(Integer.parseInt(id), mode));
   }

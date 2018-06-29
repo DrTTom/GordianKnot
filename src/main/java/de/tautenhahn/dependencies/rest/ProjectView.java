@@ -21,7 +21,10 @@ import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.reports.Unreferenced;
+import de.tautenhahn.dependencies.rest.presentation.ArcInfo;
 import de.tautenhahn.dependencies.rest.presentation.DisplayableClasspathEntry;
+import de.tautenhahn.dependencies.rest.presentation.DisplayableDiGraph;
+import de.tautenhahn.dependencies.rest.presentation.NodeInfo;
 
 
 /**
@@ -90,8 +93,9 @@ public class ProjectView
    *
    * @param nodeNumber
    * @param value
+   * @returns name of node just changed (that node may be no longer displayed)
    */
-  public void setListMode(int nodeNumber, String value)
+  public String setListMode(int nodeNumber, String value)
   {
     Node node = currentGraph.getAllNodes().get(nodeNumber).getNode();
     if ("COLLAPSE_PARENT".equals(value))
@@ -113,6 +117,7 @@ public class ProjectView
         computeGraph();
       }
     }
+    return node.getName();
   }
 
 

@@ -45,12 +45,16 @@ function showPath(value) {
 function selectNodesByName(nodeName) {
    get(urlPrefix+"view/nodesByName/"+nodeName, function (value) {
       var ids = JSON.parse(value);
-      network.selectNodes(ids);
-      if (ids.length == 1) {
-         getNodeInfo(ids[0]);
-      }
+      selectNodesById(ids);
       openPage("graph", document.getElementById("defaultOpen"));
    });
+}
+
+function selectNodesById(ids) {
+   network.selectNodes(ids);
+   if (ids.length == 1) {
+      getNodeInfo(ids[0]);
+   }
 }
 
 function showReport(value) {
@@ -66,7 +70,10 @@ function stopMovingNodes(params) {
 }
 
 function showGraph(responseText) {
-   var response = JSON.parse(responseText);
+   showParsedGraph(JSON.parse(responseText));
+}
+
+function showParsedGraph(response) {
    var nodes = new vis.DataSet(response.nodes);
    var edges = new vis.DataSet(response.edges);
 
@@ -129,6 +136,7 @@ function showGraph(responseText) {
       }
    });
    updateFilterList();
+   return response;
 }
 
 function distribute() {
@@ -155,8 +163,11 @@ function getNodeInfo(id) {
 
 function changeListMode(mode) {
    if (selectedNode != "") {
-      get(urlPrefix+"view/node/" + selectedNode + "/listmode/" + mode,
-          showGraph);
+      get(urlPrefix+"view/node/" + selectedNode + "/listmode/" + mode, (resp) => {
+         var result = JSON.parse(resp);
+         showParsedGraph(result.first);
+         selectNodesById(result.second);
+      });
    }
 }
 
@@ -165,8 +176,10 @@ function setFilter(value) {
 }
 
 function impliedOnly(value) {
-   get(urlPrefix+"view/filters/impliedBy/" + selectedNode + "/" + value,
-      showGraph);
+   if (selectedNode!="") {
+      get(urlPrefix+"view/filters/impliedBy/" + selectedNode + "/" + value,
+          showGraph);
+   }
 }
 
 function updateFilterList() {
@@ -186,8 +199,8 @@ function getArcInfo(id) {
 function openPage(pageName, elmnt) {
    var tabcontent = document.getElementsByClassName("tabcontent");
    for (var i = 0; i < tabcontent.length; i++) {
-	   tabcontent[i].style.opacity = 0;
-	   tabcontent[i].style.zIndex=-1;
+      tabcontent[i].style.opacity = 0;
+      tabcontent[i].style.zIndex=-1;
    }
 
    var tablinks = document.getElementsByClassName("activetablink");
@@ -201,5 +214,6 @@ function openPage(pageName, elmnt) {
    elmnt.blur();
 }
 
-window.onload=function() {openPage("graph", document.getElementById("defaultOpen"))};
-
+window.onload=function() {
+   openPage("graph", document.getElementById("defaultOpen"))
+   };
