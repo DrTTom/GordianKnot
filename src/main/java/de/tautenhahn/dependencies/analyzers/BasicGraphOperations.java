@@ -81,10 +81,9 @@ public final class BasicGraphOperations
     return new DfsWrapper(graph).search(start);
   }
 
+
   /**
    * Just avoiding the same references several times on the stack.
-   *
-   * @author jean
    */
   private static class DfsWrapper
   {

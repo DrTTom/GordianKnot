@@ -98,7 +98,7 @@ public final class ContainerNode extends Node
     return getNeighbours(ClassNode::getSucLeafs);
   }
 
-  private List<Node> getNeighbours(Function<ClassNode, List<Node>> lister)
+  private List<Node> getNeighbours(Function<ClassNode, List<ClassNode>> lister)
   {
     return getContainedLeafs().flatMap(l -> lister.apply(l).stream())
                               .distinct()

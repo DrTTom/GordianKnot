@@ -84,8 +84,8 @@ public class ReferenceChecker
       unrefClasses.removeIf(interpreter::isTest);
     }
     unrefClasses.removeIf(n -> knownNeededClasses.contains(n.getClassName()));
-    // unrefClasses.removeIf(interpreter::isMainClass);
-    // TODO: EJBs, Servlets, ...
+    unrefClasses.removeIf(interpreter::isRecognizedAsMainClass);
+    // TODO: EJBs, Servlets, registered services, ...
     return unrefClasses;
   }
 
@@ -102,8 +102,7 @@ public class ReferenceChecker
   }
 
   /**
-   * Returns all jar nodes from which too few classes are used together with the names of those classes. <br>
-   * TODO: could count transitive requirements in same jar as well.
+   * Returns all jar nodes from which too few classes are used together with the names of those classes.
    */
   public Map<ContainerNode, List<String>> getLittleContributionJars()
   {
@@ -114,9 +113,14 @@ public class ReferenceChecker
     return result;
   }
 
-  private void checkSuppliesLittle(ContainerNode j, Map<ContainerNode, List<String>> result)
+  /**
+   * To avoid false positives in case a jar has only one entry class, one could wish to count also re
+   * recursive dependencies. However, that would disable almost all warnings, even if the library supplies
+   * only a single unimportant method.
+   */
+  private void checkSuppliesLittle(ContainerNode jar, Map<ContainerNode, List<String>> result)
   {
-    List<Node> predecessors = j.getPredecessors();
+    List<Node> predecessors = jar.getPredecessors();
     if (predecessors.isEmpty())
     {
       return;
@@ -124,13 +128,13 @@ public class ReferenceChecker
     Set<String> supplied = new HashSet<>();
     for ( Node pred : predecessors )
     {
-      pred.explainDependencyTo(j).stream().map(Pair::getSecond).forEach(supplied::add);
+      pred.explainDependencyTo(jar).stream().map(Pair::getSecond).forEach(supplied::add);
       if (supplied.size() > jarContributionLimit)
       {
         return;
       }
     }
-    result.put(j, new ArrayList<>(supplied));
+    result.put(jar, new ArrayList<>(supplied));
   }
 
   /**
