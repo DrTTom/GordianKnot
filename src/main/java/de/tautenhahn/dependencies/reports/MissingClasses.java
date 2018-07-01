@@ -23,9 +23,9 @@ import de.tautenhahn.dependencies.parser.Filter;
 public class MissingClasses
 {
 
-  private final Set<String> knownClasses = new HashSet<>();
+  private Set<String> knownClasses = new HashSet<>(); // NOPMD
 
-  private final Stack<String> referencingClassNames = new Stack<>();
+  private Stack<String> referencingClassNames = new Stack<>(); // NOPMD assigned twice
 
   Map<String, List<List<String>>> content = new HashMap<>();
 
@@ -44,6 +44,8 @@ public class MissingClasses
         .filter(c -> !knownClasses.contains(c.getClassName()))
         .filter(c -> filter.isInFocus(c.getName()))
         .forEach(this::checkRefs);
+    knownClasses = null;
+    referencingClassNames = null;
   }
 
   private void checkRefs(ClassNode node)

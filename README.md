@@ -14,10 +14,10 @@ GordianKnot is able to detect
 - circular dependencies
 - unused classes
 - unused libraries
+- missing classes
 - libraries which may be candidates for replacement
 
 Once finished, it will also report
-- missing classes
 - problems with packaging your classes into archives
 - security problems due to unclean interfaces between components
 - and more to come
@@ -68,7 +68,8 @@ In case a test fails, verbose information abut the reason will be written into t
 
 # Coming features
 
-- class path elements can be un-selected
+- class path elements can be un-selected (needed ?)
+- specified nodes can be hidden
 - diverse help texts and tool tips
 - some colored traffic lights on the reports page
 - standard license

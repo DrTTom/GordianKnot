@@ -67,12 +67,12 @@ public class TestBasicGraphOperations
   public void breadthFirstSearch()
   {
     assertThat("bfs sequence",
-               BasicGraphOperations.breadthFirstSearch(graph, a, true)
+               BasicGraphOperations.breadthFirstSearch(graph, true, a)
                                    .map(n -> n.getNode().getName())
                                    .collect(Collectors.toList()),
                contains("a", "b", "d", "c"));
     assertThat("bfs backwards sequence",
-               BasicGraphOperations.breadthFirstSearch(graph, a, false)
+               BasicGraphOperations.breadthFirstSearch(graph, false, a)
                                    .map(n -> n.getNode().getName())
                                    .collect(Collectors.toList()),
                contains("a", "d", "c", "b"));
