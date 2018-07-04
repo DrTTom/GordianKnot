@@ -47,6 +47,7 @@ function selectNodesByName(nodeName) {
       var ids = JSON.parse(value);
       selectNodesById(ids);
       openPage("graph", document.getElementById("defaultOpen"));
+      window.scrollTo(0, 0);
    });
 }
 
@@ -216,4 +217,4 @@ function openPage(pageName, elmnt) {
 
 window.onload=function() {
    openPage("graph", document.getElementById("defaultOpen"))
-   };
+};
