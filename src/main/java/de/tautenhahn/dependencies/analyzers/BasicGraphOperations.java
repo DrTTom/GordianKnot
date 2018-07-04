@@ -4,7 +4,9 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -45,6 +47,45 @@ public final class BasicGraphOperations
   }
 
   /**
+   * For cycle-free graphs, return the ranks of each node. <br>
+   * For cyclic graphs, this method will just ignore some of the arcs, so the outcome is undefined. However,
+   * removing some arcs which belong to cycles, there is a subgraph where each vertex has the rank as
+   * indicated. For organizing some graphic output, that may be just good enough.
+   * 
+   * @param graph
+   * @return
+   */
+  public static int[] getRanks(DiGraph graph)
+  {
+    if (graph.getAllNodes().isEmpty())
+    {
+      return new int[0];
+    }
+    int minInValence = graph.getAllNodes()
+                            .stream()
+                            .mapToInt(n -> n.getPredecessors().size())
+                            .min()
+                            .getAsInt();
+    Set<IndexedNode> sources = graph.getAllNodes()
+                                    .stream()
+                                    .filter(n -> n.getPredecessors().size() == minInValence)
+                                    .collect(Collectors.toSet());
+    int[] result = new int[graph.getAllNodes().size()];
+    breadthFirstSearch(graph, true, sources.toArray(new IndexedNode[0])).forEach(n -> {
+      if (!sources.contains(n))
+      {
+        result[n.getIndex()] = n.getPredecessors()
+                                .stream()
+                                .mapToInt(p -> result[p.getIndex()])
+                                .max()
+                                .getAsInt()
+                               + 1;
+      }
+    });
+    return result;
+  }
+
+  /**
    * Returns the transitive closure of a given graph using repeated algorithm of Floyd/Warshall. In case of
    * performance problems, implement Purdom's algorithm instead!
    *
@@ -62,12 +103,12 @@ public final class BasicGraphOperations
    * sequence. Use the cheaper depth-first search if you do not care about the sequence.
    *
    * @param graph
-   * @param start
    * @param forward
+   * @param start several nodes my be given where the graph theorist would introduce an artificial source.
    */
-  public static Stream<IndexedNode> breadthFirstSearch(DiGraph graph, IndexedNode start, boolean forward)
+  public static Stream<IndexedNode> breadthFirstSearch(DiGraph graph, boolean forward, IndexedNode... start)
   {
-    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new BfsIterator(graph, start, forward),
+    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new BfsIterator(graph, forward, start),
                                                                     0),
                                 false);
   }
@@ -81,10 +122,9 @@ public final class BasicGraphOperations
     return new DfsWrapper(graph).search(start);
   }
 
+
   /**
    * Just avoiding the same references several times on the stack.
-   *
-   * @author jean
    */
   private static class DfsWrapper
   {
@@ -119,11 +159,14 @@ public final class BasicGraphOperations
 
     private final boolean forward;
 
-    BfsIterator(DiGraph graph, IndexedNode start, boolean forward)
+    BfsIterator(DiGraph graph, boolean forward, IndexedNode... start)
     {
-      foundNodes.add(start);
       found = new boolean[graph.getAllNodes().size()];
-      found[start.getIndex()] = true;
+      for ( IndexedNode s : start )
+      {
+        foundNodes.add(s);
+        found[s.getIndex()] = true;
+      }
       this.forward = forward;
     }
 

@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 public class ClassNode extends Node
 {
 
-  private final List<Node> predLeafs = new ArrayList<>();
+  private final List<ClassNode> predLeafs = new ArrayList<>();
 
-  private final List<Node> sucLeafs = new ArrayList<>();
+  private final List<ClassNode> sucLeafs = new ArrayList<>();
 
   private final Collection<String> missingDependencies = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class ClassNode extends Node
     return Stream.empty();
   }
 
-  List<Node> getPredLeafs()
+  List<ClassNode> getPredLeafs()
   {
     return predLeafs;
   }
@@ -84,7 +84,7 @@ public class ClassNode extends Node
   /**
    * Returns the direct successors, ignoring any collapsed containers.
    */
-  public List<Node> getSucLeafs()
+  public List<ClassNode> getSucLeafs()
   {
     return Collections.unmodifiableList(sucLeafs);
   }

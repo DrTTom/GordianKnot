@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
@@ -28,16 +29,19 @@ public class DisplayableDiGraph
   public static class VisNode
   {
 
-    final String label;
+    private final String label;
 
-    final String id;
+    private final String id;
+
+    private final int level;
 
     String group = "package";
 
-    VisNode(String label, String id)
+    VisNode(String label, String id, int level)
     {
       this.label = label;
       this.id = id;
+      this.level = level;
     }
 
     /**
@@ -64,6 +68,10 @@ public class DisplayableDiGraph
       return id;
     }
 
+    public int getLevel()
+    {
+      return level;
+    }
   }
 
   /**
@@ -129,9 +137,10 @@ public class DisplayableDiGraph
   public DisplayableDiGraph(DiGraph graph)
   {
     graph.renumber();
+    int[] rank = BasicGraphOperations.getRanks(graph);
     for ( IndexedNode node : graph.getAllNodes() )
     {
-      addNode(node.getNode(), Integer.toString(node.getIndex()));
+      addNode(node.getNode(), Integer.toString(node.getIndex()), rank[node.getIndex()]);
       for ( IndexedNode j : node.getSuccessors() )
       {
         edges.add(new VisEdge(Integer.toString(node.getIndex()), Integer.toString(j.getIndex())));
@@ -139,14 +148,14 @@ public class DisplayableDiGraph
     }
   }
 
-  private void addNode(Node n, String id)
+  private void addNode(Node n, String id, int rank)
   {
     String label = n.getSimpleName().replaceAll(".*:", "").//
                     replaceAll("_([a-z]{3})$", ".$1").//
                     replaceAll("(.{8,18}[a-z])([A-Z])", "$1\n$2").//
                     replaceAll("(.{8,18}-)(\\w)", "$1\n$2");
 
-    VisNode e = new VisNode(label, id);
+    VisNode e = new VisNode(label, id, rank);
     if (n instanceof ClassNode)
     {
       e.group = "class";

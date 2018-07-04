@@ -20,6 +20,7 @@ import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
+import de.tautenhahn.dependencies.reports.MissingClasses;
 import de.tautenhahn.dependencies.reports.Unreferenced;
 import de.tautenhahn.dependencies.rest.presentation.ArcInfo;
 import de.tautenhahn.dependencies.rest.presentation.DisplayableClasspathEntry;
@@ -50,6 +51,8 @@ public class ProjectView
 
   private final Unreferenced unrefReport;
 
+  private final MissingClasses missingClassesReport;
+
   /**
    * Creates instance for given class path and project name.
    *
@@ -64,6 +67,7 @@ public class ProjectView
     ProjectScanner analyzer = new ProjectScanner(filter);
     root = analyzer.scan(this.classPath);
     unrefReport = Unreferenced.forProject(root, filter, this.classPath).create();
+    missingClassesReport = new MissingClasses(root, filter);
     resetListMode();
     projectName = name;
   }
@@ -280,5 +284,10 @@ public class ProjectView
       return Stream.of(node);
     }
     return ((ContainerNode)node).getChildren().stream().flatMap(this::replaceByNodesHavingContent);
+  }
+
+  public MissingClasses getMissingClassesReport()
+  {
+    return missingClassesReport;
   }
 }

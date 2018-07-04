@@ -55,7 +55,7 @@ public final class ImpliedByNode implements ViewFilter
     IndexedNode start = findNodeByName(input).orElseThrow(() -> new IllegalArgumentException("missing node "
                                                                                              + nodeName));
     nodeDisplayName = start.getNode().getDisplayName();
-    return new DiGraph(BasicGraphOperations.breadthFirstSearch(input, start, useSuccessors)
+    return new DiGraph(BasicGraphOperations.breadthFirstSearch(input, useSuccessors, start)
                                            .map(IndexedNode::getNode));
   }
 

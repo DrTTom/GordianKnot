@@ -51,7 +51,7 @@
                 }) %>
       <h2>Unreferenced libraries</h2>
       <%= resolve("unrefElementsTmpl", { elements: jars, 
-                     okMessage: "Your class path looks correct.", 
+                     okMessage: "There are no unreferenced libraries.", 
                      explanation: "Your class path contains jars which are not used statically. Run your tests to find out whether they are really needed:"
                 }) %>
       <h2>Libraries providing few classes</h2>
@@ -100,6 +100,17 @@
          </table>
       <% } %>
    </script>
+
+   <script type="text/html" id="missingReportTmpl">
+      <h2>Missing classes</h2>
+      <% if(_.size(content)==0) { %>
+         All referenced classes are present in the class path.
+      <% } else { %>
+         Not all classes can be loaded. This is OK if you are checking just a compile class path. Otherwise, your tests 
+         seem to be incomplete.
+     <% } %>
+   </script>
+
 
    <script type="text/html" id="classpathTmpl">
       <table>
@@ -158,6 +169,7 @@
    </div>
    <div id="report" class="tabcontent">
       <div id="refReport"></div>
+      <div id="missingReport"></div>
    </div>
    <div id="classpath" class="tabcontent">
       <h2>Classpath</h2>

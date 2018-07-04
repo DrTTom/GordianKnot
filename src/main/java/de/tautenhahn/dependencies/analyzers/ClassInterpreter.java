@@ -110,11 +110,14 @@ public class ClassInterpreter
 
   private boolean referencesClass(ClassNode n, String name)
   {
-    return n.getSucLeafs().stream().map(s -> ((ClassNode)s).getClassName()).anyMatch(name::equals);
+    return n.getSucLeafs().stream().map(s -> s.getClassName()).anyMatch(name::equals);
   }
 
   /**
-   * Returns true if given node represents a class which can be loaded as main class.
+   * Returns true if given node represents a class which can be loaded as main class.<br>
+   * WARNING: In Java 10, executing {@link Class#getDeclaredMethod(String, Class...)} requires
+   * org/slf4j/simple/SimpleLoggerConfiguration which is not in the platform class loader. In other words, the
+   * JVM does not pass the "cyclic archive dependencies" check.
    *
    * @param n
    */
@@ -126,7 +129,7 @@ public class ClassInterpreter
       Method m = clazz.getDeclaredMethod("main", String[].class);
       return (m.getModifiers() & Modifier.PUBLIC) > 0 && (m.getModifiers() & Modifier.STATIC) > 0;
     }
-    catch (ClassNotFoundException | NoSuchMethodException | SecurityException e)
+    catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoClassDefFoundError e)
     {
       return false;
     }

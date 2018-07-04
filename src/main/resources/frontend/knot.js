@@ -10,6 +10,7 @@ get(urlPrefix+"view/name", function (name) {
 get(urlPrefix+"view", showGraph);
 get(urlPrefix+"view/classpath", showPath);
 get(urlPrefix+"view/unrefReport", showReport);
+get(urlPrefix+"view/missingReport", showMissingReport);
 
 function setNewContent(templateId, data, targetId) {
    insertContent(resolve(templateId, data), targetId);
@@ -63,6 +64,11 @@ function showReport(value) {
    setNewContent("refReportTmpl", report, "refReport");
 }
 
+function showMissingReport(value) {
+   var report = JSON.parse(value);
+   setNewContent("missingReportTmpl", report, "missingReport");
+}
+
 function stopMovingNodes(params) {
    network.setOptions({
       physics: false
@@ -74,10 +80,17 @@ function showGraph(responseText) {
    showParsedGraph(JSON.parse(responseText));
 }
 
+
 function showParsedGraph(response) {
+
    var nodes = new vis.DataSet(response.nodes);
    var edges = new vis.DataSet(response.edges);
 
+   nodes.forEach( (node) => {
+      node.y = node.level*10;
+      nodes.update(node);
+   } );
+   
    var container = document.getElementById("mynetwork");
    var data = {
       nodes: nodes,
@@ -111,7 +124,8 @@ function showParsedGraph(response) {
          "dir": createGroupProps("#afd6e7","#dbecf4"),
          "package": createGroupProps("#aec489","#d2debe"),
          "class": createGroupProps("#ffed9e","#fff5ca")
-      }
+      },
+      layout:{randomSeed:2}
    };
    network = new vis.Network(container, data, options);
    selectedNode = "";
