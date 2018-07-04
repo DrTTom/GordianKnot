@@ -1,12 +1,15 @@
 package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.Spliterators;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -51,38 +54,83 @@ public final class BasicGraphOperations
    * For cyclic graphs, this method will just ignore some of the arcs, so the outcome is undefined. However,
    * removing some arcs which belong to cycles, there is a subgraph where each vertex has the rank as
    * indicated. For organizing some graphic output, that may be just good enough.
-   * 
+   *
    * @param graph
-   * @return
    */
   public static int[] getRanks(DiGraph graph)
   {
+    List<IndexedNode> sorted = topSort(graph);
+    int[] result = new int[sorted.size()];
+    sorted.forEach(n -> result[n.getIndex()] = n.getPredecessors()
+                                                .stream()
+                                                .mapToInt(p -> result[p.getIndex()])
+                                                .max()
+                                                .orElse(0)
+                                               + 1);
+    return result;
+  }
+
+  /**
+   * For cycle-free graphs, returns the nodes in such an order that all arcs go forward in the sequence. This
+   * method can be applied for cyclic graphs where it just ignores some of the arcs. The outcome in that case
+   * is undefined but should be good enough if we just want a large number of arcs pointing in the right
+   * direction.
+   *
+   * @param graph
+   */
+  public static List<IndexedNode> topSort(DiGraph graph)
+  {
     if (graph.getAllNodes().isEmpty())
     {
-      return new int[0];
+      return Collections.emptyList();
     }
-    int minInValence = graph.getAllNodes()
-                            .stream()
-                            .mapToInt(n -> n.getPredecessors().size())
-                            .min()
-                            .getAsInt();
-    Set<IndexedNode> sources = graph.getAllNodes()
-                                    .stream()
-                                    .filter(n -> n.getPredecessors().size() == minInValence)
-                                    .collect(Collectors.toSet());
-    int[] result = new int[graph.getAllNodes().size()];
-    breadthFirstSearch(graph, true, sources.toArray(new IndexedNode[0])).forEach(n -> {
-      if (!sources.contains(n))
+    TopSortWrapper wrapper = new TopSortWrapper(graph);
+    while (true)
+    {
+      Optional<IndexedNode> source = graph.getAllNodes()
+                                          .stream()
+                                          .filter(n -> !wrapper.listed[n.getIndex()])
+                                          .sorted((a, b) -> a.getPredecessors().size()
+                                                            - b.getPredecessors().size())
+                                          .findFirst();
+      if (!source.isPresent())
       {
-        result[n.getIndex()] = n.getPredecessors()
-                                .stream()
-                                .mapToInt(p -> result[p.getIndex()])
-                                .max()
-                                .getAsInt()
-                               + 1;
+        break;
       }
-    });
-    return result;
+      wrapper.visit(source.get());
+    }
+    return new ArrayList<>(wrapper.result);
+  }
+
+  /**
+   * Avoids putting some arrays onto the stack several times.
+   */
+  private static class TopSortWrapper
+  {
+
+    boolean[] listed;
+
+    boolean[] seen;
+
+    Deque<IndexedNode> result = new ArrayDeque<>();
+
+    TopSortWrapper(DiGraph graph)
+    {
+      listed = new boolean[graph.getAllNodes().size()];
+      seen = new boolean[listed.length];
+    }
+
+    void visit(IndexedNode n)
+    {
+      if (!listed[n.getIndex()])
+      {
+        // if seen there is a cycle;
+        seen[n.getIndex()] = true;
+        n.getSuccessors().stream().filter(s -> !seen[s.getIndex()]).forEach(this::visit);
+        listed[n.getIndex()] = true;
+        result.addFirst(n);
+      }
+    }
   }
 
   /**
