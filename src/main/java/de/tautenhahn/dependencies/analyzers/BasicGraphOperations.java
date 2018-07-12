@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.analyzers;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
+import de.tautenhahn.dependencies.parser.Pair;
 
 
 /**
@@ -68,6 +70,70 @@ public final class BasicGraphOperations
                                                 .orElse(0)
                                                + 1);
     return result;
+  }
+
+  /**
+   * Returns the number of nodes each node depends on (inclusive itself) and used from.
+   *
+   * @param graph any directed graph, transitive closure is computed internally.
+   */
+  public static Pair<int[], int[]> countDependsOnAndUsedFrom(DiGraph graph)
+  {
+    DiGraph transitive = transitiveClosure(graph);
+    List<IndexedNode> nodes = transitive.getAllNodes();
+    int[] dependsOn = new int[nodes.size()];
+    int[] usedFrom = new int[nodes.size()];
+    for ( IndexedNode node : nodes )
+    {
+      int self = node.getSuccessors().contains(node) ? 0 : 1;
+      dependsOn[node.getIndex()] = self + node.getSuccessors().size();
+      usedFrom[node.getIndex()] = self + node.getPredecessors().size();
+    }
+    return new Pair<>(dependsOn, usedFrom);
+  }
+
+  /**
+   * Returns the cumulative dependsOn value.
+   *
+   * @param numbers
+   */
+  public static int ccd(Pair<int[], int[]> numbers)
+  {
+    return Arrays.stream(numbers.getFirst()).sum();
+  }
+
+  /**
+   * Returns the average dependsOn value.
+   *
+   * @param numbers
+   */
+  public static double acd(Pair<int[], int[]> numbers)
+  {
+    return 1.0 * ccd(numbers) / numbers.getFirst().length;
+  }
+
+  /**
+   * Returns the ratio between ccd of current graph and ccd of a balanced binary tree of same size. That value
+   * should be comparable between graphs of different node number.
+   *
+   * @param numbers
+   */
+  public static double rcd(Pair<int[], int[]> numbers)
+  {
+    return 1.0 * ccd(numbers) / getTreeValue(numbers.getFirst().length);
+  }
+
+  private static int getTreeValue(int n)
+  {
+    if (n <= 1)
+    {
+      return n;
+    }
+    if (n % 2 == 0)
+    {
+      return getTreeValue(n / 2 - 1) + getTreeValue(n / 2) + n;
+    }
+    return 2 * getTreeValue((n - 1) / 2) + n;
   }
 
   /**
@@ -135,13 +201,46 @@ public final class BasicGraphOperations
 
   /**
    * Returns the transitive closure of a given graph using repeated algorithm of Floyd/Warshall. In case of
-   * performance problems, implement Purdom's algorithm instead!
+   * performance problems, implement Purdom's algorithm instead! May be its OK to work directly on the lists.
    *
    * @param graph
    */
   public static DiGraph transitiveClosure(DiGraph graph)
   {
-    return new DiGraph(graph); // TODO!
+    int n = graph.getAllNodes().size();
+    boolean[][] adjacency = new boolean[n][n];
+    for ( int l = 0 ; l < n ; l++ )
+    {
+      for ( IndexedNode node : graph.getAllNodes() )
+      {
+        for ( IndexedNode succ : node.getSuccessors() )
+        {
+          adjacency[node.getIndex()][succ.getIndex()] = true;
+        }
+      }
+    }
+    for ( int k = 0 ; k < n ; k++ )
+    {
+      for ( int i = 0 ; i < n ; i++ )
+      {
+        for ( int j = 0 ; j < n ; j++ )
+        {
+          adjacency[i][j] |= adjacency[i][k] && adjacency[k][j];
+        }
+      }
+    }
+    DiGraph result = new DiGraph(graph);
+    for ( int i = 0 ; i < n ; i++ )
+    {
+      for ( int j = 0 ; j < n ; j++ )
+      {
+        if (adjacency[i][j])
+        {
+          result.addArc(result.getAllNodes().get(i), result.getAllNodes().get(j));
+        }
+      }
+    }
+    return result;
   }
 
   /**

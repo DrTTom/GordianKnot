@@ -33,7 +33,7 @@
                  collapse <%=numberCollapsable %> nodes into parent container</button>
       <% } %>
    </script>
-    <script type="text/html" id="arcInfo">
+   <script type="text/html" id="arcInfo">
        <h3> <%= from.name %> depends on <br><%= to.name %> </h3> 
        Dependency is caused by (using relative names):
        <table>
@@ -111,7 +111,6 @@
      <% } %>
    </script>
 
-
    <script type="text/html" id="classpathTmpl">
       <table>
          <tr>
@@ -140,36 +139,70 @@
       <% } %>
    </script>
 
-   <h1>Dependencies of project <span id="projectName"></span></h1>
+   <script type="text/html" id="metricsTmpl">
+      <div class="twocolumn">
+         <div>Total number classes:</div><div>TODO</div>
+         <div>Number own classes:</div><div>TODO</div>
+         <div>Number jars:</div><div>TODO</div>
+      </div>
+      <p/>
+TODO: egde density!
+      <h3>Component dependency</h3>
+      <table>
+         <tr><th>Scope</th> <th>  cumulative (ccd) </th> <th> average (acd) </th> <th> relative to bintree of same size (rcd) </th> </tr>
+         <%= resolve("metricLineTmpl", { name: "own classes", values: xcd[0] }) %>
+         <%= resolve("metricLineTmpl", { name: "own packages", values: xcd[1] }) %>
+         <%= resolve("metricLineTmpl", { name: "archives", values: xcd[2] }) %>
+      <table>
+      <a href="http://blog.eisele.net/2009/12/software-quality-basics-ii-ccd-acd-ca.html">Definitions</a>
+   </script>
+
+   <script type="text/html" id="metricLineTmpl">
+      <tr><td ><%= name %></td><td><%= values[0].toFixed(2) %></td><td><%= values[1].toFixed(2) %></td><td><%= values[2].toFixed(2) %></td></tr>
+   </script>
+
+   <h1>
+      Dependencies of project <span id="projectName"></span>
+   </h1>
    <button class="tablink" onclick="openPage('graph', this)" id="defaultOpen">Graph</button>
    <button class="tablink" onclick="openPage('report', this)">Report</button>
-   <button class="tablink" onclick="openPage('classpath', this)">Class path</button><br/>
+   <button class="tablink" onclick="openPage('metrics', this)">Metrics</button>
+   <button class="tablink" onclick="openPage('classpath', this)">Class path</button>
+   <br />
 
    <div id="graph" class="tabcontent">
       <div class=twocolumnLeftWide>
-      <div id="mynetwork"></div>
-      <div id="detailInfo">
-         <h2>Graph</h2>
-         <h3>Nodes</h3>
-         <button onClick="distribute()">start</button> <button onClick="stopMovingNodes()">stop</button> automatic distribution
-         <br>
-         <button onClick="setFilter('resetListMode')">reset</button> expanded/collapsed nodes
-         <h3>Filters</h3>
-         <div id="filters"></div>
-         <button onClick="setFilter('none')" title="Clear all active filters">whole graph</button>
-         <button onClick="setFilter('cycles')" title="Display only nodes and acrs which are part of some cyclic dependency.">cycles only</button>
-         <br/>
-         <button onClick="impliedOnly(true)">required by selected node</button>
-         <button onClick="impliedOnly(false)">requiring selected node</button>
+         <div id="mynetwork"></div>
+         <div id="detailInfo">
+            <h2>Graph</h2>
+            <h3>Nodes</h3>
+            <button onClick="distribute()">start</button>
+            <button onClick="stopMovingNodes()">stop</button>
+            automatic distribution <br>
+            <button onClick="setFilter('resetListMode')">reset</button>
+            expanded/collapsed nodes
+            <h3>Filters</h3>
+            <div id="filters"></div>
+            <button onClick="setFilter('none')" title="Clear all active filters">whole
+               graph</button>
+            <button onClick="setFilter('cycles')"
+               title="Display only nodes and acrs which are part of some cyclic dependency.">cycles
+               only</button>
+            <br />
+            <button onClick="impliedOnly(true)">required by selected node</button>
+            <button onClick="impliedOnly(false)">requiring selected node</button>
 
-         <h2>Selected Element</h2>
-         <div id="description"></div>
-      </div>
+            <h2>Selected Element</h2>
+            <div id="description"></div>
+         </div>
       </div>
    </div>
    <div id="report" class="tabcontent">
       <div id="refReport"></div>
       <div id="missingReport"></div>
+   </div>
+   <div id="metrics" class="tabcontent">
+      <div id="metrics"></div>
    </div>
    <div id="classpath" class="tabcontent">
       <h2>Classpath</h2>

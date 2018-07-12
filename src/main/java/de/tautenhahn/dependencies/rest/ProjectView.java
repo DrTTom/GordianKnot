@@ -16,10 +16,12 @@ import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
+import de.tautenhahn.dependencies.parser.ListModeUtil;
 import de.tautenhahn.dependencies.parser.Node;
 import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
 import de.tautenhahn.dependencies.parser.ProjectScanner;
+import de.tautenhahn.dependencies.reports.Metrics;
 import de.tautenhahn.dependencies.reports.MissingClasses;
 import de.tautenhahn.dependencies.reports.Unreferenced;
 import de.tautenhahn.dependencies.rest.presentation.ArcInfo;
@@ -53,6 +55,8 @@ public class ProjectView
 
   private final MissingClasses missingClassesReport;
 
+  private final Metrics metrics;
+
   /**
    * Creates instance for given class path and project name.
    *
@@ -68,6 +72,7 @@ public class ProjectView
     root = analyzer.scan(this.classPath);
     unrefReport = Unreferenced.forProject(root, filter, this.classPath).create();
     missingClassesReport = new MissingClasses(root, filter);
+    metrics = new Metrics(root, filter);
     resetListMode();
     projectName = name;
   }
@@ -77,8 +82,7 @@ public class ProjectView
    */
   public final void resetListMode()
   {
-    root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
-      ? ListMode.COLLAPSED : ListMode.LEAFS_COLLAPSED));
+    ListModeUtil.showJarsAndOwnPackages(root);
     computeGraph();
   }
 
@@ -87,7 +91,7 @@ public class ProjectView
    */
   public final void collapseAll()
   {
-    root.walkCompleteSubTree().forEach(n -> n.setListMode(ListMode.COLLAPSED));
+    ListModeUtil.showResourcesOnly(root);
     computeGraph();
   }
 
@@ -286,8 +290,19 @@ public class ProjectView
     return ((ContainerNode)node).getChildren().stream().flatMap(this::replaceByNodesHavingContent);
   }
 
+  /**
+   * Returns report about missing classes.
+   */
   public MissingClasses getMissingClassesReport()
   {
     return missingClassesReport;
+  }
+
+  /**
+   * Returns record with some metrics.
+   */
+  public Metrics getMetrics()
+  {
+    return metrics;
   }
 }

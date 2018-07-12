@@ -11,6 +11,13 @@ get(urlPrefix+"view", showGraph);
 get(urlPrefix+"view/classpath", showPath);
 get(urlPrefix+"view/unrefReport", showReport);
 get(urlPrefix+"view/missingReport", showMissingReport);
+get(urlPrefix+"view/metrics", showMetrics);
+
+function showMetrics(value)
+{
+    var response = JSON.parse(value);
+    setNewContent("metricsTmpl", response, "metrics");
+}
 
 function setNewContent(templateId, data, targetId) {
    insertContent(resolve(templateId, data), targetId);

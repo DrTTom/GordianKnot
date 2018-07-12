@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
+import de.tautenhahn.dependencies.parser.ListModeUtil;
 import de.tautenhahn.dependencies.parser.Node;
-import de.tautenhahn.dependencies.parser.Node.ListMode;
 import de.tautenhahn.dependencies.parser.Pair;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
 
@@ -50,8 +50,7 @@ public class ReferenceChecker
   public ReferenceChecker(ContainerNode root, Filter filter, ParsedClassPath classpath)
   {
     this.root = root;
-    root.walkCompleteSubTree().forEach(n -> n.setListMode(n.getSimpleName().startsWith("jar:")
-      ? ListMode.COLLAPSED : ListMode.EXPANDED));
+    ListModeUtil.showJarsAndOwnClasses(root);
     this.filter = filter;
     interpreter = new ClassInterpreter();
     interpreter.setClassLoader(classpath.createClassLoader());

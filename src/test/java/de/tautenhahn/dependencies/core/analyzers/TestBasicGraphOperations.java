@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.core.analyzers;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
+import de.tautenhahn.dependencies.parser.Pair;
 
 
 /**
@@ -90,6 +92,17 @@ public class TestBasicGraphOperations
                                    .collect(Collectors.toList()),
                contains("a", "b", "c", "d"));
 
+  }
+
+  /**
+   * Checks rcd value of sample graph.
+   */
+  @SuppressWarnings("boxing")
+  @Test
+  public void rcdValue()
+  {
+    Pair<int[], int[]> numbers = BasicGraphOperations.countDependsOnAndUsedFrom(graph);
+    assertThat("rcd", BasicGraphOperations.rcd(numbers), equalTo(2.0));
   }
 
 }

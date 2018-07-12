@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ProjectScanner
 {
 
+  // TODO: create some parsing report which contains duplicate classes.
   private static final Logger LOG = LoggerFactory.getLogger(ProjectScanner.class);
 
   private final Map<String, ClassNode> classFirstSeenAt = new Hashtable<>();
@@ -195,4 +196,6 @@ public class ProjectScanner
       LOG.error("cannot read {}", clazz, e);
     }
   }
+
+
 }
