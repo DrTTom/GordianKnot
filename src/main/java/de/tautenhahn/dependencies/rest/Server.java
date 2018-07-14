@@ -3,17 +3,9 @@ package de.tautenhahn.dependencies.rest;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.options;
-import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,55 +26,25 @@ import spark.ResponseTransformer;
 public class Server
 {
 
-  static PrintStream out = System.out;
-
   /**
    * This object should be put into the session when multiple sessions are supported.
    */
   ProjectView view;
 
   /**
-   * Command line call.
+   * Creates new instance to access given project view.
    *
-   * @param args
+   * @param view
    */
-  public static void main(String... args)
+  public Server(ProjectView view)
   {
-    // args = new String[]{System.getProperty("java.class.path"), "Gordian Knot"};
-    if (args.length == 0 || args[0].toLowerCase(Locale.ENGLISH).matches("--?h(elp)?"))
-    {
-      out.println("\"Gordian Knot\" dependency checker version 0.2 alpha"
-                  + "\nUsage: GordianKnot <classpathToCheck> [projectName] [options]");
-      return;
-    }
-    Pair<String, String> resolved = resolve(args[0]);
-    Server instance = new Server();
-    instance.view = new ProjectView(resolved.getFirst(), args.length > 1 ? args[1] : resolved.getSecond());
-    instance.startSpark();
-    out.println("Server started, point your browser to http://localhost:" + port() + "/index.html");
+    this.view = view;
   }
 
-  private static Pair<String, String> resolve(String value)
-  {
-    if (value.endsWith(".txt") && !value.contains(":"))
-    {
-      Path p = Paths.get(value);
-      try
-      {
-        String path = new String(Files.readAllBytes(p), StandardCharsets.UTF_8);
-        String name = String.valueOf(p.getFileName());
-        name = name.substring(0, name.length() - ".txt".length());
-        return new Pair<>(path, name);
-      }
-      catch (IOException e)
-      {
-        throw new IllegalArgumentException("cannot read " + value, e);
-      }
-    }
-    return new Pair<>(value, null);
-  }
-
-  void startSpark()
+  /**
+   * Starts the server.
+   */
+  public void start()
   {
     staticFiles.location("frontend");
     allowCrossSiteCalls();

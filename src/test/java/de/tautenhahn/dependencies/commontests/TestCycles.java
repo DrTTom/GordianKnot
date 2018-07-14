@@ -21,7 +21,8 @@ import de.tautenhahn.dependencies.reports.CyclicDependencies;
 
 
 /**
- * Unit test for detecting cycles in the current product structure.
+ * Unit test for detecting cycles in the current product structure. Test depends on own project, make sure to
+ * call gradle assemble before executing this test!
  * 
  * @author TT
  */

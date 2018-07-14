@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
@@ -267,27 +266,26 @@ public class ProjectView
   public List<String> getNodeIDs(String nodeName)
   {
     Node listed = Optional.ofNullable(root.find(nodeName)).map(Node::getListedContainer).orElse(null);
-    if (listed == null)
+    if (listed != null)
     {
-      return Collections.emptyList();
+      Map<Node, String> shownIds = currentGraph.getAllNodes()
+                                               .stream()
+                                               .collect(Collectors.toMap(IndexedNode::getNode,
+                                                                         n -> Integer.toString(n.getIndex())));
+      String ownId = shownIds.get(listed);
+      if (ownId != null)
+      {
+        return Collections.singletonList(ownId);
+      }
+      if (listed instanceof ContainerNode)
+      {
+        return ((ContainerNode)listed).walkCompleteSubTree()
+                                      .map(shownIds::get)
+                                      .filter(Objects::nonNull)
+                                      .collect(Collectors.toList());
+      }
     }
-    Map<Node, String> shownIds = currentGraph.getAllNodes()
-                                             .stream()
-                                             .collect(Collectors.toMap(IndexedNode::getNode,
-                                                                       n -> Integer.toString(n.getIndex())));
-
-    return replaceByNodesHavingContent(listed).map(shownIds::get)
-                                              .filter(Objects::nonNull)
-                                              .collect(Collectors.toList());
-  }
-
-  private Stream<Node> replaceByNodesHavingContent(Node node)
-  {
-    if (node.hasOwnContent())
-    {
-      return Stream.of(node);
-    }
-    return ((ContainerNode)node).getChildren().stream().flatMap(this::replaceByNodesHavingContent);
+    return Collections.emptyList();
   }
 
   /**

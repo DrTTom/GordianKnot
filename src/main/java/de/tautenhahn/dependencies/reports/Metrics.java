@@ -2,6 +2,7 @@ package de.tautenhahn.dependencies.reports;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
@@ -86,10 +87,10 @@ public class Metrics
   }
 
   @SuppressWarnings("boxing")
-  private void append(StringBuilder result, String label, double[] values)
+  private void append(StringBuilder result, String label, double... values)
   {
     result.append('\n')
           .append(label)
-          .append(String.format("%10.2f %10.2f %10.2f", values[0], values[1], values[2]));
+          .append(String.format(Locale.ENGLISH, "%10.2f %10.2f %10.2f", values[0], values[1], values[2]));
   }
 }

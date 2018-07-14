@@ -42,7 +42,7 @@ dependencies {
    testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
 
-mainClassName = 'de.tautenhahn.dependencies.rest.Server'
+mainClassName = 'de.tautenhahn.dependencies.Main'
 applicationDefaultJvmArgs = ['-Dorg.slf4j.simpleLogger.logFile=GordianKnotServer.log']
 
 run {

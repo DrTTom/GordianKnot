@@ -37,7 +37,7 @@ public class TestMetrics
     Metrics systemUnderTest = new Metrics(root, new Filter());
     assertThat("report string",
                systemUnderTest.toString(),
-               containsString("archives:            2,00       1,00       0,67"));
+               containsString("archives:            2.00       1.00       0.67"));
     classA1.addSuccessor(classA);
     classA1.addSuccessor(fromJar);
     classA1.addSuccessor(classB);
@@ -46,6 +46,5 @@ public class TestMetrics
     assertThat("worst classes",
                systemUnderTest.worstElements.get(0),
                hasItem("dir:source.de.tautenhahn.a.A1"));
-    System.out.println(systemUnderTest);
   }
 }

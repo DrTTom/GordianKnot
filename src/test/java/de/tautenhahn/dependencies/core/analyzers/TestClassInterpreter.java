@@ -5,10 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.tautenhahn.dependencies.Main;
 import de.tautenhahn.dependencies.analyzers.ClassInterpreter;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
-import de.tautenhahn.dependencies.rest.Server;
 
 
 /**
@@ -26,10 +26,10 @@ public class TestClassInterpreter
   public void mainClass()
   {
     ContainerNode root = ContainerNode.createRoot();
-    ClassNode server = root.createLeaf(Server.class.getName());
+    ClassNode server = root.createLeaf(Main.class.getName());
     ClassNode my = root.createLeaf(TestClassInterpreter.class.getName());
     ClassInterpreter systemUnderTest = new ClassInterpreter();
-    assertTrue("server is main class", systemUnderTest.isRecognizedAsMainClass(server));
+    assertTrue("Main is main class", systemUnderTest.isRecognizedAsMainClass(server));
     assertFalse("and this class is not", systemUnderTest.isRecognizedAsMainClass(my));
   }
 

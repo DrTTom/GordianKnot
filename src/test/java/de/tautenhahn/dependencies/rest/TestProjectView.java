@@ -3,7 +3,6 @@ package de.tautenhahn.dependencies.rest;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -106,10 +105,15 @@ public class TestProjectView
                contains("rest"));
     assertThat("labels representing this class", getLabels(systemUnderTest, myNodeName), contains("rest"));
     List<String> labels = getLabels(systemUnderTest, "dir:test");
-    assertThat("labels representing test directory", labels, hasItem("rest"));
     assertThat("labels representing test directory",
                labels,
-               containsInAnyOrder("rest", "reports", "analyzers", "parser", "commontests"));
+               containsInAnyOrder("rest",
+                                  "reports",
+                                  "analyzers",
+                                  "parser",
+                                  "commontests",
+                                  "dependencies",
+                                  "presentation"));
   }
 
   private List<String> getLabels(ProjectView systemUnderTest, String nodeName)
