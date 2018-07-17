@@ -117,7 +117,7 @@ public class TestMain
                  notNullValue());
       URL url = new URL("http://localhost:" + TEST_PORT + "/view/classpath");
       try (InputStream ins = url.openStream();
-        Scanner s = new Scanner(ins, StandardCharsets.UTF_8);
+        Scanner s = new Scanner(ins, "UTF-8");
         Scanner scanner = s.useDelimiter("\t"))
       {
         assertThat("classpath", scanner.next(), containsString("build/classes/java/main"));

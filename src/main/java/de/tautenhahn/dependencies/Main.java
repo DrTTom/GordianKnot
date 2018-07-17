@@ -21,7 +21,7 @@ import spark.Spark;
 
 /**
  * Command line interface to start the server.
- * 
+ *
  * @author TT
  */
 public final class Main
@@ -121,8 +121,8 @@ public final class Main
     Path backup = workingDir.resolve(gradle.getFileName() + ".bak");
     try
     {
-      Files.copy(gradle, backup);
-      changeBuildFileAndCall(gradle, "runtime", backup);
+      Files.copy(gradle, backup, StandardCopyOption.REPLACE_EXISTING);
+      changeBuildFileAndCall(gradle, "runtime", backup, workingDir);
     }
     catch (IOException | InterruptedException e)
     {
@@ -131,16 +131,16 @@ public final class Main
     return workingDir.resolve("build/classpath.txt");
   }
 
-  private static void changeBuildFileAndCall(Path gradle, String configName, Path backup)
+  private static void changeBuildFileAndCall(Path gradle, String configName, Path backup, Path workingDir)
     throws IOException, InterruptedException
   {
-    String addition = "task writeClasspath << {\n" + "    buildDir.mkdirs()\n"
+    String addition = "\ntask writeClasspath << {\n" + "    buildDir.mkdirs()\n"
                       + "    new File(buildDir, \"classpath.txt\").text = configurations." + configName
                       + ".asPath + \"\\n\"\n" + "}";
     try
     {
       Files.write(gradle, addition.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
-      Process proc = new ProcessBuilder("gradle", "writeClasspath").start();
+      Process proc = new ProcessBuilder("gradle", "writeClasspath").directory(workingDir.toFile()).start();
       proc.waitFor();
     }
     finally

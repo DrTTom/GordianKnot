@@ -99,6 +99,16 @@ public class ClassInterpreter
   }
 
   /**
+   * Returns true if given node represents an EJB.
+   *
+   * @param n
+   */
+  public boolean isEjb(ClassNode n)
+  {
+    return referencesClass(n, "javax.ejb.Stateful") || referencesClass(n, "javax.ejb.Stateless");
+  }
+
+  /**
    * Returns true if given node represents JUnit test.
    *
    * @param n

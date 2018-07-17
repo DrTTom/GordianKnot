@@ -29,6 +29,11 @@ public class Metrics
 
   List<List<String>> worstElements = new ArrayList<>();
 
+  int[] numElements = new int[3];
+
+  double[] edgeDensity = new double[3];
+
+
   /**
    * Creates instance.
    *
@@ -55,6 +60,8 @@ public class Metrics
 
   private void computeValues(int i, DiGraph graph)
   {
+    numElements[i] = graph.getAllNodes().size();
+    edgeDensity[i] = BasicGraphOperations.getDensity(graph);
     Pair<int[], int[]> numbers = BasicGraphOperations.countDependsOnAndUsedFrom(graph);
     xcd[i][0] = BasicGraphOperations.ccd(numbers);
     xcd[i][1] = BasicGraphOperations.acd(numbers);

@@ -140,13 +140,13 @@
    </script>
 
    <script type="text/html" id="metricsTmpl">
-      <div class="twocolumn">
-         <div>Total number classes:</div><div>TODO</div>
-         <div>Number own classes:</div><div>TODO</div>
-         <div>Number jars:</div><div>TODO</div>
-      </div>
-      <p/>
-TODO: egde density!
+     <h3>Summary</h3>
+      <table>
+         <tr><th>Scope</th> <th> number elements </th> <th> arc density </th> </tr>
+         <tr><td>own classes</td> <td><%= numElements[0] %></td><td> <%= edgeDensity[0].toFixed(3) %></td></tr>
+         <tr><td>own packages</td><td><%= numElements[1] %></td><td> <%= edgeDensity[1].toFixed(3) %></td></tr>
+         <tr><td>archives</td>    <td><%= numElements[2] %></td><td> <%= edgeDensity[2].toFixed(3) %></td></tr>
+      <table>
       <h3>Component dependency</h3>
       <table>
          <tr><th>Scope</th> <th>  cumulative (ccd) </th> <th> average (acd) </th> <th> relative to bintree of same size (rcd) </th> </tr>
@@ -155,6 +155,19 @@ TODO: egde density!
          <%= resolve("metricLineTmpl", { name: "archives", values: xcd[2] }) %>
       <table>
       <a href="http://blog.eisele.net/2009/12/software-quality-basics-ii-ccd-acd-ca.html">Definitions</a>
+      <h3>Elements with biggest contribution to overall coupling</h3>
+      <h4>Classes</h4>
+      <%= resolve("worstElementsTmpl", { list: worstElements[0] }) %>
+      <h4>Packages</h4>
+      <%= resolve("worstElementsTmpl", { list: worstElements[1] }) %>
+      <h4>Resources</h4>
+      <%= resolve("worstElementsTmpl", { list: worstElements[2] }) %>
+   </script>
+
+   <script type="text/html" id="worstElementsTmpl">
+      <% for(var i = 0; i < list.length; ++i) {%>
+          <%= list[i] %><br/>
+      <% } %>
    </script>
 
    <script type="text/html" id="metricLineTmpl">
