@@ -77,4 +77,26 @@ public class Filter
   {
     return focus.stream().anyMatch(p -> p.matcher(name).matches());
   }
+
+  @Override
+  public int hashCode()
+  {
+    return ignoredSources.hashCode() + 3 * ignoredClassNames.hashCode() + 9 * focus.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass())
+    {
+      return false;
+    }
+    Filter other = (Filter)obj;
+    return ignoredSources.equals(other.ignoredSources) && ignoredClassNames.equals(other.ignoredClassNames)
+           && focus.equals(other.focus);
+  }
 }

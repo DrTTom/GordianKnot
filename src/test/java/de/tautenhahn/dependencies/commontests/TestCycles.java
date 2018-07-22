@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 import de.tautenhahn.dependencies.parser.Filter;
 import de.tautenhahn.dependencies.parser.ParsedClassPath;
-import de.tautenhahn.dependencies.parser.ProjectScanner;
 import de.tautenhahn.dependencies.reports.CyclicDependencies;
 
 
@@ -37,12 +36,12 @@ public class TestCycles
    */
   @SuppressWarnings("boxing")
   @Test
-  public void cyclicPackageDependencies()
+  public final void cyclicPackageDependencies()
   {
     Filter filter = new Filter();
     // Ingore the one cyclic dependency my project creates on purpose for testing:
     filter.addIgnoredClassName("de.tautenhahn.dependencies.rest.TestProjectView");
-    ContainerNode root = new ProjectScanner(filter).scan(ParsedClassPath.getCurrentClassPath());
+    ContainerNode root = ProjectCache.getScannedProject(ParsedClassPath.getCurrentClassPath(), filter);
     CyclicDependencies packageCycles = CyclicDependencies.findForPackages(root);
     LOG.info("Analyzed package dependencies \n{}", packageCycles);
     assertThat("Number of arcs creating cyclic package dependencies",
@@ -59,11 +58,11 @@ public class TestCycles
    */
   @SuppressWarnings("boxing")
   @Test
-  public void cyclicJarDependencies() throws IOException
+  public final void cyclicJarDependencies() throws IOException
   {
     String ownJars = getOwnJars();
     assumeTrue("test makes only sense if at least two jars are specified", ownJars.contains(":"));
-    ContainerNode root = new ProjectScanner(new Filter()).scan(new ParsedClassPath(ownJars));
+    ContainerNode root = ProjectCache.getScannedProject(new ParsedClassPath(ownJars), new Filter());
     CyclicDependencies packageCycles = CyclicDependencies.findForPackages(root);
     LOG.info("Analyzed jar dependencies of {} \n {}", ownJars, packageCycles);
     assertThat("Number of arcs creating cyclic package dependencies",

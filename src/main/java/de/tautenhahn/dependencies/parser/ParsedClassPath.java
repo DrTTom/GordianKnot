@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 
 /**
- * Wraps the class path, provides it as collections of Path objects with hopefully good names.
+ * Wraps the class path, provides it as collections of Path objects with distinctive short names.
  *
  * @author TT
  */
@@ -58,9 +58,6 @@ public class ParsedClassPath
     setupNames();
   }
 
-  /**
-   * Sorry for the ugly code but it is still fast enough.
-   */
   private void setupNames()
   {
     UniqueNameTree tree = new UniqueNameTree();
@@ -157,5 +154,26 @@ public class ParsedClassPath
   public List<Path> getEntries()
   {
     return entries;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return archives.hashCode() + 3 * sourceFolders.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass())
+    {
+      return false;
+    }
+    ParsedClassPath other = (ParsedClassPath)obj;
+    return archives.equals(other.archives) && sourceFolders.equals(other.sourceFolders);
   }
 }

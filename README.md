@@ -62,6 +62,7 @@ The following tests classes are provided:
 
 ```
 de.tautenhahn.dependencies.commontests.TestCycles
+de.tautenhahn.dependencies.commontests.TestUnreferencedElements
 more to come
 ```
 See API documentation of these classes to find out whether some adaption of the tests is needed for your project and how to achieve that. Add the tests to your project, usually by adding them to some test suite.
