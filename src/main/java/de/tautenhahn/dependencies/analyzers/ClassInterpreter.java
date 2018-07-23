@@ -109,6 +109,16 @@ public class ClassInterpreter
   }
 
   /**
+   * Returns true if given node represents an EJB.
+   *
+   * @param n
+   */
+  public boolean isWebService(ClassNode n)
+  {
+    return referencesClass(n, "javax.jws.WebService");
+  }
+
+  /**
    * Returns true if given node represents JUnit test.
    *
    * @param n

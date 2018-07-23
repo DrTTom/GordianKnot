@@ -85,7 +85,8 @@ public class ReferenceChecker
     unrefClasses.removeIf(n -> knownNeededClasses.contains(n.getClassName()));
     unrefClasses.removeIf(interpreter::isRecognizedAsMainClass);
     unrefClasses.removeIf(interpreter::isEjb);
-    // TODO: EJBs, Servlets, registered services, ...
+    unrefClasses.removeIf(interpreter::isWebService);
+    // TODO: Servlets, registered services, ...
     return unrefClasses;
   }
 

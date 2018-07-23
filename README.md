@@ -56,7 +56,7 @@ This starts a local web server and displays a link to the output page.
 Include the following dependency into the test class path of your project:
 
 ```
-Coming soon
+GordianKnot-0.3-core.jar GordianKnot-0.3-test.jar
 ```
 The following tests classes are provided:
 

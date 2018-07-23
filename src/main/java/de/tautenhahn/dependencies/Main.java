@@ -8,11 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.Locale;
-import java.util.Optional;
 
+import de.tautenhahn.dependencies.parser.GradleAdapter;
 import de.tautenhahn.dependencies.parser.Pair;
 import de.tautenhahn.dependencies.rest.ProjectView;
 import de.tautenhahn.dependencies.rest.Server;
@@ -90,12 +88,9 @@ public final class Main
         Path src = Paths.get(pathDef).toRealPath();
         if (pathDef.endsWith(".gradle"))
         {
-          Path workingDir = Optional.ofNullable(src.getParent())
-                                    .orElseThrow(() -> new IllegalArgumentException("no parent directory for "
-                                                                                    + src));
-          name = replaceUnknown(name, String.valueOf(workingDir.getFileName()));
-          pathDef = workingDir.resolve("build/classes/java/main") + ":"
-                    + readFile(callGradle(src, workingDir));
+          GradleAdapter adapter = new GradleAdapter(src);
+          name = adapter.getProjectName();
+          pathDef = adapter.getClassPath("runtime");
         }
         else
         {
@@ -114,39 +109,6 @@ public final class Main
   private static String replaceUnknown(String name, String newName)
   {
     return "unknown".equals(name) ? newName : name;
-  }
-
-  static Path callGradle(Path gradle, Path workingDir)
-  {
-    Path backup = workingDir.resolve(gradle.getFileName() + ".bak");
-    try
-    {
-      Files.copy(gradle, backup, StandardCopyOption.REPLACE_EXISTING);
-      changeBuildFileAndCall(gradle, "runtime", backup, workingDir);
-    }
-    catch (IOException | InterruptedException e)
-    {
-      throw new IllegalArgumentException("gradle call not successful", e);
-    }
-    return workingDir.resolve("build/classpath.txt");
-  }
-
-  private static void changeBuildFileAndCall(Path gradle, String configName, Path backup, Path workingDir)
-    throws IOException, InterruptedException
-  {
-    String addition = "\ntask writeClasspath << {\n" + "    buildDir.mkdirs()\n"
-                      + "    new File(buildDir, \"classpath.txt\").text = configurations." + configName
-                      + ".asPath + \"\\n\"\n" + "}";
-    try
-    {
-      Files.write(gradle, addition.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
-      Process proc = new ProcessBuilder("gradle", "writeClasspath").directory(workingDir.toFile()).start();
-      proc.waitFor();
-    }
-    finally
-    {
-      Files.move(backup, gradle, StandardCopyOption.REPLACE_EXISTING);
-    }
   }
 
   private static String readFile(Path path)

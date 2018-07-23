@@ -23,6 +23,9 @@ repositories {
    mavenCentral()
 }
 
+version = '0.3'
+group = 'de.tautenhahn.dependencies'
+
 check.dependsOn jacocoTestReport
 
 dependencies {
@@ -44,6 +47,52 @@ dependencies {
 
 mainClassName = 'de.tautenhahn.dependencies.Main'
 applicationDefaultJvmArgs = ['-Dorg.slf4j.simpleLogger.logFile=GordianKnotServer.log']
+
+jar {
+   classifier = 'core'
+   exclude '**/rest/*'
+   exclude '**/Main.class'
+   includeEmptyDirs = false
+}
+
+task jarServer(type:Jar) {
+   classifier = 'server'
+   from (sourceSets.main.output) {
+      include '**/rest/**/*'
+      include '**/Main.class'
+   }
+   includeEmptyDirs = false
+}
+
+task jarTest(type:Jar) {
+   classifier = 'test'
+   from (sourceSets.test.output)
+   {
+      include '**/commontests/*'
+   }
+   includeEmptyDirs = false
+}
+
+distZip {
+   from (jarServer)
+   {
+      into "${project.name}-${project.version}/lib"
+   }
+}
+
+distTar {
+   from (jarServer)
+   {
+      into "${project.name}-${project.version}/lib"
+   }
+}
+
+tasks.withType(CreateStartScripts) {
+   classpath= files(jarServer) +classpath
+}
+
+assemble.dependsOn jarServer
+assemble.dependsOn jarTest
 
 run {
    args = [sourceSets.test.runtimeClasspath.asPath, 'GordianKnot']
