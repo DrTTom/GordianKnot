@@ -53,10 +53,12 @@ This starts a local web server and displays a link to the output page.
 
 # Usage as Tests
 
-Include the following dependency into the test class path of your project:
+As long as there is no official repository used, call `gradle publishToMavenLocal` in this project and add reposity 
+`mavenLocal()` to your target gradle project (for maven you may skip this entry).
+Include the following dependency into the test compile class path of your project:
 
 ```
-GordianKnot-0.3-core.jar GordianKnot-0.3-test.jar
+de.tautenhahn.dependencies:GordianKnotTest:0.3
 ```
 The following tests classes are provided:
 

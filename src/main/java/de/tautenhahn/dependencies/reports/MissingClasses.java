@@ -1,12 +1,13 @@
 package de.tautenhahn.dependencies.reports;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
@@ -17,27 +18,29 @@ import de.tautenhahn.dependencies.parser.Filter;
  * Reports missing classes. For properly checked projects, this report will always be empty. However, in case
  * of lacking test coverage, there might be entries. Furthermore, this report may come handy while playing
  * around with your class path. It gives you a handy text report why some library is needed.
- * 
+ *
  * @author TT
  */
 public class MissingClasses
 {
 
-  private Set<String> knownClasses = new HashSet<>(); // NOPMD
+  private Set<String> knownClasses = new HashSet<>();
 
-  private Stack<String> referencingClassNames = new Stack<>(); // NOPMD assigned twice
+  private Deque<String> referencingClassNames;
 
   Map<String, List<List<String>>> content = new HashMap<>();
 
   /**
    * Creates report for given parsed project. Using own search here because of several subtle differences to
    * the basic graph search operation.
-   * 
+   *
    * @param root
    * @param filter
    */
   public MissingClasses(ContainerNode root, Filter filter)
   {
+    knownClasses = new HashSet<>();
+    referencingClassNames = new ArrayDeque<>();
     root.walkCompleteSubTree()
         .filter(n -> n instanceof ClassNode)
         .map(n -> (ClassNode)n)
@@ -51,11 +54,11 @@ public class MissingClasses
   private void checkRefs(ClassNode node)
   {
     String name = node.getClassName();
-    referencingClassNames.push(name);
+    referencingClassNames.addFirst(name);
     knownClasses.add(name);
     node.getMissingDependencies().forEach(this::addMissing);
     node.getSucLeafs().stream().filter(n -> !knownClasses.contains(name)).forEach(this::checkRefs);
-    referencingClassNames.pop();
+    referencingClassNames.removeFirst();
   }
 
   private void addMissing(String className)

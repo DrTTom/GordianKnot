@@ -11,6 +11,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -111,9 +112,11 @@ public class ProjectScanner
       }
       else if (Files.isDirectory(path))
       {
-        Files.walk(path)
-             .filter(p -> isFile(p, ".class") && isClassResourceName(p.getFileName().toString()))
-             .forEach(p -> handleClassFile(p, path));
+        try (Stream<Path> fileTree = Files.walk(path))
+        {
+          fileTree.filter(p -> isFile(p, ".class") && isClassResourceName(p.getFileName().toString()))
+                  .forEach(p -> handleClassFile(p, path));
+        }
       }
     }
     catch (IOException e)
