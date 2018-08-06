@@ -116,11 +116,12 @@ public class TestUnreferencedElements
 
   /**
    * Returns an array of names or regular expressions for jar files needed by your application but not
-   * referenced by any of your classes. Logging runtime jars are a typical example for that.
+   * referenced by any of your classes. Logging runtime jars are a typical example for that. Moreover, gradle
+   * may include its worker jar when executing tests, so ignore that one as well.
    */
   protected String[] getKnownNeededLibraries()
   {
-    return new String[]{"slf4j-simple-.*\\.jar"};
+    return new String[]{"slf4j-simple-.*\\.jar", "gradle-worker.jar"};
   }
 
   /**

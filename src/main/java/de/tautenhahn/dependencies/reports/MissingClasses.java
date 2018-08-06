@@ -24,11 +24,14 @@ import de.tautenhahn.dependencies.parser.Filter;
 public class MissingClasses
 {
 
-  private Set<String> knownClasses = new HashSet<>();
+  /**
+   * Temporary field to be accessed by a recursive method during construction.
+   */
+  private Set<String> knownClasses; // NOPMD nulled at end of constructor
 
-  private Deque<String> referencingClassNames;
+  private Deque<String> referencingClassNames; // NOPMD see above
 
-  Map<String, List<List<String>>> content = new HashMap<>();
+  private final Map<String, List<List<String>>> content = new HashMap<>();
 
   /**
    * Creates report for given parsed project. Using own search here because of several subtle differences to
