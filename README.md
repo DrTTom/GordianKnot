@@ -69,7 +69,7 @@ more to come
 ```
 See API documentation of these classes to find out whether some adaption of the tests is needed for your project and how to achieve that. Add the tests to your project, usually by adding them to some test suite.
 
-In case a test fails, verbose information abut the reason will be written into the log file.
+In case a test fails, verbose information about the reason will be written into the log file.
 
 # Coming features
 
@@ -78,4 +78,4 @@ In case a test fails, verbose information abut the reason will be written into t
 - diverse help texts and tool tips
 - some colored traffic lights on the reports page
 - standard license
-- separate test lib with pom available in some repository
+- test library and pom in some official repository
