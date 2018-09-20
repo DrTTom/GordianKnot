@@ -18,7 +18,7 @@ import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
 /**
- * TODO: use new classinterpreter
+ * Unit tests for cycle finding.
  *
  * @author TT
  */

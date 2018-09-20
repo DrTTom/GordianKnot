@@ -19,7 +19,6 @@ import de.tautenhahn.dependencies.parser.Pair;
  * <li>A JUnit test suite references test classes in a sub-package, thus causing a cyclic package dependency.
  * </li>
  * <li>A Factory class references classes in a sub-package, thus causing a cyclic package dependency.</li>
- * TODO:
  * <li>An inner class references its outer class and vice versa, causing a cyclic class dependency.</li>
  * <li>A class having a main method is unreferenced.</li>
  * <li>An EJB, servlet class or JUnit test suite is unreferenced.</li>

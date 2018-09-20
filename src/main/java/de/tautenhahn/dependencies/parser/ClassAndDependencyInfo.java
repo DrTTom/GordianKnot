@@ -32,6 +32,8 @@ public final class ClassAndDependencyInfo
 
   private static final int MAGIC = 0xCAFEBABE;
 
+  private static final int MAX_SUPPORTED_VERSION = 54;
+
   private static final byte CONSTANT_UTF8 = 1;
 
   private static final byte CONSTANT_INTEGER = 3;
@@ -100,8 +102,12 @@ public final class ClassAndDependencyInfo
       {
         throw new IllegalArgumentException("not a class file (bad magic)");
       }
-      skip(data, 4); // version
-      // TODO: check version: System.out.println("Version: " + data.readShort() + "." + data.readShort());
+      skip(data, 2); // minor version
+      short version = data.readShort();
+      if (version > MAX_SUPPORTED_VERSION)
+      {
+        throw new IllegalArgumentException("classes major version " + version + " unsupported");
+      }
       int poolSize = data.readShort();
       strings = new String[poolSize + 1];
       classIndex = new HashMap<>();
