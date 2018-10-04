@@ -26,7 +26,7 @@ public class TestCycleFinder
    * Asserts that in an example graph the biggest component of strong connectivity is found.
    */
   @Test
-  public void getComponents()
+  public void findComponents()
   {
     ContainerNode root = ContainerNode.createRoot();
     for ( char label = 'a' ; label < 'g' ; label++ )

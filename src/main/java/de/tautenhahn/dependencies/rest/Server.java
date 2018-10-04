@@ -87,7 +87,7 @@ public class Server
    */
   private Pair<DisplayableDiGraph, List<String>> setListMode(Request req, Response res) // NOPMD
   {
-    String nodeName = view.setListMode(Integer.parseInt(req.params("id")), req.params("value"));
+    String nodeName = view.changeListMode(Integer.parseInt(req.params("id")), req.params("value"));
     return new Pair<>(view.getDisplayableGraph(), view.getNodeIDs(nodeName));
   }
 

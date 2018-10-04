@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Finds out which classes are referenced from a given class. Instances are for one time uses!
+ * Finds out which classes are referenced from a given class. Instances are for one time use!
  *
  * @author TT
  */
@@ -103,7 +103,7 @@ public final class ClassAndDependencyInfo
         throw new IllegalArgumentException("not a class file (bad magic)");
       }
       skip(data, 2); // minor version
-      short version = data.readShort();
+      int version = data.readShort();
       if (version > MAX_SUPPORTED_VERSION)
       {
         throw new IllegalArgumentException("classes major version " + version + " unsupported");

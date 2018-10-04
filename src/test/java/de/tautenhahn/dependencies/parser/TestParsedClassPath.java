@@ -26,7 +26,7 @@ public class TestParsedClassPath
    * in IDE may differ from the one in gradle.
    */
   @Test
-  public void getClassPath()
+  public void obtainCurrentClassPath()
   {
     ParsedClassPath systemUnderTest = ParsedClassPath.getCurrentClassPath();
     assertThat("current class path", systemUnderTest.getEntries(), not(empty()));

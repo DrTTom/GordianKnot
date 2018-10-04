@@ -102,7 +102,7 @@ public class ProjectView
    * @param value
    * @returns name of node just changed (that node may be no longer displayed)
    */
-  public String setListMode(int nodeNumber, String value)
+  public String changeListMode(int nodeNumber, String value)
   {
     Node node = currentGraph.getAllNodes().get(nodeNumber).getNode();
     if ("COLLAPSE_PARENT".equals(value))

@@ -23,7 +23,7 @@ public class TestMetrics
    * Creates metrics for minimal project and checks the values.
    */
   @Test
-  public void getMetrics()
+  public void computeMetrics()
   {
     ContainerNode root = ContainerNode.createRoot();
     ClassNode fromJar = root.createLeaf("jar:dummy.DummyClass");
