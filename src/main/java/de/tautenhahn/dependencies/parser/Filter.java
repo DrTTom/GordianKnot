@@ -1,7 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 public class Filter
 {
 
-  private final Collection<Pattern> ignoredClassNames = new ArrayList<>();
+  private final List<Pattern> ignoredClassNames = new ArrayList<>();
 
-  private final Collection<Pattern> ignoredSources = new ArrayList<>();
+  private final List<Pattern> ignoredSources = new ArrayList<>();
 
-  private final Collection<Pattern> focus = new ArrayList<>();
+  private final List<Pattern> focus = new ArrayList<>();
 
 
   /**
@@ -91,7 +91,7 @@ public class Filter
     {
       return true;
     }
-    if (obj == null || getClass() != obj.getClass())
+    if (obj == null || Filter.class != obj.getClass())
     {
       return false;
     }
