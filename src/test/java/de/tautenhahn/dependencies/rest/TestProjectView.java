@@ -41,7 +41,7 @@ public class TestProjectView
    * Asserts view elements can be obtained.
    */
   @Test
-  public void getView()
+  public void checkElements()
   {
     ProjectView systemUnderTest = new ProjectView(CLASSPATH, "GordianKnot");
     assertThat("some node", systemUnderTest.getNodeInfo("0"), notNullValue());
@@ -135,6 +135,6 @@ public class TestProjectView
         .filter(n -> label.equals(n.getLabel()))
         .map(n -> n.getId())
         .findAny()
-        .ifPresent(id -> view.setListMode(Integer.parseInt(id), mode));
+        .ifPresent(id -> view.changeListMode(Integer.parseInt(id), mode));
   }
 }

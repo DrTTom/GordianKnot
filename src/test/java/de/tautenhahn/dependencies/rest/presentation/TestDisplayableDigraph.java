@@ -23,10 +23,10 @@ public class TestDisplayableDigraph
 {
 
   /**
-   * Check that arcs in a digraph are properly represented.
+   * Check that arcs in a directed graph are properly represented.
    */
   @Test
-  public void getEdges()
+  public void checkEdges()
   {
     ContainerNode root = ContainerNode.createRoot();
     ClassNode a = root.createLeaf("jar:lib_jar.com.someone.ClassA");

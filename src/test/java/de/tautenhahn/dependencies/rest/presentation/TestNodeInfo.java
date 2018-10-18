@@ -57,7 +57,7 @@ public class TestNodeInfo
    * Gets an arc information.
    */
   @Test
-  public void getArc()
+  public void testArcs()
   {
     ContainerNode root = ContainerNode.createRoot();
     ClassNode c1 = root.createLeaf("dir:none.de.dummy.Class1");
