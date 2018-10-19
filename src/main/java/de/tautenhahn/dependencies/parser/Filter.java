@@ -91,7 +91,7 @@ public class Filter
     {
       return true;
     }
-    if (obj == null || Filter.class != obj.getClass())
+    if (obj == null || getClass() != obj.getClass())
     {
       return false;
     }

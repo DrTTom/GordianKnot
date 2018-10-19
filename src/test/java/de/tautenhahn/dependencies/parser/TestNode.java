@@ -62,7 +62,7 @@ public class TestNode
     assertThat("inner node", node, instanceOf(ContainerNode.class));
     assertThat("simple name", node.getSimpleName(), equalTo("example"));
     assertThat("name", node.getName(), equalTo(PKG_1));
-    assertThat("toString", node.toString(), startsWith("ContainerNode"));
+    assertThat("toString", node.toString(), startsWith(PKG_1));
     ClassNode dummy = (ClassNode)node.find("Dummy");
     assertThat("name of leaf", dummy.getName(), equalTo(PKG_1 + ".Dummy"));
     assertThat("class name", dummy.getClassName(), equalTo("de.tautenhahn.example.Dummy"));

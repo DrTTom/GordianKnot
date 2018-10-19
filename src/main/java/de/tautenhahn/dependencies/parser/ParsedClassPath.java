@@ -169,7 +169,7 @@ public class ParsedClassPath
     {
       return true;
     }
-    if (obj == null || ParsedClassPath.class != obj.getClass())
+    if (obj == null || getClass() != obj.getClass())
     {
       return false;
     }

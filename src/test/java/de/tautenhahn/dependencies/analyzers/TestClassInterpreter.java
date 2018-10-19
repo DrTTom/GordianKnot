@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core.analyzers;
+package de.tautenhahn.dependencies.analyzers;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,14 +6,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import de.tautenhahn.dependencies.Main;
-import de.tautenhahn.dependencies.analyzers.ClassInterpreter;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;
 
 
 /**
  * Unit test for {@link ClassInterpreter}
- * 
+ *
  * @author TT
  */
 public class TestClassInterpreter

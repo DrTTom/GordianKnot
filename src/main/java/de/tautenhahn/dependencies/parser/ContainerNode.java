@@ -2,9 +2,11 @@ package de.tautenhahn.dependencies.parser;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -184,4 +186,30 @@ public final class ContainerNode extends Node
     return children.get(simpleName);
   }
 
+  @Override
+  public String toString()
+  {
+    StringBuilder result = new StringBuilder();
+    result.append(Optional.ofNullable(getName()).orElse("(Root)"));
+    appendChildren(result, "", "|  ");
+    return result.toString();
+  }
+
+  void appendChildren(StringBuilder result, String indent, String indent2)
+  {
+    for ( Iterator<Node> iter = children.values().iterator() ; iter.hasNext() ; )
+    {
+      Node child = iter.next();
+      String lastPartOfIndent = iter.hasNext() ? indent2 : "   ";
+      result.append('\n')
+            .append(indent)
+            .append(lastPartOfIndent.replace("   ", "\\--").replace("|  ", "+--"))
+            .append(child.getSimpleName());
+      if (child instanceof ContainerNode)
+      {
+        ((ContainerNode)child).appendChildren(result, indent + lastPartOfIndent, "|  ");
+      }
+
+    }
+  }
 }

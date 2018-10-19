@@ -100,7 +100,8 @@ public class TestUnreferencedElements
    */
   protected String[] getKnownEntryClassNames()
   {
-    return new String[]{"de.tautenhahn.dependencies.reports.CyclicDependencies"};
+    return new String[]{"de.tautenhahn.dependencies.reports.CyclicDependencies",
+                        "de.tautenhahn.dependencies.parser.ComponentsBuilder"};
   }
 
   /**
@@ -121,7 +122,7 @@ public class TestUnreferencedElements
    */
   protected String[] getKnownNeededLibraries()
   {
-    return new String[]{"slf4j-simple-.*\\.jar", "gradle-worker.jar"};
+    return new String[]{"slf4j-simple-.*\\.jar", "gradle-worker.jar", "jacocoagent.jar"};
   }
 
   /**

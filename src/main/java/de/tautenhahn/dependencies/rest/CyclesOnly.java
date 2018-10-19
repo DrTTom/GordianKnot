@@ -83,6 +83,6 @@ public class CyclesOnly implements ViewFilter
   @Override
   public boolean equals(Object obj)
   {
-    return obj != null && CyclesOnly.class == obj.getClass();
+    return obj != null && getClass() == obj.getClass();
   }
 }

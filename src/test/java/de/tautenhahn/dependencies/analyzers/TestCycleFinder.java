@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core.analyzers;
+package de.tautenhahn.dependencies.analyzers;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -7,8 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.analyzers.CycleFinder;
-import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;

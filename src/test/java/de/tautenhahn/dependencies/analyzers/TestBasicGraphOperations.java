@@ -1,4 +1,4 @@
-package de.tautenhahn.dependencies.core.analyzers;
+package de.tautenhahn.dependencies.analyzers;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.analyzers.BasicGraphOperations;
-import de.tautenhahn.dependencies.analyzers.DiGraph;
 import de.tautenhahn.dependencies.analyzers.DiGraph.IndexedNode;
 import de.tautenhahn.dependencies.parser.ClassNode;
 import de.tautenhahn.dependencies.parser.ContainerNode;

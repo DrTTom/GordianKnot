@@ -64,7 +64,7 @@ public class Pair<S, T>
     {
       return true;
     }
-    if (obj == null || Pair.class != obj.getClass())
+    if (obj == null || getClass() != obj.getClass())
     {
       return false;
     }

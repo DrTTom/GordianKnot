@@ -246,4 +246,5 @@ public abstract class Node
     return getName().replaceAll(".*:[^.]*\\.", "").replaceAll("[jwer]ar:", "").replaceAll("_([jwer]ar)",
                                                                                           ".$1");
   }
+
 }
