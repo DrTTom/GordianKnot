@@ -1,12 +1,7 @@
 package de.tautenhahn.dependencies.parser;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
 
 
 /**
@@ -17,38 +12,16 @@ import java.util.TreeMap;
 public class ComponentsBuilder
 {
 
-  Map<String, String> componentByPackage = new TreeMap<>((a, b) -> b.length() - a.length());
+  private final ComponentsDesign comp;
 
   /**
    * Creates instance and parses component definition from given configuration file.
    *
-   * @param conf
-   * @throws IOException
+   * @param comp
    */
-  public ComponentsBuilder(URL conf) throws IOException
+  public ComponentsBuilder(ComponentsDesign comp)
   {
-    try (InputStream ins = conf.openStream(); Scanner s = new Scanner(ins, "UTF-8"))
-    {
-      // TODO handle wrong input!
-      String component = null;
-      while (s.hasNextLine())
-      {
-        String line = s.nextLine().trim();
-        if (line.isEmpty())
-        {
-          continue;
-        }
-
-        if (line.charAt(0) == '[')
-        {
-          component = line.substring(1, line.length() - 1);
-        }
-        else
-        {
-          componentByPackage.put(line, component);
-        }
-      }
-    }
+    this.comp = comp;
   }
 
   /**
@@ -97,11 +70,6 @@ public class ComponentsBuilder
    */
   String getComponentName(String className)
   {
-    return componentByPackage.entrySet()
-                             .stream()
-                             .filter(e -> className.startsWith(e.getKey()))
-                             .map(Map.Entry::getValue)
-                             .findFirst()
-                             .orElse("UNASSIGNED");
+    return comp.getComponentName(className);
   }
 }
