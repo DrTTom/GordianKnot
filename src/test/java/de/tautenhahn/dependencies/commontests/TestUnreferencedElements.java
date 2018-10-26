@@ -101,7 +101,7 @@ public class TestUnreferencedElements
   protected String[] getKnownEntryClassNames()
   {
     return new String[]{"de.tautenhahn.dependencies.reports.CyclicDependencies",
-                        "de.tautenhahn.dependencies.parser.ComponentsBuilder"};
+                        "de.tautenhahn.dependencies.reports.ArchitecturalMatch"};
   }
 
   /**

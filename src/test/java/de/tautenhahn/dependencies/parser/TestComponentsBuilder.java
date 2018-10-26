@@ -11,8 +11,6 @@ import java.util.Optional;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tautenhahn.dependencies.reports.ArchitecturalMatch;
-
 
 /**
  * Unit test for creating a component based project tree.
@@ -44,9 +42,11 @@ public class TestComponentsBuilder
   public void assignClassToComponent() throws IOException
   {
     assertThat("subpackage",
-               components.getComponentName("de.tautenhahn.dependencies.parser.Irgendwas"),
+               components.getComponentName("de.tautenhahn.dependencies.analyzers.special.Irgendwas"),
+               is("SpecialAnalyzers"));
+    assertThat("base package",
+               components.getComponentName("de.tautenhahn.dependencies.analyzers.Irgendwas"),
                is("Core"));
-    assertThat("base package", components.getComponentName("de.tautenhahn.Irgendwas"), is("Utils"));
   }
 
 
@@ -54,7 +54,7 @@ public class TestComponentsBuilder
    * Checks that a tree with components can be build and contains necessary dependencies.
    */
   @Test
-  public void buildTree() throws IOException
+  public void buildTree()
   {
     ProjectScanner scanner = new ProjectScanner(new Filter());
     ParsedClassPath classPath = new ParsedClassPath(Paths.get("build", "classes", "java", "main").toString());
@@ -67,8 +67,6 @@ public class TestComponentsBuilder
     Node a = getByName(otherRoot, "Core." + ComponentsBuilder.class.getName()).get();
     Node b = getByName(otherRoot, "Core." + ClassNode.class.getName()).get();
     assertThat("dependency", a.getSuccessors(), hasItem(b));
-
-    System.out.println(new ArchitecturalMatch(components, root));
   }
 
   private Optional<Node> getByName(ContainerNode n, String name)
