@@ -27,8 +27,10 @@ public class MissingClasses
   /**
    * Temporary field to be accessed by a recursive method during construction.
    */
-  private transient Set<String> knownClasses;
-  private transient Deque<String> referencingClassNames;
+  private transient Set<String> knownClasses; // NOPMD not final, see above
+
+  private transient Deque<String> referencingClassNames; // NOPMD
+
   private final Map<String, List<List<String>>> content = new HashMap<>();
 
   /**

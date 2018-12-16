@@ -16,7 +16,7 @@ get(urlPrefix+"view/metrics", showMetrics);
 function showMetrics(value)
 {
     var response = JSON.parse(value);
-    setNewContent("metricsTmpl", response, "metrics");
+    setNewContent("metricsTmpl", response, "metricsContent");
 }
 
 function setNewContent(templateId, data, targetId) {
@@ -47,7 +47,7 @@ function get(url, callBack) {
 
 function showPath(value) {
    var response = JSON.parse(value);
-   setNewContent("classpathTmpl", {entries: response}, "classpath");
+   setNewContent("classpathTmpl", {entries: response}, "classpathContent");
 }
 
 function selectNodesByName(nodeName) {
