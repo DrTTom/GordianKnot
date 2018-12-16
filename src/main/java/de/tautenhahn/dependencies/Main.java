@@ -70,7 +70,7 @@ public final class Main
       Runtime.getRuntime().exec("firefox " + url);
       return true;
     }
-    catch (Throwable t)
+    catch (RuntimeException|IOException t)
     {
       return false;
     }

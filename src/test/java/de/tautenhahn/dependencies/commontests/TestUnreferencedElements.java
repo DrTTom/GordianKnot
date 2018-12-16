@@ -1,7 +1,6 @@
 package de.tautenhahn.dependencies.commontests;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeThat;

@@ -195,7 +195,7 @@ public final class ContainerNode extends Node
     return result.toString();
   }
 
-  void appendChildren(StringBuilder result, String indent, String indent2)
+  private void appendChildren(StringBuilder result, String indent, String indent2)
   {
     for ( Iterator<Node> iter = children.values().iterator() ; iter.hasNext() ; )
     {

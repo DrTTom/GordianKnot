@@ -8,12 +8,12 @@ import de.tautenhahn.dependencies.parser.Node.ListMode;
 
 
 /**
- * Matches the real components ant their dependency against architectural assumptions. Differences may
+ * Matches the real components and their dependency against architectural assumptions. Differences may
  * indicate security problems in addition to messy structure.
  *
  * @author TT
  */
-public class ArchitecturalMatch
+class ArchitecturalMatch
 {
 
   // private final ComponentsDesign components;

@@ -38,7 +38,7 @@ public class ComponentsDesign
     Map<String, List<String>> predPatterns = new HashMap<>();
     List<String> components = new ArrayList<>();
 
-    try (InputStream ins = conf.openStream(); Scanner s = new Scanner(ins, "UTF-8"))
+    try (InputStream insRes = conf.openStream(); Scanner s = new Scanner(insRes, "UTF-8"))
     {
       String component = "UNASSIGNED";
       while (s.hasNextLine())

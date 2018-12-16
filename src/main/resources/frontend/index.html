@@ -146,14 +146,14 @@
          <tr><td>own classes</td> <td><%= numElements[0] %></td><td> <%= edgeDensity[0].toFixed(3) %></td></tr>
          <tr><td>own packages</td><td><%= numElements[1] %></td><td> <%= edgeDensity[1].toFixed(3) %></td></tr>
          <tr><td>archives</td>    <td><%= numElements[2] %></td><td> <%= edgeDensity[2].toFixed(3) %></td></tr>
-      <table>
+      </table>
       <h3>Component dependency</h3>
       <table>
          <tr><th>Scope</th> <th>  cumulative (ccd) </th> <th> average (acd) </th> <th> relative to bintree of same size (rcd) </th> </tr>
          <%= resolve("metricLineTmpl", { name: "own classes", values: xcd[0] }) %>
          <%= resolve("metricLineTmpl", { name: "own packages", values: xcd[1] }) %>
          <%= resolve("metricLineTmpl", { name: "archives", values: xcd[2] }) %>
-      <table>
+      </table>
       <a href="http://blog.eisele.net/2009/12/software-quality-basics-ii-ccd-acd-ca.html">Definitions</a>
       <h3>Elements with biggest contribution to overall coupling</h3>
       <h4>Classes</h4>
@@ -214,10 +214,10 @@
       <div id="refReport"></div>
       <div id="missingReport"></div>
    </div>
-   <div id="metrics" class="tabcontent">
+   <div id="metricsTab" class="tabcontent">
       <div id="metrics"></div>
    </div>
-   <div id="classpath" class="tabcontent">
+   <div id="classpathTab" class="tabcontent">
       <h2>Classpath</h2>
       <form id="classpath"></form>
    </div>

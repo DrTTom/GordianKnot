@@ -86,9 +86,12 @@ public class GradleAdapter
 
   private void changeBuildFileAndCall(String configName, Path backup) throws IOException, InterruptedException
   {
-    String addition = "\ntask writeClasspath << {\n" + "    buildDir.mkdirs()\n"
-                      + "    new File(buildDir, \"classpath.txt\").text = configurations." + configName
-                      + ".asPath + \"\\n\"\n" + "}";
+    String addition= "tasks.register(\"writeClasspath\") {\n"
+                   + "   doLast {\n"
+                   + "      buildDir.mkdirs()\n"
+                   + "      new File(buildDir, \"classpath.txt\").text = configurations." + configName + ".asPath + \"\\n\"\n"
+                   + "   }\n}";
+
     try
     {
       Files.write(gradle, addition.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);

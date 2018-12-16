@@ -69,7 +69,7 @@ public class NodeInfo
 
   private void parseName()
   {
-    Pattern regex = Pattern.compile("([^\\.]+\\.)*(\\w+):([^\\.]+)\\.?(.*)");
+    Pattern regex = Pattern.compile("([^.]+\\.)*(\\w+):([^.]+)\\.?(.*)");
     Matcher m = regex.matcher(nodeName);
     if (!m.matches())
     {
@@ -81,7 +81,7 @@ public class NodeInfo
       name = m.group(3);
       if (m.group(1) != null)
       {
-        Matcher m2 = Pattern.compile("([^\\.]+\\.)*(\\w+):([^\\.]+)\\.$").matcher(m.group(1));
+        Matcher m2 = Pattern.compile("([^.]+\\.)*(\\w+):([^.]+)\\.$").matcher(m.group(1));
         if (!m2.find())
         {
           throw new IllegalArgumentException("not a valid node name");

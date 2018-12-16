@@ -32,7 +32,7 @@ public final class ClassAndDependencyInfo
 
   private static final int MAGIC = 0xCAFEBABE;
 
-  private static final int MAX_SUPPORTED_VERSION = 54;
+  private static final int MAX_SUPPORTED_VERSION = 55;
 
   private static final byte CONSTANT_UTF8 = 1;
 
@@ -62,7 +62,7 @@ public final class ClassAndDependencyInfo
 
   private static final byte CONSTANT_INVOKEDYNAMIC = 18;
 
-  private String[] strings;
+  private transient String[] strings;
 
   private Map<Integer, Integer> classIndex;
 

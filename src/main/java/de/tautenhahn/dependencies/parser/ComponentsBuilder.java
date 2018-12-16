@@ -68,7 +68,7 @@ public class ComponentsBuilder
   /**
    * Returns the name of the component for given class name.
    */
-  String getComponentName(String className)
+  private String getComponentName(String className)
   {
     return comp.getComponentName(className);
   }

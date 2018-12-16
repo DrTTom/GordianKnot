@@ -144,7 +144,7 @@ public final class BasicGraphOperations
    *
    * @param graph
    */
-  public static List<IndexedNode> topSort(DiGraph graph)
+  private static List<IndexedNode> topSort(DiGraph graph)
   {
     if (graph.getAllNodes().isEmpty())
     {

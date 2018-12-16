@@ -33,7 +33,7 @@ public class ClassNode extends Node
   ClassNode(Node parent, String name)
   {
     super(parent, name);
-    className = getName().replaceAll("[^\\.]+:[^\\.]+\\.", "");
+    className = getName().replaceAll("[^.]+:[^.]+\\.", "");
   }
 
   @Override
