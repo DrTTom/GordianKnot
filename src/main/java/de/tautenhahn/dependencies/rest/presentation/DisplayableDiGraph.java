@@ -80,13 +80,13 @@ public class DisplayableDiGraph
   static class VisEdge
   {
 
-    String from;
+    final String from;
 
-    String to;
+    final String to;
 
     String arrows = "middle";
 
-    String id;
+    final String id;
 
     VisEdge(String i, String j)
     {

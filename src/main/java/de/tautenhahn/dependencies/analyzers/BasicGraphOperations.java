@@ -156,9 +156,8 @@ public final class BasicGraphOperations
       Optional<IndexedNode> source = graph.getAllNodes()
                                           .stream()
                                           .filter(n -> !wrapper.listed[n.getIndex()])
-                                          .sorted((a, b) -> a.getPredecessors().size()
-                                                            - b.getPredecessors().size())
-                                          .findFirst();
+                                          .min((a, b) -> a.getPredecessors().size()
+                                                            - b.getPredecessors().size());
       if (!source.isPresent())
       {
         break;
@@ -174,11 +173,11 @@ public final class BasicGraphOperations
   private static class TopSortWrapper
   {
 
-    boolean[] listed;
+    final boolean[] listed;
 
-    boolean[] seen;
+    final boolean[] seen;
 
-    Deque<IndexedNode> result = new ArrayDeque<>();
+    final Deque<IndexedNode> result = new ArrayDeque<>();
 
     TopSortWrapper(DiGraph graph)
     {

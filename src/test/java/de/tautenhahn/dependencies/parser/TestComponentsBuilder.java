@@ -35,12 +35,9 @@ public class TestComponentsBuilder
 
   /**
    * Check whether component definition is used.
-   *
-   * @throws IOException
    */
   @Test
-  public void assignClassToComponent() throws IOException
-  {
+  public void assignClassToComponent() {
     assertThat("subpackage",
                components.getComponentName("de.tautenhahn.dependencies.analyzers.special.Irgendwas"),
                is("SpecialAnalyzers"));

@@ -25,13 +25,13 @@ public class Metrics
   /**
    * ccd/acd/rcd (second index) for own classes, own packages, archives + class directories (first index)
    */
-  double[][] xcd = new double[3][3];
+  final double[][] xcd = new double[3][3];
 
-  List<List<String>> worstElements = new ArrayList<>();
+  final List<List<String>> worstElements = new ArrayList<>();
 
-  int[] numElements = new int[3];
+  final int[] numElements = new int[3];
 
-  double[] edgeDensity = new double[3];
+  final double[] edgeDensity = new double[3];
 
 
   /**

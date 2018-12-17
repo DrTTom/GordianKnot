@@ -133,7 +133,7 @@ public class TestProjectView
         .getNodes()
         .stream()
         .filter(n -> label.equals(n.getLabel()))
-        .map(n -> n.getId())
+        .map(VisNode::getId)
         .findAny()
         .ifPresent(id -> view.changeListMode(Integer.parseInt(id), mode));
   }

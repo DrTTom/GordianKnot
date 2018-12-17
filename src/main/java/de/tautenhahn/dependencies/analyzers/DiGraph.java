@@ -158,7 +158,7 @@ public class DiGraph
     nodes = nodesToRetain.stream()
                          .map(IndexedNode::new)
                          .peek(n -> indexes.put(n.getNode(), n))
-                         .collect(Collectors.toCollection(() -> new ArrayList<>()));
+                         .collect(Collectors.toCollection(ArrayList::new));
     for ( IndexedNode original : nodesToRetain )
     {
       IndexedNode copy = indexes.get(original.getNode());

@@ -29,7 +29,7 @@ public class Server
   /**
    * This object should be put into the session when multiple sessions are supported.
    */
-  ProjectView view;
+  private final ProjectView view;
 
   /**
    * Creates new instance to access given project view.
@@ -107,7 +107,7 @@ public class Server
 
   }
 
-  static void allowCrossSiteCalls()
+  private static void allowCrossSiteCalls()
   {
     before((request, response) -> {
       response.header("Access-Control-Allow-Origin", "*");

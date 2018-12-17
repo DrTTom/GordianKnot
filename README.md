@@ -53,7 +53,7 @@ This starts a local web server and displays a link to the output page.
 
 # Usage as Tests
 
-As long as there is no official repository used, call `gradle publishToMavenLocal` in this project and add reposity 
+As long as there is no official repository used, call `gradle publishToMavenLocal` in this project and add repository
 `mavenLocal()` to your target gradle project (for maven you may skip this entry).
 Include the following dependency into the test compile class path of your project:
 

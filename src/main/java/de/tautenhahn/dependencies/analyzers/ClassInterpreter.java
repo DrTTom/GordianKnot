@@ -129,7 +129,7 @@ public class ClassInterpreter
 
   private boolean referencesClass(ClassNode n, String name)
   {
-    return n.getSucLeafs().stream().map(s -> s.getClassName()).anyMatch(name::equals);
+    return n.getSucLeafs().stream().map(ClassNode::getClassName).anyMatch(name::equals);
   }
 
   /**

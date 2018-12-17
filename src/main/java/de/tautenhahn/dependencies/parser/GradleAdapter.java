@@ -18,9 +18,9 @@ import java.util.Optional;
 public class GradleAdapter
 {
 
-  Path workingDir;
+  private final Path workingDir;
 
-  Path gradle;
+  private Path gradle;
 
   /**
    * Creates instance to analyze gradle project specified by build file.

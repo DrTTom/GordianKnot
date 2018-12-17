@@ -17,10 +17,10 @@ import de.tautenhahn.dependencies.parser.ProjectScanner;
  * 
  * @author TT
  */
-public final class ProjectCache
+final class ProjectCache
 {
 
-  private static Map<Pair<ParsedClassPath, Filter>, ContainerNode> cache = Collections.synchronizedMap(new LinkedHashMap<>());
+  private static final Map<Pair<ParsedClassPath, Filter>, ContainerNode> CACHE = Collections.synchronizedMap(new LinkedHashMap<>());
 
   private static final int LIMIT = 4;
 
@@ -37,11 +37,11 @@ public final class ProjectCache
    */
   public static ContainerNode getScannedProject(ParsedClassPath path, Filter filter)
   {
-    ContainerNode result = cache.computeIfAbsent(new Pair<>(path, filter),
+    ContainerNode result = CACHE.computeIfAbsent(new Pair<>(path, filter),
                                                  p -> new ProjectScanner(filter).scan(path));
-    if (cache.size() > LIMIT)
+    if (CACHE.size() > LIMIT)
     {
-      cache.remove(cache.keySet().iterator().next());
+      CACHE.remove(CACHE.keySet().iterator().next());
     }
     return result;
   }

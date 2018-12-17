@@ -49,7 +49,7 @@ public class ComponentsBuilder
   private void copyDependencies(ClassNode original, Map<ClassNode, ClassNode> copyByOrinalLeafs)
   {
     ClassNode myCopy = copyByOrinalLeafs.get(original);
-    original.getSucLeafs().stream().map(copyByOrinalLeafs::get).forEach(s -> myCopy.addSuccessor(s));
+    original.getSucLeafs().stream().map(copyByOrinalLeafs::get).forEach(myCopy::addSuccessor);
   }
 
   private void addToComponent(ContainerNode result, ClassNode l, Map<ClassNode, ClassNode> copyByOrinalLeafs)

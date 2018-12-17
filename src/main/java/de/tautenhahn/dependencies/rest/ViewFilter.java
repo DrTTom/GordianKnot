@@ -10,7 +10,7 @@ import de.tautenhahn.dependencies.analyzers.DiGraph;
  *
  * @author TT
  */
-public interface ViewFilter extends Function<DiGraph, DiGraph>
+interface ViewFilter extends Function<DiGraph, DiGraph>
 {
 
   /**

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author TT
  */
+@SuppressWarnings("WeakerAccess")
 public class ExampleClass
 {
 

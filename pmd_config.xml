@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0">
    <description>
       All rules except that which are excluded for named reason.
    </description>

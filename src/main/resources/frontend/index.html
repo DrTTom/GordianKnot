@@ -120,8 +120,8 @@
          </tr>
          <% for(var i = 0; i < entries.length; ++i) {%>
             <tr>
-               <td><input type="checkbox" disabled <%=entries[i].active ? "checked": ""%>/></td>
-               <td><%= entries[i].label %></td>
+               <td><input type="checkbox" disabled id="<%=entries[i].label %>" <%=entries[i].active ? "checked": ""%>/></td>
+                <td><label for="<%= entries[i].label %>"><%= entries[i].label %></label></td>
                <td><%=entries[i].fullPath%></td>
             </tr>
          <% } %>

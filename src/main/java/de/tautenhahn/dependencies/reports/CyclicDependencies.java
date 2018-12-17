@@ -24,20 +24,20 @@ import de.tautenhahn.dependencies.parser.Pair;
  *
  * @author TT
  */
-public class CyclicDependencies
+public final class CyclicDependencies
 {
 
   /**
    * For programmatic access. Special types will be introduced when needed.
    */
-  List<Map<Pair<String, String>, List<Pair<String, String>>>> cycles = new ArrayList<>();
+  private final List<Map<Pair<String, String>, List<Pair<String, String>>>> cycles = new ArrayList<>();
 
   /**
    * Creates new instance analyzing given graph.
    * 
    * @param graph
    */
-  public CyclicDependencies(DiGraph graph)
+  private CyclicDependencies(DiGraph graph)
   {
     CycleFinder finder = new CycleFinder(graph);
     finder.getStrongComponents().stream().filter(c -> c.size() > 1).forEach(this::explainCycle);
