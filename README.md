@@ -79,3 +79,7 @@ In case a test fails, verbose information about the reason will be written into 
 - some colored traffic lights on the reports page
 - standard license
 - test library and pom in some official repository
+
+# Known Issues
+
+- test class "Alien" not recognized correctly when running tests in IntelliJ while it works perfectly when running from Gradle or Eclipse.

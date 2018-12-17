@@ -2,7 +2,7 @@
 <ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <description>
-      Shall become bos default rule set.
+      All rules except that which are excluded for named reason.
    </description>
 
    <rule ref="category/java/bestpractices.xml">

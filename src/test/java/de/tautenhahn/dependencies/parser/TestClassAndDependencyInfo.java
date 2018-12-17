@@ -162,15 +162,15 @@ public class TestClassAndDependencyInfo
     String command = javaHome == null ? "jdeps" : Paths.get(javaHome, "bin", "jdeps").toString();
     Path tempfile = Paths.get("tempfile.class");
     Files.deleteIfExists(tempfile);
-    try (InputStream ins = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
+    try (InputStream insRes = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
     {
-      Files.copy(ins, tempfile);
+      Files.copy(insRes, tempfile);
     }
     ProcessBuilder builder = new ProcessBuilder(command, "-v", tempfile.toAbsolutePath().toString());
     Process run = builder.start();
     Collection<String> result = new ArrayList<>();
-    try (InputStream is = run.getInputStream();
-      BufferedReader buff = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)))
+    try (InputStream isRes = run.getInputStream();
+      BufferedReader buff = new BufferedReader(new InputStreamReader(isRes, StandardCharsets.UTF_8)))
     {
       String s = buff.readLine();
       while (s != null)

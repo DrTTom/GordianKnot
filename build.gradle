@@ -15,8 +15,9 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.8.0'
-    ruleSetFiles = files("pmd_config.xml")
+    toolVersion = '6.10.0'
+    ruleSets = []
+    ruleSetConfig = resources.text.fromFile("pmd_config.xml")
 }
 
 repositories {

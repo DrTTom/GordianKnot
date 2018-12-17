@@ -86,8 +86,8 @@ public class TestMain
                  new URL("http://localhost:" + TEST_PORT + "/view/node/0/listmode/EXPANDED").getContent(),
                  notNullValue());
       URL url = new URL("http://localhost:" + TEST_PORT + "/view/name");
-      try (InputStream ins = url.openStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(ins, StandardCharsets.UTF_8)))
+      try (InputStream insRes = url.openStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(insRes, StandardCharsets.UTF_8)))
       {
         assertThat("name", r.readLine(), is("DummyProject"));
       }
@@ -116,8 +116,8 @@ public class TestMain
                  new URL("http://localhost:" + TEST_PORT + "/view/classpath").getContent(),
                  notNullValue());
       URL url = new URL("http://localhost:" + TEST_PORT + "/view/classpath");
-      try (InputStream ins = url.openStream();
-        Scanner s = new Scanner(ins, "UTF-8");
+      try (InputStream insRes = url.openStream();
+        Scanner s = new Scanner(insRes, "UTF-8");
         Scanner scanner = s.useDelimiter("\t"))
       {
         assertThat("classpath", scanner.next(), containsString("build/classes/java/main"));
