@@ -114,7 +114,7 @@ public class ProjectScanner
       {
         try (Stream<Path> fileTreeRes = Files.walk(path))
         {
-          fileTreeRes.filter(p -> isFile(p, ".class") && isClassResourceName(p.getFileName().toString()))
+          fileTreeRes.filter(p -> isFile(p, ".class") && isClassResourceName(String.valueOf(p.getFileName())))
                   .forEach(p -> handleClassFile(p, path));
         }
       }

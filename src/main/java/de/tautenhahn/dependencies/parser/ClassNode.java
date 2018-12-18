@@ -63,11 +63,11 @@ public class ClassNode extends Node
   @Override
   public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
-    return other instanceof ClassNode ? Collections.singletonList(new Pair<>(this, other))
-      : ((ContainerNode)other).getContainedLeafs()
+    return other instanceof ContainerNode ?  ((ContainerNode)other).getContainedLeafs()
                               .filter(sucLeafs::contains)
                               .map(l -> new Pair<Node, Node>(this, l))
-                              .collect(Collectors.toList());
+                              .collect(Collectors.toList()) :
+                             Collections.singletonList(new Pair<>(this, other));
   }
 
   @Override

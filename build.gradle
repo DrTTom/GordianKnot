@@ -142,7 +142,7 @@ publishing {
 }
 
 spotbugs {
-    // effort = "max"
-    // reportLevel = "low"
-    excludeFilter = file("findbugs-exclude.xml")
+   effort = "max"
+   reportLevel = "low"
+   excludeFilter = file("findbugs-exclude.xml")
 }

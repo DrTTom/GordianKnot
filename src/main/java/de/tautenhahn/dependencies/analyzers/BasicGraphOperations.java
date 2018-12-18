@@ -1,16 +1,6 @@
 package de.tautenhahn.dependencies.analyzers;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -325,7 +315,11 @@ public final class BasicGraphOperations
     @Override
     public IndexedNode next()
     {
-      IndexedNode s = Objects.requireNonNull(foundNodes.poll(), "queue is empty");
+      if (foundNodes.isEmpty())
+      {
+        throw new NoSuchElementException("queue is empty");
+      }
+      IndexedNode s = foundNodes.poll();
       (forward ? s.getSuccessors() : s.getPredecessors()).stream()
                                                          .filter(n -> !found[n.getIndex()])
                                                          .forEach(n -> {

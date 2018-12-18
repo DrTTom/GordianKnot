@@ -40,7 +40,7 @@ public class TestMain
   @BeforeClass
   public static void setUpStatic()
   {
-    Main.fireFoxDisabled = true;
+    Main.firefoxEnabled = false;
     Spark.port(TEST_PORT);
   }
 
@@ -118,9 +118,9 @@ public class TestMain
       URL url = new URL("http://localhost:" + TEST_PORT + "/view/classpath");
       try (InputStream insRes = url.openStream();
         Scanner s = new Scanner(insRes, "UTF-8");
-        Scanner scanner = s.useDelimiter("\t"))
+        Scanner scannerRes = s.useDelimiter("\t"))
       {
-        assertThat("classpath", scanner.next(), containsString("build/classes/java/main"));
+        assertThat("classpath", scannerRes.next(), containsString("build/classes/java/main"));
       }
     }
     finally

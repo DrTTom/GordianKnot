@@ -146,7 +146,7 @@ public class ClassInterpreter
     {
       Class<?> clazz = classLoader.loadClass(n.getClassName());
       Method m = clazz.getDeclaredMethod("main", String[].class);
-      return (m.getModifiers() & Modifier.PUBLIC) > 0 && (m.getModifiers() & Modifier.STATIC) > 0;
+      return (m.getModifiers() & Modifier.PUBLIC) != 0 && (m.getModifiers() & Modifier.STATIC) != 0;
     }
     catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoClassDefFoundError e)
     {

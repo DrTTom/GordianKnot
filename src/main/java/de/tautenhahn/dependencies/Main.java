@@ -27,7 +27,7 @@ public final class Main
 
   static PrintStream out = System.out;
 
-  static boolean fireFoxDisabled;
+  static boolean firefoxEnabled=true;
 
   private Main()
   { // no instances wanted
@@ -61,19 +61,19 @@ public final class Main
 
   private static boolean startFireFox(String url)
   {
-    if (fireFoxDisabled)
+    if (firefoxEnabled)
     {
-      return false;
+      try
+      {
+        Runtime.getRuntime().exec("firefox " + url);
+        return true;
+      }
+      catch (RuntimeException|IOException t)
+      {
+        t.printStackTrace(out);
+      }
     }
-    try
-    {
-      Runtime.getRuntime().exec("firefox " + url);
-      return true;
-    }
-    catch (RuntimeException|IOException t)
-    {
-      return false;
-    }
+    return false;
   }
 
 

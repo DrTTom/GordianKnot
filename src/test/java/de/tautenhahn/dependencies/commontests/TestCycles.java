@@ -90,7 +90,7 @@ public class TestCycles
   {
     return String.join(":",
                        Files.list(Paths.get("build", "libs"))
-                            .filter(p -> p.getFileName().toString().matches(".*\\.[jwer]ar"))
+                            .filter(p -> String.valueOf(p.getFileName()).matches(".*\\.[jwer]ar"))
                             .map(Path::toAbsolutePath)
                             .map(Path::toString)
                             .toArray(String[]::new));
