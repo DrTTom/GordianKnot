@@ -1,10 +1,11 @@
 package de.tautenhahn.dependencies.parser;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,11 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 /**
  * Unit tests for finding out which classes are referenced by a given class.
  *
@@ -38,149 +34,138 @@ import org.slf4j.LoggerFactory;
 public class TestClassAndDependencyInfo
 {
 
-  /**
-   * Asserts that our tool lists the same dependencies as jdeps does. Classes referenced in inherited methods
-   * are not listed. Either
-   * <ul>
-   * <li>accept that because computation of closures and cycles will not be affected</li>
-   * <li>parse larger parts of the class to get missing references</li>
-   * <li>use every string which fits the format and is not flagged a constant</li>
-   * </ul>
-   *
-   * @throws IOException
-   */
-  @SuppressWarnings("boxing")
-  @Test
-  public void listDeps() throws IOException
-  {
-    Class<?> clazz = ConcurrentHashMap.class;
-    long start = System.currentTimeMillis();
-    Collection<String> outputLines = callJdeps(clazz);
-    long durationJDep = System.currentTimeMillis() - start;
-    Collection<String> fromJDeps = outputLines.stream()
-                                              .map(this::extractClassName)
-                                              .filter(Objects::nonNull)
-                                              .collect(Collectors.toSet());
-
-    start = System.currentTimeMillis();
-    try (InputStream classContent = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
+    /**
+     * Asserts that our tool lists the same dependencies as jdeps does. Classes referenced in inherited methods are not
+     * listed. Either
+     * <ul>
+     * <li>accept that because computation of closures and cycles will not be affected</li>
+     * <li>parse larger parts of the class to get missing references</li>
+     * <li>use every string which fits the format and is not flagged a constant</li>
+     * </ul>
+     *
+     * @throws IOException
+     */
+    @SuppressWarnings("boxing")
+    @Test
+    public void listDeps() throws IOException
     {
-      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent, clazz.getName());
-      long myDuration = System.currentTimeMillis() - start;
-      Collection<String> fromMe = systemUnderTest.getDependencies();
-      Set<String> notListedByMe = new HashSet<>(fromJDeps);
-      notListedByMe.removeAll(fromMe);
+        Class<?> clazz = ConcurrentHashMap.class;
+        long start = System.currentTimeMillis();
+        Collection<String> outputLines = callJdeps(clazz);
+        long durationJDep = System.currentTimeMillis() - start;
+        Collection<String> fromJDeps =
+            outputLines.stream().map(this::extractClassName).filter(Objects::nonNull).collect(Collectors.toSet());
 
-      Set<String> addedByMe = new HashSet<>(fromMe);
-      addedByMe.removeAll(fromJDeps);
+        start = System.currentTimeMillis();
+        try (InputStream classContent = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
+        {
+            ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent, clazz.getName());
+            long myDuration = System.currentTimeMillis() - start;
+            Collection<String> fromMe = systemUnderTest.getDependencies();
+            Set<String> notListedByMe = new HashSet<>(fromJDeps);
+            notListedByMe.removeAll(fromMe);
 
-      assertThat("dependencies not found but listed by jDeps", notListedByMe, empty());
-      assertThat("dependencies added but not listed by jDeps", addedByMe, empty());
-      assertThat("duration", myDuration, lessThanOrEqualTo(durationJDep / 20));
+            Set<String> addedByMe = new HashSet<>(fromMe);
+            addedByMe.removeAll(fromJDeps);
+
+            assertThat(notListedByMe).as("dependencies not found but listed by jDeps").isEmpty();
+            assertThat(addedByMe).as("dependencies added but not listed by jDeps").isEmpty();
+            assertThat(myDuration).isLessThanOrEqualTo(durationJDep / 20);
+        }
     }
-  }
 
-  /**
-   * Parses an example class and checks that field, annotation, argument, return value and variable types are
-   * listed while String constants and generic parameter types are ignored.
-   *
-   * @throws IOException
-   */
-  @Test
-  public void newDependencyParser() throws IOException
-  {
-    try (InputStream classContent = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName()
-                                                                           + ".class"))
+    /**
+     * Parses an example class and checks that field, annotation, argument, return value and variable types are listed
+     * while String constants and generic parameter types are ignored.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void newDependencyParser() throws IOException
     {
-      ClassAndDependencyInfo systemUnderTest = ClassAndDependencyInfo.parse(classContent,
-                                                                            ExampleClass.class.getName());
-      assertThat("parsed class name", systemUnderTest.getClassName(), is(ExampleClass.class.getName()));
-      assertThat("dependencies",
-                 systemUnderTest.getDependencies(),
-                 containsInAnyOrder(Logger.class.getName(),
-                                    LoggerFactory.class.getName(),
-                                    HashMap.class.getName(), // NOPMD: need class name, not type
-                                    String.class.getName(),
-                                    Supplier.class.getName(),
-                                    List.class.getName(),
-                                    Boolean.class.getName(),
-                                    Object.class.getName(),
-                                    Deprecated.class.getName(),
-                                    Class.class.getName()));
+        try (InputStream classContent = ExampleClass.class.getResourceAsStream(
+            ExampleClass.class.getSimpleName() + ".class"))
+        {
+            ClassAndDependencyInfo systemUnderTest =
+                ClassAndDependencyInfo.parse(classContent, ExampleClass.class.getName());
+            assertThat(systemUnderTest.getClassName()).as("parsed class name").isEqualTo(ExampleClass.class.getName());
+            assertThat(systemUnderTest.getDependencies()).as("dependencies").
+            containsExactlyInAnyOrder(Logger.class.getName(), LoggerFactory.class.getName(), HashMap.class.getName(),
+                    // NOPMD: need class name, not type
+                    String.class.getName(), Supplier.class.getName(), List.class.getName(), Boolean.class.getName(),
+                    Object.class.getName(), Deprecated.class.getName(), Class.class.getName());
+        }
     }
-  }
 
-  /**
-   * Asserts that an exception is thrown if class has not the expected name.
-   *
-   * @throws IOException
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void wrongClassName() throws IOException
-  {
-    try (
-      InputStream ins = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName() + ".class"))
+    /**
+     * Asserts that an exception is thrown if class has not the expected name.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void wrongClassName() throws IOException
     {
-      ClassAndDependencyInfo.parse(ins, "de.tautenhahn.DifferentFile");
+        try (InputStream ins = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName() + ".class"))
+        {
+            assertThatThrownBy(()->
+            ClassAndDependencyInfo.parse(ins, "de.tautenhahn.DifferentFile")).isInstanceOf(IllegalArgumentException.class);
+        }
     }
-  }
 
-  /**
-   * Assert that class names are taken from method descriptors.
-   */
-  @Test
-  public void extractClassNames()
-  {
-    String input = "(Ljava/util/concurrent/ConcurrentHashMap$BulkTask<V>;III[Ljava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$ReduceValuesTask;Ljava/util/function/BiFunction;)V";
-    List<String> result = new ArrayList<>();
-    ClassAndDependencyInfo.addClassNames(input, result);
-    assertThat("parsed class names",
-               result,
-               containsInAnyOrder("java.util.concurrent.ConcurrentHashMap$BulkTask",
-                                  "java.util.concurrent.ConcurrentHashMap$Node",
-                                  "java.util.concurrent.ConcurrentHashMap$ReduceValuesTask",
-                                  "java.util.function.BiFunction"));
-  }
-
-  private String extractClassName(String line)
-  {
-    int first = line.indexOf('>') + 2;
-    int end = line.indexOf(" ", first + 1);
-    return first < 0 || end < 0 ? null : line.substring(first, end);
-  }
-
-  /**
-   * Call jdeps for a copy of the class because with Java 10 it no longer accepts class names.
-   *
-   * @param clazz
-   * @return process output.
-   * @throws IOException
-   */
-  private Collection<String> callJdeps(Class<?> clazz) throws IOException
-  {
-    String javaHome = System.getenv("JAVA_HOME");
-    String command = javaHome == null ? "jdeps" : Paths.get(javaHome, "bin", "jdeps").toString();
-    Path tempfile = Paths.get("tempfile.class");
-    Files.deleteIfExists(tempfile);
-    try (InputStream insRes = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
+    /**
+     * Assert that class names are taken from method descriptors.
+     */
+    @Test
+    public void extractClassNames()
     {
-      Files.copy(insRes, tempfile);
+        String input =
+            "(Ljava/util/concurrent/ConcurrentHashMap$BulkTask<V>;III[Ljava/util/concurrent/ConcurrentHashMap$Node;"
+                + "Ljava/util/concurrent/ConcurrentHashMap$ReduceValuesTask;Ljava/util/function/BiFunction;)V";
+        List<String> result = new ArrayList<>();
+        ClassAndDependencyInfo.addClassNames(input, result);
+        assertThat(result).as("parsed class names").containsExactlyInAnyOrder("java.util.concurrent.ConcurrentHashMap$BulkTask",
+            "java.util.concurrent.ConcurrentHashMap$Node", "java.util.concurrent.ConcurrentHashMap$ReduceValuesTask",
+            "java.util.function.BiFunction");
     }
-    ProcessBuilder builder = new ProcessBuilder(command, "-v", tempfile.toAbsolutePath().toString());
-    Process run = builder.start();
-    Collection<String> result = new ArrayList<>();
-    try (InputStream isRes = run.getInputStream();
-      BufferedReader buff = new BufferedReader(new InputStreamReader(isRes, StandardCharsets.UTF_8)))
-    {
-      String s = buff.readLine();
-      while (s != null)
-      {
-        result.add(s);
-        s = buff.readLine();
-      }
-    }
-    Files.delete(tempfile);
-    return result;
-  }
 
+    private String extractClassName(String line)
+    {
+        int first = line.indexOf('>') + 2;
+        int end = line.indexOf(" ", first + 1);
+        return first < 0 || end < 0 ? null : line.substring(first, end);
+    }
+
+    /**
+     * Call jdeps for a copy of the class because with Java 10 it no longer accepts class names.
+     *
+     * @param clazz
+     * @return process output.
+     * @throws IOException
+     */
+    private Collection<String> callJdeps(Class<?> clazz) throws IOException
+    {
+        String javaHome = System.getenv("JAVA_HOME");
+        String command = javaHome == null ? "jdeps" : Paths.get(javaHome, "bin", "jdeps").toString();
+        Path tempfile = Paths.get("tempfile.class");
+        Files.deleteIfExists(tempfile);
+        try (InputStream insRes = clazz.getResourceAsStream(clazz.getSimpleName() + ".class"))
+        {
+            Files.copy(insRes, tempfile);
+        }
+        ProcessBuilder builder = new ProcessBuilder(command, "-v", tempfile.toAbsolutePath().toString());
+        Process run = builder.start();
+        Collection<String> result = new ArrayList<>();
+        try (InputStream isRes = run.getInputStream();
+             BufferedReader buff = new BufferedReader(new InputStreamReader(isRes, StandardCharsets.UTF_8)))
+        {
+            String s = buff.readLine();
+            while (s != null)
+            {
+                result.add(s);
+                s = buff.readLine();
+            }
+        }
+        Files.delete(tempfile);
+        return result;
+    }
 }
