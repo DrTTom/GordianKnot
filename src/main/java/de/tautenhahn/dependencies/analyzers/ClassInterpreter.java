@@ -124,7 +124,7 @@ public class ClassInterpreter
    */
   public boolean isTest(ClassNode n)
   {
-    return referencesClass(n, "org.junit.Test");
+    return referencesClass(n, "org.junit.Test") || referencesClass(n,"org.junit.jupiter.api.Test");
   }
 
   private boolean referencesClass(ClassNode n, String name)

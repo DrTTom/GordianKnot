@@ -58,6 +58,10 @@ dependencies {
 mainClassName = 'de.tautenhahn.dependencies.Main'
 applicationDefaultJvmArgs = ['-Dorg.slf4j.simpleLogger.logFile=GordianKnotServer.log']
 
+test{
+   useJUnitPlatform()
+}
+
 jar {
    baseName = "${project.name}Core"
    exclude '**/rest/*'
