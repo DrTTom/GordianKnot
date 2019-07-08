@@ -114,7 +114,9 @@ public class TestUnreferencedElements
      */
     protected String[] getKnownNeededLibraries()
     {
-        return new String[] {"slf4j-simple-.*\\.jar", "gradle-worker.jar", "jacocoagent.jar"};
+        return new String[] {"junit-jupiter-engine-5_5_0.jar", ".*_junit-platform-commons-1_5_0.jar", "junit5-rt.jar",
+                             "1_5_0_junit-platform-engine-1_5_0.jar", ".*_opentest4j-1_2_0.jar",
+                             ".*_apiguardian-api-1_1_0.jar", "gradle-worker.jar", "slf4j-simple-1_8_0-beta4.jar"};
     }
 
     /**

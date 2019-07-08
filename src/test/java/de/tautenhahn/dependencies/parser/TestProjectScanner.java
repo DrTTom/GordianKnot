@@ -43,9 +43,9 @@ public class TestProjectScanner
     }
 
     /**
-     * Checks whether parsing is fast enough to handle projects jar files.
+     * Checks whether parsing is fast enough to handle projects jar files. Asserts that a dependency between two classes
+     * from different jars is listed.
      */
-    @SuppressWarnings("boxing")
     @Test
     public void checkJars()
     {
@@ -55,10 +55,11 @@ public class TestProjectScanner
         ContainerNode root = systemUnderTest.scan(ParsedClassPath.getCurrentClassPath());
         assertThat(System.currentTimeMillis() - startTime).as("duration").isLessThan(5000L);
 
-        String junitJar = "jar:junit-4_12_jar.";
-        String hamcrestJar = "jar:hamcrest-all-1_3_jar.";
-        Node assertNode = root.find(junitJar + "org.junit.Assert");
-        Node matcherAssertNode = root.find(hamcrestJar + "org.hamcrest.MatcherAssert");
-        assertThat(matcherAssertNode.getPredecessors()).as("predecessors").contains(assertNode);
+        root.walkSubTree().filter(n -> n.getDisplayName().contains("BeforeEach")).forEach(System.out::println);
+        String junitEngineJar = "jar:junit-jupiter-engine-5_5_0_jar";
+        String junitApiJar = "jar:junit-jupiter-api-5_5_0_jar";
+        Node adapterNode = root.find(junitEngineJar + ".org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor");
+        Node exNode = root.find(junitApiJar + ".org.junit.jupiter.api.function.Executable");
+        assertThat(exNode.getPredecessors()).as("predecessors").contains(adapterNode);
     }
 }

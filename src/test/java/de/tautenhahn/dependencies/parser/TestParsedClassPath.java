@@ -57,7 +57,7 @@ public class TestParsedClassPath
 
     private ClassLoader createAlienLoader()
     {
-        Path otherClasses = Paths.get("src", "test", "resources", "alienClasses").toAbsolutePath();
+        Path otherClasses = Paths.get("src", "test", "alienClasses").toAbsolutePath();
         return new ParsedClassPath(otherClasses.toString()).createClassLoader();
     }
 }
