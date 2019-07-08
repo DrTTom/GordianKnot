@@ -130,9 +130,12 @@ public final class CyclicDependencies
     {
       for ( IndexedNode succ : node.getSuccessors() )
       {
-        Pair<String, String> key = new Pair<>(getName(node), getName(succ));
-        List<Pair<String, String>> reason = node.getNode().explainDependencyTo(succ.getNode());
-        cycle.put(key, reason);
+        if (c.contains(succ))
+        {
+          Pair<String, String> key = new Pair<>(getName(node), getName(succ));
+          List<Pair<String, String>> reason = node.getNode().explainDependencyTo(succ.getNode());
+          cycle.put(key, reason);
+        }
       }
     }
     cycles.add(cycle);

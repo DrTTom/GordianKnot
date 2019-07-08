@@ -75,7 +75,7 @@ public class TestNode
         assertThat(alien.getPredecessors()).as("direct predecessor").contains(nested);
 
         systemUnderTest.setListMode(ListMode.COLLAPSED);
-        assertThat(systemUnderTest.getSuccessors())
+        assertThat(systemUnderTest.getSuccessors()) // NOPMD msg given in next line
             .as("successors of collapsed node")
             .containsExactlyInAnyOrder(other, alien);
         assertThat(systemUnderTest.walkSubTree().collect(Collectors.toList())).as("subtree of collapsed").isEmpty();

@@ -87,7 +87,7 @@ public class TestMain
             }
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("OPTIONS");
-            assertThat(conn.getHeaderField("Allow")).isNull();;
+            assertThat(conn.getHeaderField("Allow")).isNull();
         } finally
         {
             Spark.stop();

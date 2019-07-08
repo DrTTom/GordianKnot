@@ -90,8 +90,8 @@ public class TestClassAndDependencyInfo
                 ClassAndDependencyInfo.parse(classContent, ExampleClass.class.getName());
             assertThat(systemUnderTest.getClassName()).as("parsed class name").isEqualTo(ExampleClass.class.getName());
             assertThat(systemUnderTest.getDependencies()).as("dependencies").
-            containsExactlyInAnyOrder(Logger.class.getName(), LoggerFactory.class.getName(), HashMap.class.getName(),
-                    // NOPMD: need class name, not type
+                containsExactlyInAnyOrder(Logger.class.getName(), LoggerFactory.class.getName(), //
+                    HashMap.class.getName(), // NOPMD: need class name, not type
                     String.class.getName(), Supplier.class.getName(), List.class.getName(), Boolean.class.getName(),
                     Object.class.getName(), Deprecated.class.getName(), Class.class.getName());
         }
@@ -107,8 +107,8 @@ public class TestClassAndDependencyInfo
     {
         try (InputStream ins = ExampleClass.class.getResourceAsStream(ExampleClass.class.getSimpleName() + ".class"))
         {
-            assertThatThrownBy(()->
-            ClassAndDependencyInfo.parse(ins, "de.tautenhahn.DifferentFile")).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> ClassAndDependencyInfo.parse(ins, "de.tautenhahn.DifferentFile")).isInstanceOf(
+                IllegalArgumentException.class);
         }
     }
 
@@ -123,9 +123,11 @@ public class TestClassAndDependencyInfo
                 + "Ljava/util/concurrent/ConcurrentHashMap$ReduceValuesTask;Ljava/util/function/BiFunction;)V";
         List<String> result = new ArrayList<>();
         ClassAndDependencyInfo.addClassNames(input, result);
-        assertThat(result).as("parsed class names").containsExactlyInAnyOrder("java.util.concurrent.ConcurrentHashMap$BulkTask",
-            "java.util.concurrent.ConcurrentHashMap$Node", "java.util.concurrent.ConcurrentHashMap$ReduceValuesTask",
-            "java.util.function.BiFunction");
+        assertThat(result)
+            .as("parsed class names")
+            .containsExactlyInAnyOrder("java.util.concurrent.ConcurrentHashMap$BulkTask",
+                "java.util.concurrent.ConcurrentHashMap$Node",
+                "java.util.concurrent.ConcurrentHashMap$ReduceValuesTask", "java.util.function.BiFunction");
     }
 
     private String extractClassName(String line)

@@ -50,7 +50,8 @@ public class TestBasicGraphOperations
     @Test
     public void density()
     {
-        assertThat(BasicGraphOperations.getDensity(graph)).isCloseTo(0.5d, Offset.offset(0.001d));
+        assertThat(BasicGraphOperations.getDensity(graph)).as("density") // NOPMD msg is given
+            .isCloseTo(0.5d, Offset.offset(0.001d));
     }
 
     /**

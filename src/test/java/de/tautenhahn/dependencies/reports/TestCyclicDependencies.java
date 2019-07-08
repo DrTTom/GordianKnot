@@ -43,7 +43,6 @@ public class TestCyclicDependencies
     {
         ProjectScanner scanner = new ProjectScanner(new Filter());
         ContainerNode root = scanner.scan(ParsedClassPath.getCurrentClassPath());
-        assertThat(CyclicDependencies.findForJars(root).toString()).
-            contains("(org.junit.Assert -> org.hamcrest.Matcher");
+        assertThat(CyclicDependencies.findForJars(root).toString()).isEmpty();
     }
 }
