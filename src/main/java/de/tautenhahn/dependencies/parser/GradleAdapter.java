@@ -40,7 +40,7 @@ public class GradleAdapter
     }
     workingDir = Optional.ofNullable(gradle.getParent())
                          .orElseThrow(() -> new IllegalArgumentException("no parent directory for "
-                                                                         + gradle));
+                           + gradle));
 
   }
 
@@ -86,16 +86,15 @@ public class GradleAdapter
 
   private void changeBuildFileAndCall(String configName, Path backup) throws IOException, InterruptedException
   {
-    String addition= "\ntask writeClasspath {\n"
-                   + "   doLast {\n"
-                   + "      buildDir.mkdirs()\n"
-                   + "      new File(buildDir, \"classpath.txt\").text = configurations." + configName + ".asPath + \"\\n\"\n"
-                   + "   }\n}";
+    String addition = "\ntask writeClasspath {\n" + "   doLast {\n" + "      buildDir.mkdirs()\n"
+      + "      new File(buildDir, \"classpath.txt\").text = configurations." + configName
+      + ".asPath + \"\\n\"\n" + "   }\n}";
 
     try
     {
       Files.write(gradle, addition.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
-      Process proc = new ProcessBuilder("gradle", "writeClasspath").directory(workingDir.toFile()).start();
+      Process proc = new ProcessBuilder("sh", "gradlew", "writeClasspath").directory(workingDir.toFile())
+                                                                          .start();
       proc.waitFor();
     }
     finally

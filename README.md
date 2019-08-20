@@ -36,7 +36,7 @@ System.getEnv("java.class.path")
 With maven call something like `mvn dependency:build-classpath -Dmdep.outputFile=cp.txt`.
 
 If you are using gradle, you could call `println sourceSets.main.runtimeClasspath.asPath` to get the path.
-However, GordianKnot will do that for you, just specify your gradle build file instead of the class path
+However, using a gradle wrapper on Linux, GordianKnot will do that for you. Just specify your gradle build file instead of the class path
 itself in the call described below.
 
 Once you got the class path, call
