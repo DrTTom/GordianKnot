@@ -32,7 +32,7 @@ public final class ClassAndDependencyInfo
 
   private static final int MAGIC = 0xCAFEBABE;
 
-  private static final int MAX_SUPPORTED_VERSION = 55;
+  private static final int MAX_SUPPORTED_VERSION = 57;
 
   private static final byte CONSTANT_UTF8 = 1;
 
@@ -74,7 +74,7 @@ public final class ClassAndDependencyInfo
 
   private final String expectedClassName;
 
-  private static final Pattern PATTERN = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
+  private static final Pattern FIND_CLASS_NAME = Pattern.compile("L(\\w+(/\\w+)*(\\$\\w+)?)(<[^>]+>)?;");
 
   private String className;
 
@@ -215,7 +215,7 @@ public final class ClassAndDependencyInfo
 
   static void addClassNames(String methodDecriptor, Collection<String> classNames)
   {
-    Matcher m = PATTERN.matcher(methodDecriptor);
+    Matcher m = FIND_CLASS_NAME.matcher(methodDecriptor);
     while (m.find())
     {
       classNames.add(m.group(1).replace('/', '.'));

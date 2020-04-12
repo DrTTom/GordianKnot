@@ -5,8 +5,9 @@ buildscript {
 }
 
 plugins {
-  id 'com.github.spotbugs' version '2.0.0'
-  id 'com.github.ben-manes.versions' version '0.21.0'
+  // using out-dated plugin because current one uses wrong auxclasspath in task spotbugsTest: 
+  id 'com.github.spotbugs' version '3.0.0'
+  id 'com.github.ben-manes.versions' version '0.28.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules
   id 'application'
   id 'pmd'
@@ -15,7 +16,7 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.10.0'
+    toolVersion = '6.22.0'
     ruleSets = []
     ruleSetConfig = resources.text.fromFile("pmd_config.xml")
 }
@@ -42,13 +43,14 @@ dependencies {
       exclude module: "jetty-webapp"
       exclude module: "jetty-xml"
    }
-   implementation 'com.google.code.gson:gson:2.8.5'
-   runtime 'org.slf4j:slf4j-simple:1.8.0-beta4'
+   implementation 'com.google.code.gson:gson:2.8.6'
+   runtimeOnly 'org.slf4j:slf4j-simple:1.8.0-beta4'
    
    testImplementation 'org.slf4j:slf4j-simple:1.8.0-beta4' // there is a security warning for all earlier versions
-   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0'
-   testImplementation 'org.assertj:assertj-core:3.12.2'
-   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.0'
+   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+   testImplementation 'org.assertj:assertj-core:3.15.0'
+   
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
    forCore 'org.slf4j:slf4j-api:1.8.0-beta2'
 }
@@ -63,7 +65,7 @@ test{
 }
 
 jar {
-   baseName = "${project.name}Core"
+   archiveBaseName = "${project.name}Core"
    exclude '**/rest/*'
    exclude '**/Main.class'
    includeEmptyDirs = false
@@ -79,7 +81,7 @@ task jarServer(type:Jar) {
 }
 
 task jarTest(type:Jar) {
-   baseName = "${project.name}Test"
+   archiveBaseName = "${project.name}Test"
    from (sourceSets.test.output)
    {
       include '**/commontests/*'
@@ -146,6 +148,7 @@ publishing {
 }
 
 spotbugs {
+   toolVersion = "4.0.1"
    effort = "max"
    reportLevel = "low"
    excludeFilter = file("findbugs-exclude.xml")
