@@ -49,7 +49,8 @@ public class Filter
   /**
    * Returns true if name denotes a source not to be parsed.
    *
-   * @param name
+   * @param name name of associated resource
+   * @return true to ignore that class
    */
   public boolean isIgnoredSource(String name)
   {
@@ -60,7 +61,8 @@ public class Filter
    * Returns true if name is the class name of an ignored class. Dependency to such classes are ignored as
    * well and taken for granted.
    *
-   * @param name
+   * @param name name of associated resource
+   * @return true to ignore that class
    */
   public boolean isIgnoredClass(String name)
   {
@@ -68,10 +70,9 @@ public class Filter
   }
 
   /**
-   * Returns true if name denotes an element which should undergo all the analyzing procedures, namely
-   * something with source code in the analyzed project.
-   *
    * @param name name of the node
+   * @return true if name denotes an element which should undergo all the analyzing procedures, namely
+   *         something with source code in the analyzed project.
    */
   public boolean isInFocus(String name)
   {

@@ -1,6 +1,16 @@
 package de.tautenhahn.dependencies.analyzers;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -25,7 +35,8 @@ public final class BasicGraphOperations
   /**
    * Returns the classical edge density of dependency graph, respecting collapsed nodes.
    *
-   * @param graph
+   * @param graph graph to analyze
+   * @return ratio of number existing arcs to number possible arcs
    */
   public static double getDensity(DiGraph graph)
   {
@@ -47,7 +58,8 @@ public final class BasicGraphOperations
    * removing some arcs which belong to cycles, there is a subgraph where each vertex has the rank as
    * indicated. For organizing some graphic output, that may be just good enough.
    *
-   * @param graph
+   * @param graph structure to analyze
+   * @return for each node, length of a longest path from a source to that node
    */
   public static int[] getRanks(DiGraph graph)
   {
@@ -66,6 +78,7 @@ public final class BasicGraphOperations
    * Returns the number of nodes each node depends on (inclusive itself) and used from.
    *
    * @param graph any directed graph, transitive closure is computed internally.
+   * @return all that counts
    */
   public static Pair<int[], int[]> countDependsOnAndUsedFrom(DiGraph graph)
   {
@@ -83,9 +96,8 @@ public final class BasicGraphOperations
   }
 
   /**
-   * Returns the cumulative dependsOn value.
-   *
-   * @param numbers
+   * @return the cumulative dependsOn value.
+   * @param numbers return value of {@link #countDependsOnAndUsedFrom(DiGraph)}
    */
   public static int ccd(Pair<int[], int[]> numbers)
   {
@@ -93,9 +105,8 @@ public final class BasicGraphOperations
   }
 
   /**
-   * Returns the average dependsOn value.
-   *
-   * @param numbers
+   * @return the average dependsOn value.
+   * @param numbers return value of {@link #countDependsOnAndUsedFrom(DiGraph)}
    */
   public static double acd(Pair<int[], int[]> numbers)
   {
@@ -106,7 +117,8 @@ public final class BasicGraphOperations
    * Returns the ratio between ccd of current graph and ccd of a balanced binary tree of same size. That value
    * should be comparable between graphs of different node number.
    *
-   * @param numbers
+   * @param numbers return value of {@link #countDependsOnAndUsedFrom(DiGraph)}
+   * @return that ratio
    */
   public static double rcd(Pair<int[], int[]> numbers)
   {
@@ -132,7 +144,8 @@ public final class BasicGraphOperations
    * is undefined but should be good enough if we just want a large number of arcs pointing in the right
    * direction.
    *
-   * @param graph
+   * @param graph structure to order
+   * @return ordered node list
    */
   private static List<IndexedNode> topSort(DiGraph graph)
   {
@@ -147,7 +160,7 @@ public final class BasicGraphOperations
                                           .stream()
                                           .filter(n -> !wrapper.listed[n.getIndex()])
                                           .min((a, b) -> a.getPredecessors().size()
-                                                            - b.getPredecessors().size());
+                                                         - b.getPredecessors().size());
       if (!source.isPresent())
       {
         break;
@@ -192,7 +205,8 @@ public final class BasicGraphOperations
    * Returns the transitive closure of a given graph using repeated algorithm of Floyd/Warshall. In case of
    * performance problems, implement Purdom's algorithm instead! May be its OK to work directly on the lists.
    *
-   * @param graph
+   * @param graph any graph
+   * @return transitive closure
    */
   public static DiGraph transitiveClosure(DiGraph graph)
   {
@@ -238,9 +252,10 @@ public final class BasicGraphOperations
    * and collections. Note that you cannot make the stream parallel without loosing the strict breadth-first
    * sequence. Use the cheaper depth-first search if you do not care about the sequence.
    *
-   * @param graph
-   * @param forward
-   * @param start several nodes my be given where the graph theorist would introduce an artificial source.
+   * @param graph any graph
+   * @param forward true to follow arc directions
+   * @param start several nodes may be given where the graph theorist would introduce an artificial source.
+   * @return sorted nodes
    */
   public static Stream<IndexedNode> breadthFirstSearch(DiGraph graph, boolean forward, IndexedNode... start)
   {

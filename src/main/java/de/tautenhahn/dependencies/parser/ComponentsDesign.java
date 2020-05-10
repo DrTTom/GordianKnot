@@ -98,7 +98,7 @@ public class ComponentsDesign
   }
 
   /**
-   * Returns the name of the component for given class name.
+   * @return the name of the component for given class name.
    */
   public String getComponentName(String className)
   {

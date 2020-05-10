@@ -33,6 +33,7 @@ public final class ContainerNode extends Node
    * Creates a new instance as child of current node.
    *
    * @param name must be relative to current node
+   * @return created node
    */
   public ContainerNode createInnerChild(String name)
   {
@@ -43,6 +44,7 @@ public final class ContainerNode extends Node
    * Creates a new instance as child of current node.
    *
    * @param name must be relative to current node
+   * @return created node
    */
   public ClassNode createLeaf(String name)
   {
@@ -84,7 +86,7 @@ public final class ContainerNode extends Node
   }
 
   /**
-   * Returns the direct children, independently of list mode.
+   * @return the direct children, independently of list mode.
    */
   public Collection<Node> getChildren()
   {
@@ -146,8 +148,10 @@ public final class ContainerNode extends Node
    */
   public Stream<Node> walkCompleteSubTree()
   {
-    return children.values().stream().flatMap(n -> n instanceof ContainerNode
-      ? Stream.concat(((ContainerNode)n).walkCompleteSubTree(), Stream.of(n)) : Stream.of(n));
+    return children.values()
+                   .stream()
+                   .flatMap(n -> n instanceof ContainerNode
+                     ? Stream.concat(((ContainerNode)n).walkCompleteSubTree(), Stream.of(n)) : Stream.of(n));
   }
 
   /**
@@ -170,8 +174,9 @@ public final class ContainerNode extends Node
 
   private Stream<ClassNode> getAllDescendentLeafs()
   {
-    return getChildren().stream().flatMap(n -> n instanceof ContainerNode
-      ? ((ContainerNode)n).getAllDescendentLeafs() : Stream.of((ClassNode)n));
+    return getChildren().stream()
+                        .flatMap(n -> n instanceof ContainerNode ? ((ContainerNode)n).getAllDescendentLeafs()
+                          : Stream.of((ClassNode)n));
   }
 
   @Override

@@ -23,10 +23,10 @@ public class GradleAdapter
   private Path gradle;
 
   /**
-   * Creates instance to analyze gradle project specified by build file.
+   * Creates instance to analyze Gradle project specified by build file.
    *
-   * @param gradleFile
-   * @throws IOException
+   * @param gradleFile path to build.gradle
+   * @throws IOException if file is not readable
    */
   public GradleAdapter(Path gradleFile)
   {
@@ -40,7 +40,7 @@ public class GradleAdapter
     }
     workingDir = Optional.ofNullable(gradle.getParent())
                          .orElseThrow(() -> new IllegalArgumentException("no parent directory for "
-                           + gradle));
+                                                                         + gradle));
 
   }
 
@@ -87,8 +87,8 @@ public class GradleAdapter
   private void changeBuildFileAndCall(String configName, Path backup) throws IOException, InterruptedException
   {
     String addition = "\ntask writeClasspath {\n" + "   doLast {\n" + "      buildDir.mkdirs()\n"
-      + "      new File(buildDir, \"classpath.txt\").text = configurations." + configName
-      + ".asPath + \"\\n\"\n" + "   }\n}";
+                      + "      new File(buildDir, \"classpath.txt\").text = configurations." + configName
+                      + ".asPath + \"\\n\"\n" + "   }\n}";
 
     try
     {

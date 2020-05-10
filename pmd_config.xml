@@ -96,11 +96,6 @@
          <property name="classReportLevel" value="100" />
       </properties>
    </rule>
-   <rule ref="category/java/design.xml/ExcessiveMethodLength">
-      <properties>
-         <property name="minimum" value="100" /> <!-- generous because we have NCSS count -->
-      </properties>
-   </rule>
    <rule ref="category/java/design.xml/NPathComplexity">
       <properties>
          <property name="reportLevel" value="300" />

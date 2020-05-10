@@ -7,8 +7,8 @@ import java.util.Objects;
  * Own Pair class because various existing ones suffer access restrictions.
  *
  * @author TT
- * @param <S>
- * @param <T>
+ * @param <S> element type
+ * @param <T> element type
  */
 public class Pair<S, T>
 {
@@ -20,8 +20,8 @@ public class Pair<S, T>
   /**
    * Creates immutable instance.
    *
-   * @param first
-   * @param second
+   * @param first wrapped value
+   * @param second wrapped value
    */
   public Pair(S first, T second)
   {
@@ -30,7 +30,7 @@ public class Pair<S, T>
   }
 
   /**
-   * Returns component.
+   * @return first value
    */
   public S getFirst()
   {
@@ -38,7 +38,7 @@ public class Pair<S, T>
   }
 
   /**
-   * Returns component.
+   * @return second value
    */
   public T getSecond()
   {

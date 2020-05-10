@@ -46,8 +46,8 @@ public abstract class Node
   /**
    * Creates new instance.
    *
-   * @param parent
-   * @param simpleName
+   * @param parent parent node
+   * @param simpleName name of that node only, full name will be created by addig parent info
    */
   Node(Node parent, String simpleName)
   {
@@ -56,7 +56,7 @@ public abstract class Node
   }
 
   /**
-   * Returns the fully qualified name.
+   * @return the fully qualified name.
    */
   public String getName()
   {
@@ -67,7 +67,7 @@ public abstract class Node
   }
 
   /**
-   * Returns the simple name.
+   * @return the simple name.
    */
   public String getSimpleName()
   {
@@ -77,7 +77,7 @@ public abstract class Node
 
 
   /**
-   * Returns the parent in the container structure.
+   * @return the parent in the container structure.
    */
   public Node getParent()
   {
@@ -87,32 +87,34 @@ public abstract class Node
   abstract Node getChildByName(String simpleChildName);
 
   /**
-   * Returns the nodes which depend on this node. In case an inner node is collapsed, it will be returned
-   * instead of its hidden children.
+   * @return the nodes which depend on this node. In case an inner node is collapsed, it will be returned
+   *         instead of its hidden children.
    */
   public abstract List<Node> getSuccessors();
 
   /**
-   * Return the node this node depends on. Same handling of collapsed nodes.
+   * @return the node this node depends on. Same handling of collapsed nodes.
    */
   public abstract List<Node> getPredecessors();
 
   /**
-   * Returns true if there is at least one class represented by this node and not by some expanded child node.
+   * @return true if there is at least one class represented by this node and not by some expanded child node.
    */
   public abstract boolean hasOwnContent();
 
   /**
-   * Returns a list of pairs (a,b) denoting the smallest known units where a is a child of the current node, b
-   * a child of the other node, a depends on b and both a and b represent the smallest known units containing
-   * the dependency. This looks into collapsed nodes.
+   * @return a list of pairs (a,b) denoting the smallest known units where a is a child of the current node, b
+   *         a child of the other node, a depends on b and both a and b represent the smallest known units
+   *         containing the dependency. This looks into collapsed nodes.
+   * @param other node to check dependency to
    */
   public abstract List<Pair<Node, Node>> getDependencyReason(Node other);
 
   /**
    * Same as {@link #getDependencyReason(Node)} but returns pairs of short comprehensive strings.
    *
-   * @param other
+   * @param other node to check dependency to
+   * @return short explanations
    */
   public List<Pair<String, String>> explainDependencyTo(Node other)
   {
@@ -123,13 +125,13 @@ public abstract class Node
   }
 
   /**
-   * Returns a stream of children in depth-first order, ignoring parts of collapsed nodes.
+   * @return a stream of children in depth-first order, ignoring parts of collapsed nodes.
    */
   public abstract Stream<Node> walkSubTree();
 
   /**
-   * Returns the mode in which children in the container structure are handled as integral part of this node
-   * or as separate nodes.
+   * @return the mode in which children in the container structure are handled as integral part of this node
+   *         or as separate nodes.
    */
   public ListMode getListMode()
   {
@@ -140,7 +142,7 @@ public abstract class Node
    * If parameter is true, combine this node with all its children into one collective node, collapse the
    * children as well. If false is given, consider the children as separate nodes.
    *
-   * @param listMode
+   * @param listMode true to collapse this node
    */
   public void setListMode(ListMode listMode)
   {
@@ -148,8 +150,7 @@ public abstract class Node
   }
 
   /**
-   * Returns sub-node specified by path, even if inside some collapsed node.
-   *
+   * @return sub-node specified by path, even if inside some collapsed node.
    * @param path relative to this node.
    */
   public Node find(String path)
@@ -162,7 +163,8 @@ public abstract class Node
   /**
    * Separates the first part of a path.
    *
-   * @param path
+   * @param path value to split
+   * @return simple name and parents fully qualified name
    */
   Pair<String, String> splitPath(String path)
   {
@@ -173,6 +175,8 @@ public abstract class Node
   /**
    * Regarding the list mode, returns the node this node is currently represented by. That will be the biggest
    * collapsed container containing this node or this node itself if all ancestors are expanded.
+   * 
+   * @return node currently representing this one
    */
   public Node getListedContainer()
   {
@@ -199,8 +203,9 @@ public abstract class Node
   }
 
   /**
-   * Returns the name relative to another node. Will throw exception if not in the subtree. In case of nodes
-   * are same, the simple name is returned instead because its more useful.
+   * @return the name relative to another node. Will throw exception if not in the subtree. In case of nodes
+   *         are same, the simple name is returned instead because its more useful.
+   * @param ancestor any ancestor node
    */
   private String getRelativeName(Node ancestor)
   {
@@ -216,7 +221,8 @@ public abstract class Node
   }
 
   /**
-   * Returns true if this node is a container containing the other node
+   * @return true if this node is a container containing the other node
+   * @param other any node to check
    */
   public boolean isAnchestor(Node other)
   {
@@ -240,11 +246,14 @@ public abstract class Node
    * <li>fully qualified class name for a class or package (omitting where it was found)</li>
    * <li>the simple file name of a jar</li>
    * </ul>
+   * 
+   * @return comprehensive value
    */
   public String getDisplayName()
   {
-    return getName().replaceAll(".*:[^.]*\\.", "").replaceAll("[jwer]ar:", "").replaceAll("_([jwer]ar)",
-                                                                                          ".$1");
+    return getName().replaceAll(".*:[^.]*\\.", "")
+                    .replaceAll("[jwer]ar:", "")
+                    .replaceAll("_([jwer]ar)", ".$1");
   }
 
 }

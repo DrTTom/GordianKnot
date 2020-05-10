@@ -100,7 +100,7 @@ public class ProjectView
    *
    * @param nodeNumber
    * @param value
-   * @returns name of node just changed (that node may be no longer displayed)
+   * @return name of node just changed (that node may be no longer displayed)
    */
   public String changeListMode(int nodeNumber, String value)
   {
