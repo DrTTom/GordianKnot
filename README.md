@@ -25,6 +25,10 @@ Once finished, it will also report
 To develop a software which is understandable and safe, keep an eye on its inner dependencies.
 Do not wait until the entanglement becomes famous!
 
+# Have a Quick Look
+
+Just call ``gradlew run``. The project will analyze itself and provide the report. If Firefox is in the path, the browser will open automatically, otherwise point your browser to ``http://localhost:4567/index.html``.
+
 # Usage as Application
 
 Get the class path of your software. You can always print it out directly from inside your application.
