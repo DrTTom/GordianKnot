@@ -34,7 +34,7 @@ public class DisplayableClasspathEntry
 
 
   /**
-   * Returns true if this entry was used in the analysis of the project.
+   * @return true if this entry was used in the analysis of the project.
    */
   public boolean isActive()
   {
@@ -51,7 +51,7 @@ public class DisplayableClasspathEntry
   }
 
   /**
-   * Returns the label of the resource node.
+   * @return the label of the resource node.
    */
   public String getLabel()
   {
@@ -59,7 +59,7 @@ public class DisplayableClasspathEntry
   }
 
   /**
-   * Returns the path as found inside class path.
+   * @return the path as found inside class path.
    */
   public String getFullPath()
   {

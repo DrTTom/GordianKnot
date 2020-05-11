@@ -59,8 +59,8 @@ public class ProjectView
   /**
    * Creates instance for given class path and project name.
    *
-   * @param classPath
-   * @param name
+   * @param classPath as specified to JVM
+   * @param name free identifier
    */
   public ProjectView(String classPath, String name)
   {
@@ -98,8 +98,8 @@ public class ProjectView
   /**
    * Changes the list mode of a specified node or its parent.
    *
-   * @param nodeNumber
-   * @param value
+   * @param nodeNumber specifies the node
+   * @param value new list mode
    * @return name of node just changed (that node may be no longer displayed)
    */
   public String changeListMode(int nodeNumber, String value)
@@ -129,8 +129,7 @@ public class ProjectView
 
 
   /**
-   * Returns additional information about a node.
-   *
+   * @return additional information about a node.
    * @param nodeId
    */
   public NodeInfo getNodeInfo(String nodeId)
@@ -139,8 +138,7 @@ public class ProjectView
   }
 
   /**
-   * Returns additional information about an arc.
-   *
+   * @return additional information about an arc.
    * @param arcId
    */
   public ArcInfo getArcInfo(String arcId)
@@ -149,7 +147,7 @@ public class ProjectView
   }
 
   /**
-   * Returns the graph to be shown.
+   * @return the graph to be shown.
    */
   DisplayableDiGraph getDisplayableGraph()
   {
@@ -202,7 +200,7 @@ public class ProjectView
   }
 
   /**
-   * Returns the project name.
+   * @return the project name.
    */
   public String getProjectName()
   {
@@ -210,7 +208,7 @@ public class ProjectView
   }
 
   /**
-   * Returns List of class path elements as absolute path.
+   * @return List of class path elements as absolute path.
    */
   public List<DisplayableClasspathEntry> getClassPath()
   {
@@ -223,7 +221,7 @@ public class ProjectView
   }
 
   /**
-   * Returns the report about unreferenced elements.
+   * @return the report about unreferenced elements.
    */
   public Unreferenced getUnreferencedReport()
   {
@@ -236,6 +234,7 @@ public class ProjectView
    *
    * @param nodeIndex
    * @param successors
+   * @return changed graph
    */
   public DisplayableDiGraph restrictToImpliedBy(int nodeIndex, boolean successors)
   {
@@ -249,7 +248,7 @@ public class ProjectView
   }
 
   /**
-   * Returns the name of all active filters.
+   * @return the name of all active filters.
    */
   public List<String> listActiveFilters()
   {
@@ -259,7 +258,7 @@ public class ProjectView
   /**
    * Returns the IDs of all nodes representing the element specified by node name in current graph. This may
    * be the node itself, its children or some collapsed ancestor.
-   *
+   * 
    * @param nodeName
    * @return empty list if node is not represented.
    */
@@ -289,7 +288,7 @@ public class ProjectView
   }
 
   /**
-   * Returns report about missing classes.
+   * @return report about missing classes.
    */
   public MissingClasses getMissingClassesReport()
   {
@@ -297,7 +296,7 @@ public class ProjectView
   }
 
   /**
-   * Returns record with some metrics.
+   * @return record with some metrics.
    */
   public Metrics getMetrics()
   {

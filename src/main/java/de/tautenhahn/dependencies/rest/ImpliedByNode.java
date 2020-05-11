@@ -30,9 +30,8 @@ public final class ImpliedByNode implements ViewFilter
   }
 
   /**
-   * Returns instance which filters only named node and those which rely on it.
-   *
-   * @param nodeName
+   * @return instance which filters only named node and those which rely on it.
+   * @param nodeName specifies the node
    */
   public static ImpliedByNode dependingOn(String nodeName)
   {
@@ -40,9 +39,8 @@ public final class ImpliedByNode implements ViewFilter
   }
 
   /**
-   * Returns instance which filters only named node and those needed by named node.
-   *
-   * @param nodeName
+   * @return instance which filters only named node and those needed by named node.
+   * @param nodeName specifies the node
    */
   public static ImpliedByNode requiredBy(String nodeName)
   {

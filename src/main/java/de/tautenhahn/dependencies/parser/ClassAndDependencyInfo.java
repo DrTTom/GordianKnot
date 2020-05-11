@@ -85,7 +85,8 @@ public final class ClassAndDependencyInfo
    *
    * @param ins class content
    * @param name expected class name
-   * @throws IOException
+   * @return parsed info
+   * @throws IOException in case of streaming problems
    */
   public static ClassAndDependencyInfo parse(InputStream ins, String name) throws IOException
   {
@@ -158,6 +159,11 @@ public final class ClassAndDependencyInfo
 
   /**
    * Switch block for the different kinds of tags. Size was defined by Sun, this method just follows.
+   * 
+   * @param index entry id in the pool
+   * @param data to read pool entries from
+   * @return number of read entries
+   * @throws IOException in case of streaming problems
    */
   private int readPoolEntry(int index, DataInputStream data) throws IOException // NOPMD
   {
@@ -244,7 +250,7 @@ public final class ClassAndDependencyInfo
   }
 
   /**
-   * Returns the name of parsed class.
+   * @return the name of parsed class.
    */
   public String getClassName()
   {
@@ -252,7 +258,7 @@ public final class ClassAndDependencyInfo
   }
 
   /**
-   * Returns names of classes this class depends on.
+   * @return names of classes this class depends on.
    */
   public Collection<String> getDependencies()
   {

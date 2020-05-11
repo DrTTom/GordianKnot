@@ -114,7 +114,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns name of the original parsed node.
+   * @return name of the original parsed node.
    */
   String getNodeName()
   {
@@ -122,7 +122,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns type of resource node found in, null if it is a root directory of archive file.
+   * @return type of resource node found in, null if it is a root directory of archive file.
    */
   String getResourceType()
   {
@@ -130,7 +130,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns name of resource node found in, null if it is a root directory of archive file.
+   * @return name of resource node found in, null if it is a root directory of archive file.
    */
   String getResourceName()
   {
@@ -138,7 +138,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns type of represented entity.
+   * @return type of represented entity.
    */
   String getType()
   {
@@ -146,7 +146,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns name of represented entity.
+   * @return name of represented entity.
    */
   String getName()
   {
@@ -154,7 +154,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns the list mode.
+   * @return the list mode.
    */
   String getListMode()
   {
@@ -162,7 +162,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns the number of represented classes.
+   * @return the number of represented classes.
    */
   int getNumberContainedClasses()
   {
@@ -170,7 +170,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns the number of nodes which will be collapsed when changing the list mode of the parent.
+   * @return the number of nodes which will be collapsed when changing the list mode of the parent.
    */
   int getNumberCollapsable()
   {
@@ -178,7 +178,7 @@ public class NodeInfo
   }
 
   /**
-   * Returns the number of nodes which will appear when hitting the "expand" button.
+   * @return the number of nodes which will appear when hitting the "expand" button.
    */
   int getNumberExpandable()
   {

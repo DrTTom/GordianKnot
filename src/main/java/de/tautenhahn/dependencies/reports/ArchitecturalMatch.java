@@ -23,7 +23,7 @@ class ArchitecturalMatch
   /**
    * Creates new instance, performing the necessary analysis.
    *
-   * @param components
+   * @param components wanted components
    * @param root project as initially parsed, will be copied, not changed.
    */
   public ArchitecturalMatch(ComponentsDesign components, ContainerNode root)

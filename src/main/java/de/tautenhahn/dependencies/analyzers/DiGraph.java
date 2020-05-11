@@ -59,7 +59,7 @@ public class DiGraph
     }
 
     /**
-     * Returns the index of the node. Nodes should ne bumbered consecutively.
+     * @return the index of the node. Nodes should be numbered consecutively.
      */
     public int getIndex()
     {
@@ -67,7 +67,7 @@ public class DiGraph
     }
 
     /**
-     * Returns the original parsed node represented by this object.
+     * @return the original parsed node represented by this object.
      */
     public Node getNode()
     {
@@ -75,7 +75,7 @@ public class DiGraph
     }
 
     /**
-     * Returns the successors.
+     * @return the successors.
      */
     public Collection<IndexedNode> getSuccessors()
     {
@@ -83,7 +83,7 @@ public class DiGraph
     }
 
     /**
-     * Returns the predecessors.
+     * @return the predecessors.
      */
     public Collection<IndexedNode> getPredecessors()
     {
@@ -91,7 +91,7 @@ public class DiGraph
     }
 
     /**
-     * Returns the number of represented classes.
+     * @return the number of represented classes.
      */
     public int getNumberClasses()
     {
@@ -106,9 +106,9 @@ public class DiGraph
   }
 
   /**
-   * Returns an instance created from all visible nodes which have some content.
-   *
-   * @param root
+   * Creates an instance containing all visible nodes which have some content.
+   * 
+   * @param root root node of container tree
    */
   public DiGraph(ContainerNode root)
   {
@@ -209,8 +209,8 @@ public class DiGraph
   }
 
   /**
-   * Returns the list of all nodes. If node set was not changed till creation or last call of
-   * {@link #renumber()}, list index is node index.
+   * @return the list of all nodes. If node set was not changed till creation or last call of
+   *         {@link #renumber()}, list index is node index.
    */
   public List<IndexedNode> getAllNodes()
   {

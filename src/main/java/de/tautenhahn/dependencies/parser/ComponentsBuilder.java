@@ -17,7 +17,7 @@ public class ComponentsBuilder
   /**
    * Creates instance and parses component definition from given configuration file.
    *
-   * @param comp
+   * @param comp assumed components
    */
   public ComponentsBuilder(ComponentsDesign comp)
   {
@@ -25,10 +25,9 @@ public class ComponentsBuilder
   }
 
   /**
-   * Returns a new project tree with given classes where nodes directly in the root represent components.
-   * Class nodes are assigned to the respective subtree, package nodes may be duplicated.
-   *
-   * @param root
+   * @return a new project tree with given classes where nodes directly in the root represent components.
+   *         Class nodes are assigned to the respective subtree, package nodes may be duplicated.
+   * @param root main container containing the whole project
    */
   public ContainerNode addComponents(ContainerNode root)
   {
@@ -66,7 +65,8 @@ public class ComponentsBuilder
   }
 
   /**
-   * Returns the name of the component for given class name.
+   * @return the name of the component for given class name.
+   * @param className specifies class
    */
   private String getComponentName(String className)
   {

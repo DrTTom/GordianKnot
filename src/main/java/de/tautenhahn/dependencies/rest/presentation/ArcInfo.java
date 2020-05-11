@@ -22,8 +22,8 @@ public class ArcInfo
   /**
    * Creates immutable instance.
    *
-   * @param graph
-   * @param arcId
+   * @param graph structure that arc belongs to
+   * @param arcId unique id
    */
   public ArcInfo(DiGraph graph, String arcId)
   {
@@ -39,7 +39,7 @@ public class ArcInfo
   }
 
   /**
-   * Returns arcs start node.
+   * @return arcs start node.
    */
   public NodeInfo getFrom()
   {
@@ -47,7 +47,7 @@ public class ArcInfo
   }
 
   /**
-   * Returns arcs end node.
+   * @return arcs end node.
    */
   public NodeInfo getTo()
   {
@@ -55,7 +55,7 @@ public class ArcInfo
   }
 
   /**
-   * Returns pairs of relative class names causing this dependency arc.
+   * @return pairs of relative class names causing this dependency arc.
    */
   public List<Pair<String, String>> getReason()
   {

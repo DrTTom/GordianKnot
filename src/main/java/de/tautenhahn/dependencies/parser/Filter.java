@@ -39,7 +39,7 @@ public class Filter
    * Adds a regular expression for fully qualified class names to ignore. Matching classes are not analyzed,
    * dependencies to those classes are taken for granted.
    *
-   * @param regex
+   * @param regex regular expression matching the targeted class names
    */
   public void addIgnoredClassName(String regex)
   {

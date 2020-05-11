@@ -79,6 +79,8 @@ public final class ContainerNode extends Node
 
   /**
    * Creates a virtual root node with no parent and no name.
+   * 
+   * @return create node
    */
   public static ContainerNode createRoot()
   {
@@ -94,7 +96,7 @@ public final class ContainerNode extends Node
   }
 
   /**
-   * Returns the nodes this node depends on.
+   * @return the nodes this node depends on.
    */
   @Override
   public List<Node> getSuccessors()
@@ -144,7 +146,7 @@ public final class ContainerNode extends Node
   }
 
   /**
-   * Returns a stream of all contained nodes including those collapsed into their respective parents.
+   * @return a stream of all contained nodes including those collapsed into their respective parents.
    */
   public Stream<Node> walkCompleteSubTree()
   {
@@ -155,7 +157,7 @@ public final class ContainerNode extends Node
   }
 
   /**
-   * Returns all Leafs currently represented by this node, excluding expanded stuff.
+   * @return all Leafs currently represented by this node, excluding expanded stuff.
    */
   public Stream<ClassNode> getContainedLeafs()
   {

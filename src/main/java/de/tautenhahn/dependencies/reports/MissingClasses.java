@@ -37,8 +37,8 @@ public class MissingClasses
    * Creates report for given parsed project. Using own search here because of several subtle differences to
    * the basic graph search operation.
    *
-   * @param root
-   * @param filter
+   * @param root root node of components tree to analyze
+   * @param filter specifies which of those components to consider
    */
   public MissingClasses(ContainerNode root, Filter filter)
   {

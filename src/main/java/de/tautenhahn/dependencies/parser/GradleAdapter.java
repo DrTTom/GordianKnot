@@ -26,7 +26,6 @@ public class GradleAdapter
    * Creates instance to analyze Gradle project specified by build file.
    *
    * @param gradleFile path to build.gradle
-   * @throws IOException if file is not readable
    */
   public GradleAdapter(Path gradleFile)
   {
@@ -45,7 +44,7 @@ public class GradleAdapter
   }
 
   /**
-   * Returns the project name
+   * @return the project name
    */
   public String getProjectName()
   {
@@ -53,9 +52,8 @@ public class GradleAdapter
   }
 
   /**
-   * Returns the class path for specified configuration.
-   *
-   * @param configuration
+   * @return the class path for specified configuration.
+   * @param configuration name of Gradle configuration
    */
   public String getClassPath(String configuration)
   {

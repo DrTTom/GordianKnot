@@ -38,9 +38,8 @@ public class ParsedClassPath
   private final Map<Path, String> problems = new HashMap<>();
 
   /**
-   * Returns a name to describe the entry, hopefully a comprehensive short one.
-   *
-   * @param entry
+   * @return a name to describe the entry, hopefully a comprehensive short one.
+   * @param entry class path entry
    */
   public String getName(Path entry)
   {
@@ -50,7 +49,7 @@ public class ParsedClassPath
   /**
    * Returns a collection of Path instances representing given class path.
    *
-   * @param classpath
+   * @param classpath as specified for JVM
    */
   public ParsedClassPath(String classpath)
   {
@@ -83,7 +82,7 @@ public class ParsedClassPath
   }
 
   /**
-   * Returns the class path elements as List.
+   * @return the class path elements as List.
    */
   public static ParsedClassPath getCurrentClassPath()
   {
@@ -95,6 +94,8 @@ public class ParsedClassPath
    * this (earlier java versions) <br>
    * Warning: Loading lots of classes for a big project is not a suitable way to analyze the project. Use only
    * to analyze some special classes.
+   * 
+   * @return that loader
    */
   public ClassLoader createClassLoader()
   {
@@ -105,7 +106,11 @@ public class ParsedClassPath
     return AccessController.doPrivileged(create);
   }
 
-  /** Work-around for java 8 not having a platform class loader */
+  /**
+   * Work-around for java 8 not having a platform class loader
+   * 
+   * @return loader which hopefully does not contain the analyzed project
+   */
   private ClassLoader getParent()
   {
     try

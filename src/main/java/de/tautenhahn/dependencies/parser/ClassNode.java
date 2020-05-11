@@ -63,11 +63,12 @@ public class ClassNode extends Node
   @Override
   public List<Pair<Node, Node>> getDependencyReason(Node other)
   {
-    return other instanceof ContainerNode ?  ((ContainerNode)other).getContainedLeafs()
+    return other instanceof ContainerNode
+      ? ((ContainerNode)other).getContainedLeafs()
                               .filter(sucLeafs::contains)
                               .map(l -> new Pair<Node, Node>(this, l))
-                              .collect(Collectors.toList()) :
-                             Collections.singletonList(new Pair<>(this, other));
+                              .collect(Collectors.toList())
+      : Collections.singletonList(new Pair<>(this, other));
   }
 
   @Override
@@ -82,7 +83,7 @@ public class ClassNode extends Node
   }
 
   /**
-   * Returns the direct successors, ignoring any collapsed containers.
+   * @return the direct successors, ignoring any collapsed containers.
    */
   public List<ClassNode> getSucLeafs()
   {
@@ -96,7 +97,7 @@ public class ClassNode extends Node
   }
 
   /**
-   * Returns all class names which the represented class references but which to not match a successor node.
+   * @return all class names which the represented class references but which do not match a successor node.
    */
   public Collection<String> getMissingDependencies()
   {
@@ -110,7 +111,7 @@ public class ClassNode extends Node
   }
 
   /**
-   * Returns the name of the represented class.
+   * @return the name of the represented class.
    */
   public String getClassName()
   {

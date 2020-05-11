@@ -265,8 +265,8 @@ public final class BasicGraphOperations
   }
 
   /**
-   * Returns nodes in depth-first order. If you do not care about the order, feel free to use the stream in
-   * parallel.
+   * @return nodes in depth-first order. If you do not care about the order, feel free to use the stream in
+   *         parallel.
    */
   public static Stream<IndexedNode> depthFirstSearch(DiGraph graph, IndexedNode start)
   {

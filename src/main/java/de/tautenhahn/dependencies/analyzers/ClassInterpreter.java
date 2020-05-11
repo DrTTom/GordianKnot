@@ -35,7 +35,7 @@ public class ClassInterpreter
   /**
    * Removes arcs exclusively cause by a test suite referencing stuff in sub-packages.
    *
-   * @param graph
+   * @param graph project structure graph
    * @return true if changed
    */
   public boolean removeTestSuiteDependencies(DiGraph graph)
@@ -46,7 +46,7 @@ public class ClassInterpreter
   /**
    * Removes arcs exclusively cause by a factory referencing stuff in sub-packages.
    *
-   * @param graph
+   * @param graph project structure graph
    * @return true if changed
    */
   public boolean removeFactoryDependencies(DiGraph graph)
@@ -57,9 +57,9 @@ public class ClassInterpreter
   /**
    * Removes all arcs outgoing from given node which are excused by some specified rule.
    *
-   * @param graph
-   * @param excusedStart
-   * @param excusedTarget
+   * @param graph project structure graph
+   * @param excusedStart specifies source nodes of arcs to remove
+   * @param excusedTarget specifies target nodes of arcs to remove
    * @return true if graph is changed
    */
   private boolean removeArcsToSubpackage(DiGraph graph,
@@ -88,9 +88,8 @@ public class ClassInterpreter
   }
 
   /**
-   * Returns true if given node represents a JUnit test suite.
-   *
-   * @param n
+   * @return true if given node represents a JUnit test suite.
+   * @param n node to check
    */
   public boolean isTestSuite(ClassNode n)
   {
@@ -98,9 +97,8 @@ public class ClassInterpreter
   }
 
   /**
-   * Returns true if given node represents an EJB.
-   *
-   * @param n
+   * @return true if given node represents an EJB.
+   * @param n node to check
    */
   public boolean isEjb(ClassNode n)
   {
@@ -108,9 +106,8 @@ public class ClassInterpreter
   }
 
   /**
-   * Returns true if given node represents an EJB.
-   *
-   * @param n
+   * @return true if given node represents an EJB.
+   * @param n node to check
    */
   public boolean isWebService(ClassNode n)
   {
@@ -118,13 +115,12 @@ public class ClassInterpreter
   }
 
   /**
-   * Returns true if given node represents JUnit test.
-   *
-   * @param n
+   * @return true if given node represents JUnit test.
+   * @param n node to check
    */
   public boolean isTest(ClassNode n)
   {
-    return referencesClass(n, "org.junit.Test") || referencesClass(n,"org.junit.jupiter.api.Test");
+    return referencesClass(n, "org.junit.Test") || referencesClass(n, "org.junit.jupiter.api.Test");
   }
 
   private boolean referencesClass(ClassNode n, String name)
@@ -133,12 +129,11 @@ public class ClassInterpreter
   }
 
   /**
-   * Returns true if given node represents a class which can be loaded as main class.<br>
-   * WARNING: In Java 10, executing {@link Class#getDeclaredMethod(String, Class...)} requires
-   * org/slf4j/simple/SimpleLoggerConfiguration which is not in the platform class loader. In other words, the
-   * JVM does not pass the "cyclic archive dependencies" check.
-   *
-   * @param n
+   * @return true if given node represents a class which can be loaded as main class.<br>
+   *         WARNING: In Java 10, executing {@link Class#getDeclaredMethod(String, Class...)} requires
+   *         org/slf4j/simple/SimpleLoggerConfiguration which is not in the platform class loader. In other
+   *         words, the JVM does not pass the "cyclic archive dependencies" check.
+   * @param n node to check
    */
   public boolean isRecognizedAsMainClass(ClassNode n)
   {
@@ -158,7 +153,7 @@ public class ClassInterpreter
   /**
    * Specifies a special class loader to use when interpreting classes.
    *
-   * @param classLoader
+   * @param classLoader loader to use
    */
   public void setClassLoader(ClassLoader classLoader)
   {

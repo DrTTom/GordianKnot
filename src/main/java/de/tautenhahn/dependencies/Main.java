@@ -27,7 +27,7 @@ public final class Main
 
   static PrintStream out = System.out;
 
-  static boolean firefoxEnabled=true;
+  static boolean firefoxEnabled = true;
 
   private Main()
   { // no instances wanted
@@ -36,7 +36,7 @@ public final class Main
   /**
    * Command line call.
    *
-   * @param args
+   * @param args see help output
    */
   public static void main(String... args)
   {
@@ -68,7 +68,7 @@ public final class Main
         Runtime.getRuntime().exec("firefox " + url);
         return true;
       }
-      catch (RuntimeException|IOException t)
+      catch (RuntimeException | IOException t)
       {
         t.printStackTrace(out);
       }

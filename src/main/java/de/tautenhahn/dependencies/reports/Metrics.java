@@ -37,8 +37,8 @@ public class Metrics
   /**
    * Creates instance.
    *
-   * @param root
-   * @param filter
+   * @param root root node of component tree to analyze
+   * @param filter specifies which of these nodes to consider
    */
   public Metrics(ContainerNode root, Filter filter)
   {

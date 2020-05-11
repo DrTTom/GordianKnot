@@ -35,7 +35,7 @@ public final class CyclicDependencies
   /**
    * Creates new instance analyzing given graph.
    * 
-   * @param graph
+   * @param graph dependency structure
    */
   private CyclicDependencies(DiGraph graph)
   {
@@ -88,7 +88,7 @@ public final class CyclicDependencies
   /**
    * Returns a report about packages in build directories (interpreted as the own packages in your software).
    *
-   * @param root
+   * @param root root node of container tree
    */
   public static CyclicDependencies findForPackages(ContainerNode root)
   {
@@ -111,7 +111,7 @@ public final class CyclicDependencies
   /**
    * Returns a report about jars.
    * 
-   * @param root
+   * @param root root node of container tree
    */
   public static CyclicDependencies findForJars(ContainerNode root)
   {
