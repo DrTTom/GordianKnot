@@ -21,8 +21,8 @@ import de.tautenhahn.dependencies.parser.ParsedClassPath;
 /**
  * Unit tests to find unreferenced elements in your class path and own classes. Override the non-final methods
  * for fine-tuning these tests. <br>
- * Maybe junit 5 has more elegant method to feed data into this test where junit 4 Parameterized was nur
- * uasable because it requires static methods. <br>
+ * Maybe junit 5 has more elegant method to feed data into this test where junit 4 Parameterized was not
+ * usable because it requires static methods. <br>
  * Note that Eclipse may resolve the dependencies incorrectly making this test fail! Call from Gradle to be
  * sure.
  *
@@ -118,9 +118,9 @@ public class TestUnreferencedElements
    */
   protected String[] getKnownNeededLibraries()
   {
-    return new String[]{"junit-jupiter-engine-5_6_2.jar", ".*_junit-platform-commons-1_5_0.jar",
-                        "junit5-rt.jar", "1_5_0_junit-platform-engine-1_5_0.jar", ".*_opentest4j-1_2_0.jar",
-                        ".*_apiguardian-api-1_1_0.jar", "gradle-worker.jar", "slf4j-simple-1_8_0-beta4.jar"};
+    return new String[]{"junit-jupiter-engine-._._..jar", ".*_junit-platform-commons-1_5_0.jar",
+                        "junit5-rt.jar", ".*junit-platform-engine-._._..jar", ".*_opentest4j-1_2_0.jar",
+                        ".*_apiguardian-api-1_1_0.jar", "gradle-worker.jar", "slf4j-simple-.*.jar"};
   }
 
   /**

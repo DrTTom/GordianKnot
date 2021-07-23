@@ -7,7 +7,7 @@ buildscript {
 plugins {
   // using out-dated plugin because current one uses wrong auxclasspath in task spotbugsTest: 
   id 'com.github.spotbugs' version '4.0.8'
-  id 'com.github.ben-manes.versions' version '0.28.0'
+  id 'com.github.ben-manes.versions' version '0.39.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules
   id 'application'
   id 'pmd'
@@ -37,22 +37,22 @@ configurations {
 }
 
 dependencies {
-   implementation ('com.sparkjava:spark-core:2.9.1')
+   implementation ('com.sparkjava:spark-core:2.9.3')
    {
       exclude module: "websocket-client"
       exclude module: "jetty-webapp"
       exclude module: "jetty-xml"
    }
-   implementation 'com.google.code.gson:gson:2.8.6'
-   runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha1'
+   implementation 'com.google.code.gson:gson:2.8.7'
+   runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha2'
    
-   testImplementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
-   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-   testImplementation 'org.assertj:assertj-core:3.16.1'
+   testImplementation 'org.slf4j:slf4j-simple:2.0.0-alpha2'
+   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+   testImplementation 'org.assertj:assertj-core:3.20.2'
    
-   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 
-   forCore 'org.slf4j:slf4j-api:2.0.0-alpha1'
+   forCore 'org.slf4j:slf4j-api:2.0.0-alpha2'
 }
 
 

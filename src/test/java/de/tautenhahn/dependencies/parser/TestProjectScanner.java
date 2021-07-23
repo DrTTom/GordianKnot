@@ -45,7 +45,7 @@ public class TestProjectScanner
 
   /**
    * Checks whether parsing is fast enough to handle projects jar files. Asserts that a dependency between two
-   * classes from different jars is listed.
+   * classes from different jars is listed. TODO: get jar versions automatically.
    */
   @Test
   public void checkJars()
@@ -56,9 +56,8 @@ public class TestProjectScanner
     ContainerNode root = systemUnderTest.scan(ParsedClassPath.getCurrentClassPath());
     assertThat(System.currentTimeMillis() - startTime).as("duration").isLessThan(5000L);
 
-    root.walkSubTree().filter(n -> n.getDisplayName().contains("BeforeEach")).forEach(System.out::println);
-    String junitEngineJar = "jar:junit-jupiter-engine-5_6_2_jar";
-    String junitApiJar = "jar:junit-jupiter-api-5_6_2_jar";
+    String junitEngineJar = "jar:junit-jupiter-engine-5_7_2_jar";
+    String junitApiJar = "jar:junit-jupiter-api-5_7_2_jar";
     Node adapterNode = root.find(junitEngineJar
                                  + ".org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor");
     Node exNode = root.find(junitApiJar + ".org.junit.jupiter.api.function.Executable");

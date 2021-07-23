@@ -32,7 +32,7 @@ public final class ClassAndDependencyInfo
 
   private static final int MAGIC = 0xCAFEBABE;
 
-  private static final int MAX_SUPPORTED_VERSION = 57;
+  private static final int MAX_SUPPORTED_VERSION = 59;
 
   private static final byte CONSTANT_UTF8 = 1;
 
