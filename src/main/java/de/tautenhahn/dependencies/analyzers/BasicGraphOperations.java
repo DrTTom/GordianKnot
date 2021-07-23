@@ -40,20 +40,18 @@ public final class BasicGraphOperations
    */
   public static double getDensity(DiGraph graph)
   {
-    int[] numberNodesAndArcs = new int[2];
-    graph.getAllNodes().forEach(n -> count(n, numberNodesAndArcs));
-    int numberNodes = numberNodesAndArcs[0];
-    return 1.0 * numberNodesAndArcs[1] / (numberNodes * (numberNodes - 1));
-  }
-
-  private static void count(IndexedNode n, int... numberNodesAndArcs)
-  {
-    numberNodesAndArcs[0]++;
-    numberNodesAndArcs[1] += n.getSuccessors().size();
+    List<IndexedNode> nodes = graph.getAllNodes();
+    int numNodes = nodes.size();
+    if (numNodes<2)
+    {
+      return 0.0;
+    }
+    int numArcs = nodes.stream().mapToInt(n-> n.getSuccessors().size()).sum();
+    return 1.0 * numArcs / (numNodes * (numNodes - 1));
   }
 
   /**
-   * For cycle-free graphs, return the ranks of each node. <br>
+   * For cycle-free graphs, return the ranks of each node.<br>
    * For cyclic graphs, this method will just ignore some of the arcs, so the outcome is undefined. However,
    * removing some arcs which belong to cycles, there is a subgraph where each vertex has the rank as
    * indicated. For organizing some graphic output, that may be just good enough.
@@ -110,7 +108,7 @@ public final class BasicGraphOperations
    */
   public static double acd(Pair<int[], int[]> numbers)
   {
-    return 1.0 * ccd(numbers) / numbers.getFirst().length;
+    return ratioAvoidingNaN(ccd(numbers), numbers.getFirst().length);
   }
 
   /**
@@ -122,7 +120,12 @@ public final class BasicGraphOperations
    */
   public static double rcd(Pair<int[], int[]> numbers)
   {
-    return 1.0 * ccd(numbers) / getTreeValue(numbers.getFirst().length);
+    return ratioAvoidingNaN(ccd(numbers), getTreeValue(numbers.getFirst().length));
+  }
+
+  private static double ratioAvoidingNaN(int a, int b)
+  {
+    return b==0 ? 0.0: 1.0* a/b;
   }
 
   private static int getTreeValue(int n)

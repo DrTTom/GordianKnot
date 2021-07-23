@@ -90,6 +90,7 @@ public class Metrics
           .append(worstElements.get(1))
           .append("\nworst archives: ")
           .append(worstElements.get(2));
+
     return result.toString();
   }
 
